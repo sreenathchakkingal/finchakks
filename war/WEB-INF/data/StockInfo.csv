@@ -1,0 +1,382 @@
+Stock,Net Returns,Ups,Downs,Up and Down count,Industry,Graph,Reported Net Profit(last 5 years),Debt equity ratio
+Indian Oil Corporation Ltd.,14.3224058,8,5,FALSE,Refineries,,,
+Reliance Industries Ltd.,15.51455365,7,6,FALSE,Diversified,,,
+Bharat Petroleum Corporation Ltd.,15.06788311,8,5,FALSE,Refineries,,,
+Hindustan Petroleum Corporation Ltd.,5.322008893,6,7,FALSE,Refineries,,,
+3M India Ltd.,16.5447773,9,4,TRUE,Diversified,FALSE,,FALSE
+Tata Steel Ltd.,19.0753467,8,5,FALSE,Steel,,,
+Hindalco Industries Ltd.,9.628692979,8,5,FALSE,Aluminium,,,
+Bharti Airtel Ltd.,35.28707576,7,4,FALSE,Telecommunications - Service,,,
+NTPC Ltd.,6.032956549,4,5,FALSE,Power - Generation/Distribution,,,
+Aban Offshore Ltd.,44.47369413,10,3,TRUE,Oil Drilling And Exploration,FALSE,,FALSE
+Aditya Birla Nuvo Ltd.,24.93775684,9,4,TRUE,Textiles - Manmade Fibre - Rayon,FALSE,,
+Mahindra & Mahindra Ltd.,18.9869216,7,6,FALSE,Auto - Cars & Jeeps,,,
+Essar Oil Ltd.,26.83159833,6,7,FALSE,Refineries,,,
+Mangalore Refinery And Petrochemicals Ltd.,20.13915708,6,7,FALSE,Refineries,,,
+Bharat Heavy Electricals Ltd.,22.21342049,7,6,FALSE,Engineering - Heavy,,,
+Tata Consultancy Services Ltd.,24.67948269,6,3,FALSE,Computers - Software,,,
+Steel Authority of India (SAIL) Ltd.,27.46044831,7,6,FALSE,Steel,,,
+GAIL (India) Ltd.,21.05904602,7,6,FALSE,Oil Drilling And Exploration,,,
+Sterlite Industries (India) Ltd. (Amalgamated),40.76315744,7,5,FALSE,Metals - Non Ferrous - Copper/Copper Alloys - Prod,,,
+Chennai Petroleum Corporation Ltd.,11.63749742,7,6,FALSE,Refineries,,,
+Wipro Ltd.,8.82706593,8,5,FALSE,Computers - Software,,,
+Akzo Nobel India Ltd.,19.0989019,9,4,TRUE,Paints/Varnishes,TRUE,OK,-
+Allahabad Bank,23.66859267,8,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+Alstom India Ltd.,26.62006016,10,3,TRUE,Power - Transmission/Equipment,FALSE,,
+Ruchi Soya Industries Ltd.,19.34646423,8,5,FALSE,Edible Oils & Solvent Extraction,,,
+Alstom T&D India Ltd.,26.62006016,10,3,TRUE,Power - Transmission/Equipment,FALSE,,
+Amara Raja Batteries Ltd.,31.04193145,10,3,TRUE,Auto Ancl - Batteries,TRUE,OK,TRUE
+Tata Power Company Ltd.,20.47185305,8,5,FALSE,Power - Generation/Distribution,,,
+Ambuja Cements Ltd.,18.46737976,10,3,TRUE,Cement,TRUE,OK,-
+IDBI Bank Ltd.,11.31160008,7,6,FALSE,Finance - Banks - Public Sector,,,
+Reliance Infrastructure Ltd.,11.80439617,8,5,FALSE,Power - Generation/Distribution,,,
+Amtek India Ltd.,30.5552268,11,2,TRUE,Auto Ancl - Others,FALSE,,
+Hindustan Unilever Ltd.,8.308667751,10,3,FALSE,Personal Care,,,
+Andhra Bank,21.55549553,8,4,TRUE,Finance - Banks - Public Sector,FALSE,,
+Suzlon Energy Ltd.,-27.79726874,4,4,FALSE,Engineering - Heavy,,,
+Apar Industries Ltd.,32.90437997,10,3,TRUE,Electric Equipment - Transformers,FALSE,,
+Apollo Hospitals Enterprise Ltd.,19.58171041,9,4,TRUE,Hospitals & Medical Services,TRUE,TRUE,OK
+UltraTech Cement Ltd.,22.53136993,6,3,FALSE,Cement,,,
+Jindal Steel & Power Ltd.,45.74789584,8,5,FALSE,Steel - Sponge Iron,,,
+Jet Airways (India) Ltd.,-4.578196823,4,4,FALSE,Transport - Air,,,
+Oriental Bank of Commerce,19.64074017,7,6,FALSE,Finance - Banks - Public Sector,,,
+Jaiprakash Associates Ltd.,18.08953586,5,4,FALSE,Construction & Contracting,,,
+Apollo Tyres Ltd.,22.19120857,9,4,TRUE,Tyres & Tubes,OK,FALSE,FALSE
+Adani Enterprises Ltd.,27.94297123,6,7,FALSE,Trading,,,
+Tata Chemicals Ltd.,16.16245203,8,5,FALSE,Chemicals - Inorganic - Caustic Soda/Soda Ash,,,
+Videocon Industries Ltd.,20.90688394,7,6,FALSE,Consumer Goods - Electronic,,,
+Ashok Leyland Ltd.,20.92650774,9,4,TRUE,Auto - LCVs/HCVs,FALSE,,
+Asian Paints Ltd.,27.06292979,9,4,TRUE,Paints/Varnishes,TRUE,TRUE,TRUE
+NMDC Ltd.,24.32962286,4,5,FALSE,Mining/Minerals,,,
+Atul Ltd.,32.68371072,9,4,TRUE,Dyes & Pigments,OK,TRUE,OK
+Hindustan Zinc Ltd.,41.63192044,8,5,FALSE,Metals - Non Ferrous - Zinc/Zinc Alloys - Products,,,OK
+Axis Bank Ltd.,30.18209024,9,4,TRUE,Finance - Banks - Private Sector,OK,OK,OK
+Bajaj Auto Ltd.,40.61342167,10,3,TRUE,Auto - 2 & 3 Wheelers,OK,OK,OK
+Bajaj Electricals Ltd.,36.53409795,9,4,TRUE,Domestic Appliances - Others,OK,FALSE,ok
+Bajaj Finance Ltd.,40.61342167,10,3,TRUE,Finance & Investments,TRUE,TRUE,FALSE
+Balkrishna Industries Ltd.,51.76465794,11,2,TRUE,Tyres & Tubes,TRUE,OK,FALSE
+Ranbaxy Laboratories Ltd.,7.632025202,9,4,FALSE,Pharmaceuticals,,,
+Bank of India,24.04204623,10,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+Bata India Ltd.,25.00394119,10,3,TRUE,Leather/Synthetic Products,TRUE,OK,TRUE
+Bayer Cropscience Ltd.,22.1687117,8,4,TRUE,Pesticides/Agro Chemicals,OK,TRUE,OK
+Dr. Reddy_27_s Laboratories Ltd.,18.09829505,8,5,FALSE,Pharmaceuticals,,,OK
+Alok Industries Ltd.,0.572959612,7,6,FALSE,Textiles - Weaving,,,OK
+Berger Paints (India) Ltd.,29.25885276,10,3,TRUE,Paints/Varnishes,TRUE,TRUE,FALSE
+Welspun Corp Ltd.,24.66006433,7,6,FALSE,Steel - Tubes/Pipes,,,
+Bhushan Steel Ltd.,46.61162406,9,4,TRUE,Steel - CR/HR Strips,OK,OK,FALSE
+Blue Dart Express Ltd.,29.28163849,10,3,TRUE,Couriers,TRUE,TRUE,-
+Bosch Ltd.,29.82514085,11,2,TRUE,Auto Ancl - Engine Parts,TRUE,OK,TRUE
+Jindal Stainless Ltd.,-2.128375096,4,6,FALSE,Steel - Alloys/Special,,,
+Canara Bank,19.54006791,8,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+Carborundum Universal Ltd.,30.7248715,9,4,TRUE,Abrasives And Grinding Wheels,OK,OK,TRUE
+CESC Ltd.,29.37472444,9,4,TRUE,Power - Generation/Distribution,FALSE,,
+Shree Renuka Sugars Ltd.,2.869999532,3,5,FALSE,Sugar,,,
+Chettinad Cement Corporation Ltd.,32.56003573,7,3,TRUE,Cement,FALSE,,
+Gammon India Ltd.,6.833435203,7,6,FALSE,Construction & Contracting,,,
+Hindustan Construction Company Ltd.,23.65579955,8,5,FALSE,Construction & Contracting,,,
+Chambal Fertilisers & Chemicals Ltd.,12.99489461,8,5,FALSE,Fertilisers,,,
+CMC Ltd.,26.12179566,10,3,TRUE,Computers - Hardware,FALSE,,
+Colgate-Palmolive (India) Ltd.,17.04303581,11,2,TRUE,Personal Care,TRUE,OK,TRUE
+ABB India Ltd.,13.63474716,9,4,FALSE,Electric Equipment - General,,,
+TVS Motor Company Ltd.,23.62246168,7,6,FALSE,Auto - 2 & 3 Wheelers,,,
+National Fertilizers Ltd.,20.7870966,8,5,FALSE,Fertilisers,,,
+Coromandel International Ltd.,32.98836262,9,4,TRUE,Fertilisers,FALSE,,
+YES Bank Ltd.,28.25120655,5,3,FALSE,Finance - Banks - Private Sector,,,
+Cipla Ltd.,13.01117083,8,5,FALSE,Pharmaceuticals,,,
+National Aluminium Company Ltd.,11.97343129,6,7,FALSE,Aluminium,,,
+Crompton Greaves Ltd.,38.61484089,9,4,TRUE,Electric Equipment - General,FALSE,,
+JK Tyre & Industries Ltd.,21.0673125,8,5,FALSE,Tyres & Tubes,,,
+Satyam Computer Services Ltd.(Merged),-1.125444575,6,6,FALSE,Computers - Software,,,
+Dabur India Ltd.,24.89425186,9,4,TRUE,Personal Care,TRUE,OK,OK
+Deepak Fertilisers & Petrochemicals Corporation Ltd.,18.34323896,9,4,TRUE,Fertilisers,FALSE,,
+Dewan Housing Finance Corporation Ltd.,20.25699881,10,3,TRUE,Finance - Housing,FALSE,,
+Reliance Capital Ltd.,19.70197516,8,5,FALSE,Finance & Investments,,,
+Rashtriya Chemicals & Fertilizers Ltd.,18.93305751,8,5,FALSE,Fertilisers,,,
+Bharat Electronics Ltd.,24.93781649,8,5,FALSE,Electronics - Equipment/Components,,,
+Dhunseri Petrochem & Tea Ltd.,16.90328602,9,4,TRUE,Petrochem - Others,FALSE,,
+IDFC Ltd.,12.05817259,5,3,FALSE,Finance - Term Lending Institutions,,,
+IndusInd Bank Ltd.,29.90136936,8,5,FALSE,Finance - Banks - Private Sector,,,
+S Kumars Nationwide Ltd.,4.779138268,7,6,FALSE,Textiles - Synthetic/Silk,,,
+LIC Housing Finance Ltd.,31.9724913,8,5,FALSE,Finance - Housing,,,
+Divi_27_s Laboratories Ltd.,23.24488013,7,3,TRUE,Pharmaceuticals,FALSE,,
+IVRCL Ltd.,17.1810076,8,5,FALSE,Construction & Contracting,,,
+Eicher Motors Ltd.,45.77585672,10,3,TRUE,Auto - LCVs/HCVs,TRUE,TRUE,TRUE
+Bombay Burmah Trading Corporation Ltd.,26.2206701,8,5,FALSE,Plantations - Tea & Coffee,,,
+EID Parry (India) Ltd.,26.96424951,9,4,TRUE,Sugar,FALSE,,
+Jindal Saw Ltd.,19.81829196,6,7,FALSE,Steel - Tubes/Pipes,,,
+Emami Ltd.,30.48225769,9,2,TRUE,Personal Care,TRUE,TRUE,TRUE
+Simplex Infrastructures Ltd.,34.35372878,8,5,FALSE,Construction & Contracting,,,
+Kesoram Industries Ltd.,17.15410774,8,5,FALSE,Diversified,,,
+Winsome Diamonds and Jewellery Ltd.,-0.075848686,7,6,FALSE,Diamond Cutting/Precious Metals/Jewellery,,,
+Era Infra Engineering Ltd.,38.78636438,9,4,TRUE,Construction & Contracting,FALSE,,
+Exide Industries Ltd.,28.36721081,9,4,TRUE,Auto Ancl - Batteries,FALSE,,
+Neyveli Lignite Corporation Ltd.,22.40426369,8,5,FALSE,Power - Generation/Distribution,,,
+Rain Industries Ltd.,22.86419497,7,6,FALSE,Cement,,,
+Uttam Galva Steels Ltd.,32.13479971,8,5,FALSE,Steel - GP/GC Sheets,,,
+Britannia Industries Ltd.,14.46192621,9,4,FALSE,Food Processing - Dairy/Fruits/Others,,,
+MphasiS Ltd.,21.99833619,8,5,FALSE,Computers - Software,,,
+Federal Bank Ltd.,30.63228853,9,4,TRUE,Finance - Banks - Private Sector,OK,OK,OK
+Finolex Industries Ltd.,20.67318172,9,4,TRUE,Petrochem - Polymers,OK,FALSE,FALSE
+REI Agro Ltd.,29.27143132,6,7,FALSE,Food Processing - Dairy/Fruits/Others,,,
+Forbes & Company Ltd.,21.1308091,9,4,TRUE,Textiles - Spinning - Cotton Blended,FALSE,,
+Future Retail Ltd.,31.18133469,9,4,TRUE,Retail - Apparel/Accessories,FALSE,,
+Kalpataru Power Transmissions Ltd.,37.98344812,8,5,FALSE,Power - Transmission/Equipment,,,
+Cadila Healthcare Ltd.,24.06968391,6,7,FALSE,Pharmaceuticals,,,
+GlaxoSmithKline Consumer Healthcare Ltd.,19.65877826,9,4,TRUE,Food Processing - Dairy/Fruits/Others,TRUE,TRUE,TRUE
+GlaxoSmithKline Pharmaceuticals Ltd.,15.75563996,10,3,TRUE,Pharmaceuticals,TRUE,FALSE,-
+DCM Shriram Consolidated Ltd.,23.46860664,7,6,FALSE,Diversified,,,
+Century Textiles & Industries Ltd.,23.48180456,8,5,FALSE,Diversified,,,
+Ballarpur Industries Ltd.,2.567553392,8,5,FALSE,Paper & Paper Products,,,
+Vardhman Textiles Ltd.,25.49109834,8,5,FALSE,Textiles - Spinning - Cotton Blended,,,
+Ceat Ltd.,24.07254402,8,5,FALSE,Tyres & Tubes,,,
+Aurobindo Pharma Ltd.,37.22556873,7,6,FALSE,Pharmaceuticals,,,
+Prism Cement Ltd.,16.08386138,7,6,FALSE,Cement,,,
+Uflex Ltd.,11.76478193,8,5,FALSE,Packaging - Metalic/Plastics/Others,,,
+Godrej Consumer Products Ltd.,36.43750854,11,1,TRUE,Personal Care,TRUE,OK,TRUE
+Godrej Industries Ltd.,42.15231353,9,4,TRUE,Personal Care,OK,OK,FALSE
+Shipping Corporation of India Ltd.,11.11347029,6,7,FALSE,Shipping,,,
+Container Corporation of India Ltd.,22.47086151,8,5,FALSE,Transport - Road,,,
+Goodyear India Ltd.,19.20876722,10,3,TRUE,Tyres & Tubes,OK,FALSE,-
+Bajaj Hindustan Ltd.,16.70820382,7,6,FALSE,Sugar,,,
+Grasim Industries Ltd.,20.97752842,9,4,TRUE,Diversified,FALSE,,
+Cummins India Ltd.,19.28939098,7,6,FALSE,Engines,,,
+Sujana Metal Products Ltd.,0.560740573,4,6,FALSE,Steel - Rolling,,,
+SRF Ltd.,23.56716429,7,6,FALSE,Textiles - Manmade Fibre - Nylon,,,
+Spicejet Ltd.,18.51380575,8,5,FALSE,Transport - Air,,,
+Engineers India Ltd.,20.77638698,7,6,FALSE,Project Consultancy/Turnkey,,,
+Gujarat Narmada Valley Fertilizers & Chemicals Ltd.,11.92287048,7,6,FALSE,Fertilisers,,,
+Indiabulls Financial Services Ltd.[Amalgamated],25.89715492,5,3,FALSE,Finance & Investments,,,
+South Indian Bank Ltd.,22.5878879,7,6,FALSE,Finance - Banks - Private Sector,,,
+Mercator Ltd.,43.57848743,8,5,FALSE,Diversified,,,
+Raymond Ltd.,10.58692841,8,5,FALSE,Textiles - Woollen/Worsted,,,
+Great Eastern Shipping Company Ltd.,22.58689218,9,4,TRUE,Shipping,FALSE,,
+United Breweries (Holdings) Ltd.,15.72500427,8,5,FALSE,Trading,,,
+Mahanagar Telephone Nigam Ltd.,-17.03032744,4,9,FALSE,Telecommunications - Service,,,
+Patel Engineering Ltd.,19.46722249,8,5,FALSE,Construction & Contracting,,,
+Bilcare Ltd.,15.3057857,8,5,FALSE,Packaging - Metalic/Plastics/Others,,,
+Greaves Cotton Ltd.,37.87938521,9,4,TRUE,Engines,FALSE,,
+Greenply Industries Ltd.,37.47703208,10,3,TRUE,Decoratives - Wood Based,OK,OK,FALSE
+Oracle Financial Services Software Ltd.,25.09011426,6,5,FALSE,Computers - Software,,,
+Indian Hotels Company Ltd.,11.85174933,8,5,FALSE,"Hotels, Resorts & Restaurants",,,
+Garden Silk Mills Ltd.,17.17874761,7,6,FALSE,Textiles - Weaving,,,
+BASF India Ltd.,16.34108201,7,6,FALSE,Chemicals - Organic - Others,,,
+Karnataka Bank Ltd.,15.36157779,7,4,FALSE,Finance - Banks - Private Sector,,,
+Usha Martin Ltd.,-9.202879331,5,8,FALSE,Steel - Alloys/Special,,,
+IFCI Ltd.,22.08771707,7,6,FALSE,Finance - Term Lending Institutions,,,
+Gujarat Alkalies & Chemicals Ltd.,21.96386464,10,3,TRUE,Chemicals - Inorganic - Caustic Soda/Soda Ash,FALSE,,
+Escorts Ltd.,6.1336891,7,6,FALSE,Auto - Tractors,,,
+The Ramco Cements Ltd.,19.30096182,7,6,FALSE,Cement,,,
+Gujarat Ambuja Exports Ltd.,26.52839653,10,3,TRUE,Edible Oils & Solvent Extraction,FALSE,,
+Gujarat Fluorochemicals Ltd.,37.88490284,9,4,TRUE,Chemicals - Organic - Others,FALSE,,
+Gujarat Mineral Development Corporation Ltd.,37.64671823,9,4,TRUE,Mining/Minerals,FALSE,,
+Zee Entertainment Enterprises Ltd.,8.2328341,8,5,FALSE,Entertainment/Multi Media,,,
+Indo Rama Synthetics (India) Ltd.,15.76562679,6,7,FALSE,Textiles - Spinning - Synthetic Blended,,,
+Gujarat State Fertilizer & Chemicals Ltd.,24.01441841,9,4,TRUE,Fertilisers,FALSE,,
+Havells India Ltd.,42.55038371,9,4,TRUE,Electric Equipment - General,TRUE,TRUE,OK
+Binani Industries Ltd.,14.57326459,6,7,FALSE,Miscellaneous,,,
+HCL Technologies Ltd.,16.20057073,9,4,TRUE,Computers - Software,TRUE,TRUE,TRUE
+Shoppers Stop Ltd.,13.51594796,4,4,FALSE,Retail - Departmental Stores,,,
+Force Motors Ltd.,12.730598,6,6,FALSE,Auto - LCVs/HCVs,,,
+Whirlpool of India Ltd.,22.51567293,8,5,FALSE,Domestic Appliances - Others,,,
+Surya Roshni Ltd.,15.7113089,8,5,FALSE,Steel - Tubes/Pipes,,,
+HDFC Bank Ltd.,22.58220464,9,4,TRUE,Finance - Banks - Private Sector,TRUE,TRUE,OK
+Ruchi Infrastructure Ltd.,-9.755644979,5,6,FALSE,Edible Oils & Solvent Extraction,,,
+Hero MotoCorp Ltd.,20.3021936,9,4,TRUE,Auto - 2 & 3 Wheelers,OK,OK,TRUE
+Fertilisers and Chemicals Travancore Ltd.,-3.285015682,6,6,FALSE,Fertilisers,,,
+Uttam Value Steels Ltd.,20.66203452,7,6,FALSE,Steel - CR/HR Strips,,,
+Hexaware Technologies Ltd.,19.38347683,10,3,TRUE,Computers - Software,TRUE,OK,-
+Bombay Rayon Fashions Ltd.,11.03516982,5,3,FALSE,Textiles - General,,,
+Hindusthan National Glass & Industries Ltd.,29.48308155,7,3,TRUE,Glass & Glass Products,FALSE,,
+Essar Shipping Ltd.,24.7398362,8,5,FALSE,Shipping,,,
+Honeywell Automation India Ltd.,24.49156403,9,4,TRUE,Instrumentation & Process Control,OK,OK,OK
+Blue Star Ltd.,7.623345397,7,6,FALSE,Air Conditioners,,,
+Sundram Fasteners Ltd.,13.33587394,8,5,FALSE,Auto Ancl - Engine Parts,,,
+Southern Petrochemicals Industries Corporation Ltd.,4.984158587,8,5,FALSE,Fertilisers,,,
+National Steel and Agro Industries Ltd.,16.15633022,7,6,FALSE,Steel - GP/GC Sheets,,,
+BEML Ltd.,28.50985394,6,7,FALSE,Engineering - Heavy,,,
+Housing Development Finance Corporation Ltd.,22.62518775,10,3,TRUE,Finance - Housing,TRUE,TRUE,FALSE
+HCL Infosystems Ltd.,1.795392738,5,8,FALSE,Computers - Hardware,,,
+ICICI Bank Ltd.,18.81147845,9,4,TRUE,Finance - Banks - Private Sector,OK,OK,FALSE
+Torrent Pharmaceuticals Ltd.,26.24698897,8,5,FALSE,Pharmaceuticals,,,
+India Glycols Ltd.,19.43592003,8,5,FALSE,Chemicals - Organic - Alcohol Based,,,
+Balmer Lawrie & Company Ltd.,29.30355097,8,5,FALSE,Diversified,,,
+Mukand Ltd.,6.969872965,8,5,FALSE,Steel - Alloys/Special,,,
+Glodyne Technoserve Ltd.,4.412500058,4,4,FALSE,Computers - Software,,,
+McNally Bharat Engineering Company Ltd.,31.11706598,6,4,FALSE,Engineering - General,,,
+Jyoti Structures Ltd.,20.74416492,7,6,FALSE,Power - Transmission/Equipment,,,
+Welspun India Ltd.,16.32452925,7,6,FALSE,Textiles - Terry Towels,,,
+Manappuram Finance Ltd.,56.48435145,6,4,FALSE,Finance & Investments,,,
+Sterlite Technologies Ltd.,-3.746139825,7,6,FALSE,Cables - Telephone,,,
+Strides Arcolab Ltd.,13.00805687,5,4,FALSE,Pharmaceuticals,,,
+Piramal Enterprises Ltd.,18.56362518,8,5,FALSE,Pharmaceuticals,,,
+Indian Overseas Bank,17.16935941,9,4,TRUE,Finance - Banks - Public Sector,FALSE,,
+Jayaswal Neco Industries Ltd.,11.00309942,6,7,FALSE,Castings/Foundry,,,
+ING Vysya Bank Ltd.,24.76801169,9,4,TRUE,Finance - Banks - Private Sector,OK,TRUE,OK
+JK Cement Ltd.,12.37612727,4,4,FALSE,Cement,,,OK
+Ipca Laboratories Ltd.,36.84638549,9,4,TRUE,Pharmaceuticals,TRUE,TRUE,OK
+ITC,19.34931035,10,3,TRUE,Cigarettes,TRUE,TRUE,TRUE
+Shirpur Gold Refinery Ltd.,-1.995456241,3,10,FALSE,Mining/Minerals,,,
+Indraprastha Gas Ltd.,8.147695024,6,4,FALSE,Industrial Gas,,,
+ABG Shipyard Ltd.,9.189179407,3,5,FALSE,Ship - Docks/Breaking/Repairs,,,
+Tata Teleservices (Maharashtra) Ltd.,3.283232942,5,8,FALSE,Telecommunications - Service,,,
+Jammu & Kashmir Bank Ltd.,33.17611992,11,2,TRUE,Finance - Banks - Private Sector,TRUE,TRUE,OK
+Polyplex Corporation Ltd.,32.0350402,7,6,FALSE,Packaging - Metalic/Plastics/Others,,,
+Gujarat Gas Company Ltd.,12.62492091,5,8,FALSE,Industrial Gas,,,
+Amtek Auto Ltd.,15.74100893,7,6,FALSE,Auto Ancl - Susp. & Braking - Others,,,
+JBF Industries Ltd.,35.82255045,9,4,TRUE,Textiles - Manmade Fibre - PFY/PSF,FALSE,,
+SREI Infrastructure Finance Ltd.,21.52352614,8,5,FALSE,Finance & Investments,,,
+Shri Lakshmi Cotsyn Ltd.,25.60870519,8,5,FALSE,Textiles - Processing/Texturising,,,
+Birla Corporation Ltd.,25.17609816,8,5,FALSE,Cement,,,
+JMC Projects (India) Ltd.,15.42729546,9,4,TRUE,Construction & Contracting,FALSE,,
+Jindal Poly Films Ltd.,25.24922126,8,5,FALSE,Packaging - Metalic/Plastics/Others,,,
+JSW Steel Ltd.,58.86018096,10,3,TRUE,Steel,FALSE,,
+Jubilant Life Sciences Ltd.,35.42626488,9,4,TRUE,Pharmaceuticals,FALSE,,
+Opto Circuits India Ltd.,22.06997556,8,5,FALSE,Medical Equipment & Accessories,,,
+Balrampur Chini Mills Ltd.,17.51300148,7,6,FALSE,Sugar,,,
+JVL Agro Industries Ltd.,41.81760783,8,4,TRUE,Edible Oils & Solvent Extraction,FALSE,,
+Kajaria,32.94579076,9,4,TRUE,CERAMICS/GRANITE,TRUE,TRUE,OK
+Bombay Dyeing & Manufacturing Company Ltd.,16.6963725,8,5,FALSE,Textiles - Processing/Texturising,,,
+Kansai Nerolac Paints Ltd.,30.33900737,10,3,TRUE,Paints/Varnishes,FALSE,,
+S Mobility Ltd.,23.81658323,5,5,FALSE,Telecommunications - Equipment,,,
+Phillips Carbon Black Ltd.,23.87192579,7,6,FALSE,Carbon Black,,,
+Electrosteel Castings Ltd.,5.587783808,7,6,FALSE,Castings/Foundry,,,
+Karur Vysya Bank Ltd.,25.85769932,8,3,TRUE,Finance - Banks - Private Sector,FALSE,,
+Kirloskar Brothers Ltd.,40.54040273,10,3,TRUE,Pumps,FALSE,,
+Biocon Ltd.,10.05712071,5,4,FALSE,Pharmaceuticals,,,
+Sakthi Sugars Ltd.,9.686738829,6,7,FALSE,Sugar,,,
+Kotak Mahindra Bank Ltd.,42.4270146,10,3,TRUE,Finance - Banks - Private Sector,TRUE,TRUE,OK
+Moser Baer India Ltd.,-16.23673074,5,8,FALSE,Computers - Accessories/Peripherals,,,
+KPIT Technologies Ltd.,47.1946782,10,2,TRUE,Computers - Software,OK,OK,OK
+KRBL Ltd.,24.98962527,10,3,TRUE,Commodities - Trading - Rice,FALSE,,
+Finolex Cables Ltd.,10.57028902,7,6,FALSE,Cables - Telephone,,,
+Lakshmi Machine Works Ltd.,33.65840733,9,4,TRUE,Engineering - Heavy,OK,FALSE,-
+Polaris Financial Technology Ltd.,-1.683705827,4,9,FALSE,Computers - Software,,,
+Larsen & Toubro Ltd.,32.02421186,9,4,TRUE,Diversified,FALSE,,
+HT Media Ltd.,2.829481025,4,4,FALSE,Printing/Publishing/Stationery,,,
+Lupin Ltd.,53.19838794,10,3,TRUE,Pharmaceuticals,TRUE,OK,TRUE
+ISMT Ltd.,23.70822,7,6,FALSE,Steel - Rolling,,,
+Mangalore Chemicals & Fertilizers Ltd.,17.87711452,10,3,TRUE,Fertilisers,OK,FALSE,FALSE
+Maruti Suzuki India Ltd.,18.54088406,7,3,TRUE,Auto - Cars & Jeeps,FALSE,,
+Monnet Ispat & Energy Ltd.,31.58726489,7,6,FALSE,Steel - Sponge Iron,,,
+KSL and Industries Ltd.,-10.93433024,5,8,FALSE,Textiles - Hosiery/Knitwear,,,
+Nakoda Ltd.,32.03642439,8,5,FALSE,Textiles - Processing/Texturising,,,
+Max India Ltd.,19.83043969,9,4,TRUE,Packaging - Metalic/Plastics/Others,FALSE,,
+Orchid Chemicals & Pharmaceuticals Ltd.,4.318140499,7,6,FALSE,Pharmaceuticals,,,
+Motherson Sumi Systems Ltd.,39.11577812,10,3,TRUE,Auto Ancl - Electrical,TRUE,TRUE,OK
+MRF Ltd.,26.29781385,10,3,TRUE,Tyres & Tubes,TRUE,OK,OK
+Nahar Industrial Enterprises Ltd.,24.89728979,9,4,TRUE,Textiles - Composite Mills,FALSE,,
+Graphite India Ltd.,24.30148041,7,6,FALSE,Electrodes - Graphite,,,
+Zuari Global Ltd.,14.73575403,8,5,FALSE,Fertilisers,,,
+Godfrey Philips India Ltd.,14.34595613,8,5,FALSE,Cigarettes,,,
+Nestle India Ltd.,18.39854253,10,3,TRUE,Food Processing - Dairy/Fruits/Others,TRUE,TRUE,-
+OCL India Ltd.,29.76937647,9,4,TRUE,Cement,FALSE,,
+City Union Bank Ltd.,31.51843527,8,5,FALSE,Finance - Banks - Private Sector,,,
+Rane Holdings Ltd.,18.57453434,8,5,FALSE,Finance & Investments,,,
+Oil And Natural Gas Corporation Ltd.,23.2676279,11,2,TRUE,Oil Drilling And Exploration,OK,OK,TRUE
+India Infoline Ltd.,23.92572063,4,4,FALSE,Finance & Investments,,,
+Orient Paper & Industries Ltd.,21.932072,9,4,TRUE,Diversified,FALSE,,
+Rolta India Ltd.,1.875637248,7,6,FALSE,Computers - Software,,,
+Jayant Agro Organics Ltd.,6.831311963,7,6,FALSE,Chemicals - Speciality - Others,,,
+Asian Star Company Ltd.,11.19118326,6,7,FALSE,Diamond Cutting/Precious Metals/Jewellery,,,
+Zensar Technologies Ltd.,17.6532985,8,5,FALSE,Computers - Software,,,
+Madhucon Projects Ltd.,27.5480681,7,5,FALSE,Construction & Contracting,,,
+Pidilite Industries Ltd.,26.81972281,10,3,TRUE,Chemicals - Speciality - Others,TRUE,TRUE,TRUE
+Cholamandalam Investment & Finance Company Ltd.,23.98367041,7,6,FALSE,Finance & Investments,,,
+Prakash Industries Ltd.,38.88849379,9,4,TRUE,Diversified,FALSE,,
+Triveni Engineering & Industries Ltd.,5.365584253,7,5,FALSE,Sugar,,,
+JK Lakshmi Cement Ltd.,29.16503507,8,5,FALSE,Cement,,,
+Punjab National Bank,22.66089868,8,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+Diamond Power Infrastructure Ltd.,32.86385555,8,5,FALSE,Cables - Power/Others,,,
+Tamil Nadu Newsprint And Papers Ltd.,11.68465767,9,4,FALSE,Paper & Paper Products,,,
+3i Infotech Ltd.,-23.23394518,2,6,FALSE,Computers - Software,,,
+KEI Industries Ltd.,25.87978696,7,6,FALSE,Cables - Power/Others,,,
+RSWM Ltd.,24.45136427,9,4,TRUE,Textiles - Spinning - Synthetic Blended,FALSE,,
+Sanwaria Agro Oils Ltd.,39.47455697,9,4,TRUE,Edible Oils & Solvent Extraction,FALSE,,
+Savita Oil Technologies Ltd.,27.36125618,9,4,TRUE,Petrochem - Others,FALSE,,
+ITD Cementation India Ltd.,9.793734571,7,6,FALSE,Construction & Contracting,,,
+Nahar Spinning Mills Ltd.,11.47648071,7,6,FALSE,Textiles - Hosiery/Knitwear,,,
+Sesa Sterlite Ltd.,51.88167142,10,3,TRUE,Mining/Minerals,FALSE,,
+Jaiprakash Power Ventures Ltd.,2.764825078,3,5,FALSE,Power - Generation/Distribution,,,
+Responsive Industries Ltd.,75.56308462,8,1,FALSE,Plastics - Plastic & Plastic Products,,,
+Asahi India Glass Ltd.,17.84988483,8,5,FALSE,Glass & Glass Products,,,
+MIRC Electronics Ltd.,-7.596869182,5,8,FALSE,Consumer Goods - Electronic,,,
+Century Plyboards (I) Ltd.,19.81038696,5,3,FALSE,Decoratives - Wood Based,,,
+Sterling Biotech Ltd.,8.774008696,8,5,FALSE,Pharmaceuticals,,,
+Trend Electronics Ltd.,10.45348242,7,6,FALSE,Consumer Goods - Electronic,,,
+Century Enka Ltd.,15.64567072,8,5,FALSE,Textiles - Manmade Fibre - PFY/PSF,,,
+Electrotherm (India) Ltd.,22.78231317,6,7,FALSE,Engineering - General,,,
+Shrenuj & Company Ltd.,20.82758967,11,2,TRUE,Diamond Cutting/Precious Metals/Jewellery,OK,OK,TRUE
+Mahindra Ugine Steel Company Ltd.,29.4053476,8,5,FALSE,Steel - Alloys/Special,,,
+Shriram City Union Finance Ltd.,39.99756342,7,3,TRUE,Finance & Investments,TRUE,TRUE,FALSE
+Sunflag Iron & Steel Company Ltd.,18.45247598,6,7,FALSE,Steel - Rolling,,,
+Elecon Engineering Company Ltd.,35.22101097,7,6,FALSE,Engineering - Heavy,,,
+Hatsun Agro Products Ltd.,31.31283552,7,6,FALSE,Food Processing - Dairy/Fruits/Others,,,
+NIIT Technologies Ltd.,18.33737804,7,2,FALSE,Computers - Software,,,
+Essel Propack Ltd.,3.858752038,7,6,FALSE,Packaging - Metalic/Plastics/Others,,,
+Surya Pharmaceuticals Ltd.,-12.97300562,4,5,FALSE,Pharmaceuticals,,,
+Hindustan Copper Ltd.,11.64413866,7,6,FALSE,Metals - Non Ferrous - Copper/Copper Alloys - Prod,,,
+Sonata Software Ltd.,4.123975125,9,4,FALSE,Computers - Software,,,
+Infotech Enterprises Ltd.,29.27717818,8,5,FALSE,Computers - Software,,,
+Abbott India Ltd.,13.63474716,9,4,FALSE,Pharmaceuticals,,,
+Shriram Transport Finance Company Ltd.,42.17684948,10,3,TRUE,Finance & Investments,OK,TRUE,FALSE
+Munjal Showa Ltd.,14.14893946,8,5,FALSE,Auto Ancl - Shock Absorber,,,
+Dhampur Sugar Mills Ltd.,15.79146698,6,7,FALSE,Sugar,,,
+Dhanlaxmi Bank Ltd.,8.704440711,7,6,FALSE,Finance - Banks - Private Sector,,,
+Siemens Ltd.,29.71894021,9,4,TRUE,Instrumentation & Process Control,FALSE,,
+Sintex Industries Ltd.,27.61611187,9,4,TRUE,Diversified,FALSE,,
+Dynamatic Technologies Ltd.,32.23381746,8,5,FALSE,Hydraulics,,,
+Nilkamal Ltd.,16.83547673,8,5,FALSE,Plastics - Plastic & Plastic Products,,,
+SKF India Ltd.,26.8924928,10,3,TRUE,Bearings,FALSE,,
+Shiv-Vani Oil & Gas Exploration Services Ltd.,13.48401473,9,4,FALSE,Oil Drilling And Exploration,,,
+Sona Koyo Steering Systems Ltd.,22.95638111,10,3,TRUE,Auto Ancl - Gears & Drive,FALSE,,
+State Bank Of Bikaner and Jaipur,25.31053388,10,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+State Bank of India,19.93691812,9,4,TRUE,Finance - Banks - Public Sector,FALSE,,
+State Bank Of Mysore,30.33752828,9,4,TRUE,Finance - Banks - Public Sector,FALSE,,
+McLeod Russel (India) Ltd.,25.17277288,3,5,FALSE,Plantations - Tea & Coffee,,,
+Alembic Ltd.,13.9565731,9,4,FALSE,Pharmaceuticals,,,
+NIIT Ltd.,-7.102298352,5,8,FALSE,Computers - Software - Training,,,
+TVS Srichakra Ltd.,19.24403828,8,5,FALSE,Tyres & Tubes,,,
+Sanofi India Ltd.,15.28651059,7,6,FALSE,Pharmaceuticals,,,
+Ind-Swift Laboratories Ltd.,10.20483755,6,7,FALSE,Pharmaceuticals,,,
+HEG Ltd.,22.62406238,6,7,FALSE,Electrodes - Graphite,,,
+Himatsingka Seide Ltd.,8.227526253,8,5,FALSE,Textiles - Synthetic/Silk,,,
+AIA Engineering Ltd.,23.53412036,6,2,FALSE,Castings/Foundry,,,
+Sangam (India) Ltd.,12.89122009,8,5,FALSE,Textiles - Spinning - Synthetic Blended,,,
+State Bank of Travancore,28.67720013,10,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+Bharati Shipyard Ltd.,-4.935758889,4,5,FALSE,Ship - Docks/Breaking/Repairs,,,
+Sun Pharmaceutical Industries Ltd.,30.5814761,12,1,TRUE,Pharmaceuticals,TRUE,FALSE,TRUE
+Kohinoor Foods Ltd.,10.17795763,5,8,FALSE,Commodities - Trading - Rice,,,
+Sundaram Clayton Ltd.,24.83427054,10,3,TRUE,Auto Ancl - Susp. & Braking - Others,FALSE,,
+Supreme Industries Ltd.,34.30171094,11,2,TRUE,Plastics - Plastic & Plastic Products,TRUE,TRUE,FALSE
+Gujarat NRE Coke Ltd.,40.53123367,8,5,FALSE,Mining/Minerals,,,
+Supreme Petrochem Ltd.,19.11771576,9,4,TRUE,Petrochem - Polymers,FALSE,,
+MMTC Ltd.,39.89107913,4,4,FALSE,Trading,,,
+Tata Coffee Ltd.,19.81943212,9,4,TRUE,Plantations - Tea & Coffee,OK,TRUE,OK
+Punjab & Sind Bank,-32.32261131,1,2,FALSE,Finance - Banks - Public Sector,,,OK
+Dena Bank,18.92412495,8,5,FALSE,Finance - Banks - Public Sector,,,OK
+Bank of Maharashtra,3.450521014,5,4,FALSE,Finance - Banks - Public Sector,,,
+Vijaya Bank,19.44514481,7,5,FALSE,Finance - Banks - Public Sector,,,
+United Bank of India,-30.74730957,1,2,FALSE,Finance - Banks - Public Sector,,,
+Tata Global Beverages Ltd.,17.22119522,9,4,TRUE,Plantations - Tea & Coffee,TRUE,OK,TRUE
+Indian Bank,-7.271406942,3,3,FALSE,Finance - Banks - Public Sector,,,
+Corporation Bank,10.9402755,8,5,FALSE,Finance - Banks - Public Sector,,,
+UCO Bank,18.63273715,5,5,FALSE,Finance - Banks - Public Sector,,,
+Syndicate Bank,20.56667952,8,5,FALSE,Finance - Banks - Public Sector,,,
+Thermax Ltd.,35.39169538,10,3,TRUE,Engineering - General,OK,OK,TRUE
+Titan Company Ltd.,38.88605493,9,4,TRUE,Watches,OK,TRUE,TRUE
+Petronet LNG Ltd.,19.40150722,6,3,FALSE,Petrochem - Others,,,
+Transport Corporation of India Ltd.,31.6520398,10,2,TRUE,Transport - Road,FALSE,,
+Tube Investments of India Ltd.,28.92519313,9,4,TRUE,Cycles & Accessories,TRUE,OK,FALSE
+Union Bank of India,21.4433356,8,3,TRUE,Finance - Banks - Public Sector,FALSE,,
+Bank of Baroda,23.70676875,8,5,FALSE,Finance - Banks - Public Sector,,,
+Unitech Ltd.,56.73314175,9,4,TRUE,Construction & Contracting,FALSE,,
+United Spirits Ltd.,34.29236016,9,4,TRUE,Beverages & Distilleries,OK,OK,FALSE
+Voltas Ltd.,32.96726816,10,3,TRUE,Diversified,FALSE,,
+Tata Communications Ltd.,3.16,9,5,FALSE,Telecommunications,,,
+TATAMOTORS,12.52,7,7,FALSE,Auto,,,
+ACC,17.97,11,4,TRUE,Cement,OK,FALSE,FALSE
+NCC,35.26,7,6,FALSE,Civil,FALSE,FALSE,ok
+Shree Cements Ltd.,46.76,9,4,TRUE,Cement,TRUE,OK,TRUE
+MARICO,20.14,7,1,FALSE,Personal Care,TRUE,TRUE,TRUE
+GLENMARK PHARMA,25,10,4,TRUE,Pharmaceuticals,OK,OK,TRUE
+Castrol India Ltd.,12.29,11,3,FALSE,LUBRICANTS,OK,OK,TRUE

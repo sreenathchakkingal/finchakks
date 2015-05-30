@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<servlet>
+		<servlet-name>NDaysHistory</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.NdaysHistoryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>NDaysHistory</servlet-name>
+		<url-pattern>/nDaysHistory</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>StockInfo</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.StockInfoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StockInfo</servlet-name>
+		<url-pattern>/stockInfo</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>UnRealizedPnL</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.UnRealizedPnLServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UnRealizedPnL</servlet-name>
+		<url-pattern>/unRealizedPnL</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>RealizedPnL</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.RealizedPnLServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RealizedPnL</servlet-name>
+		<url-pattern>/realizedPnL</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>NMonthsLow</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.NMonthsLowServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>NMonthsLow</servlet-name>
+		<url-pattern>/nMonthsLow</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>MaintainMapping</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.MaintainMappingServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MaintainMapping</servlet-name>
+		<url-pattern>/maintainMapping</url-pattern>
+	</servlet-mapping>
+		
+	<servlet>
+		<servlet-name>MaintainWatchList</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.MaintainWatchListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MaintainWatchList</servlet-name>
+		<url-pattern>/maintainWatchList</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>AutoComplete</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.AutoCompleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AutoComplete</servlet-name>
+		<url-pattern>/autoComplete</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ValidRatingsAutoComplete</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.ValidRatingsAutoCompleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ValidRatingsAutoComplete</servlet-name>
+		<url-pattern>/validRatingsAutoComplete</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>MaintainStockRatings</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.MaintainStockRatingsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MaintainStockRatings</servlet-name>
+		<url-pattern>/maintainStockRatings</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>MaintainRating</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.MaintainRatingServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MaintainRating</servlet-name>
+		<url-pattern>/maintainRating</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+		
+	<servlet>
+		<servlet-name>SyncStockRatings</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.SyncStockRatingsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SyncStockRatings</servlet-name>
+		<url-pattern>/syncStockRatings</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<display-name>Remote API Servlet</display-name>
+		<servlet-name>RemoteApiServlet</servlet-name>
+		<servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RemoteApiServlet</servlet-name>
+		<url-pattern>/remote_api</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Test</servlet-name>
+		<servlet-class>com.finanalyzer.servlet.TestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Test</servlet-name>
+		<url-pattern>/test</url-pattern>
+	</servlet-mapping>
+	
+
+</web-app>
