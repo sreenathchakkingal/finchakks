@@ -1,45 +1,41 @@
 package com.finanalyzer.servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.finanalyzer.db.StockRatingsDb;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.finanalyzer.db.DbOperations;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
-import com.google.appengine.tools.remoteapi.RemoteApiOptions;
-import com.gs.collections.impl.list.mutable.FastList;
 
 public class SyncStockRatingsServlet extends AbstractCoreServlet{
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String username = "sreenathchakkingal04@gmail.com";
-        String password = "shornapaapa";
-        RemoteApiOptions options = new RemoteApiOptions()
-            .server("finchakks.appspot.com", 443)
-            .credentials(username, password);
-        RemoteApiInstaller installer = new RemoteApiInstaller();
-        installer.install(options);
-        String message = "failed";
-        try {
-        	StockRatingsDb localDb = new StockRatingsDb();
-            localDb.removeAllEntities();
-        	DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-            Query query = new Query(localDb.getTableName());
-            FastList<Entity> entities = FastList.newList(ds.prepare(query).asList(FetchOptions.Builder.withDefaults()));
-            message = "Success";
-        } finally {
-            installer.uninstall();
-        }
-        request.setAttribute("message", message);
+//		AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
+//		FastList<Entity> entitiesFromLegacyTable = allScripsUtil.retrieveAllEntities();
+//		List<DbObject> dbObjects= FastList.newList(); 
+//
+//		for(Entity legacyEntity : entitiesFromLegacyTable)
+//		{
+//			String isin =(String) legacyEntity.getProperty("isin");
+//			String stockName =(String)  legacyEntity.getProperty("stockName");
+//			String bseId =(String)  legacyEntity.getProperty("bseId");
+//			String nseId =(String)  legacyEntity.getProperty("nseId");
+//			String fairValue =String.valueOf(legacyEntity.getProperty("fairValue"));
+//			String industry =(String)  legacyEntity.getProperty("industry");
+//			AllScriptsDbObject allScriptsDbObject = new AllScriptsDbObject(nseId, stockName, isin, bseId, fairValue, industry);
+//			dbObjects.add(allScriptsDbObject);
+//		}
+		
+//		DbOperations.getInstance().bulkInsert(dbObjects);
+		List<Entity> retrieveEntities = DbOperations.getInstance().retrieveEntities(new Query("AllScrips"), true);
+		int size = retrieveEntities.size();
+        request.setAttribute("message", size);
         this.despatchTo(request, response, "sync.jsp");
 		
 	}

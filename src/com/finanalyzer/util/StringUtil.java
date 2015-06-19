@@ -10,12 +10,20 @@ public class StringUtil {
 		return response == null || "".equals(response) || "null".equalsIgnoreCase(response);
 	}
 
+	public static boolean isInvalidValue(String[] ratingsToBeRemoved) {
+		return !isValidValue(ratingsToBeRemoved);
+	}
+	
 	public static boolean isValidValue(String response) {
 		return !isInvalidValue(response);
 	}
 
 	public static boolean isValidValue(String[] ratingsToBeRemoved) {
 		return ratingsToBeRemoved != null && ratingsToBeRemoved.length > 0;
+	}
+	
+	public static boolean isValidValue(List<String> ratingsToBeRemoved) {
+		return ratingsToBeRemoved != null && !ratingsToBeRemoved.isEmpty();
 	}
 
 	

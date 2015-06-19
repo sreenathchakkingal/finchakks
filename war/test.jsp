@@ -1,27 +1,31 @@
-<%@include file="core.jsp"%>
+<html>
+<head>
+<title>Angular JS Controller</title>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+</head>
+<body>
+<h2>AngularJS Sample Application</h2>
+<div ng-app="mainApp" ng-controller="studentController">
 
-<form action="maintainStockRatings" method="get">
-		<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+Enter first name: <input type="text" ng-model="student.firstName"><br><br>
+Enter last name: <input type="text" ng-model="student.lastName"><br>
+<br>
+You are entering: {{student.fullName()}}
+</div>
+<script>
+var mainApp = angular.module("mainApp", []);
 
-		<tr>
-			<td>Stock Id -Nse</td>
-			<td><input type="text" name="stockName" id="stockName" value="<c:out value="${stockRatingValue.stockName}" />"><br></td>
-		</tr>
-		<td><input type="submit" name="Retrieve" value="Retrieve"></td>
-	</table>
-	<br/><br/> 
-	
-		<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td>Testing 2</td>
-			<td><input type="text" name="ratingValues" class="ratingValue"><br></td>
-			<td><input type="text" name="ratingValues" class="ratingValue"><br></td>
-			<td><input type="text" name="ratingValues" class="ratingValue"><br></td>
-			<td><input type="text" name="ratingValues" class="ratingValue"><br></td>
-			
-		</tr>
-		<td><input type="submit" name="Retrieve" value="Retrieve"></td>
-	</table>
-	
-
-</form>
+mainApp.controller('studentController', function($scope) {
+   $scope.student = {
+      firstName: "Mahesh",
+      lastName: "Parashar",
+      fullName: function() {
+         var studentObject;
+         studentObject = $scope.student;
+         return studentObject.firstName + " " + studentObject.lastName;
+      }
+   };
+});
+</script>
+</body>
+</html>

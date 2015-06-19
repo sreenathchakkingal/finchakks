@@ -6,24 +6,33 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 import org.apache.commons.fileupload.FileItemIterator;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
-import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.StockIdConverstionUtil;
-import com.finanalyzer.db.UnRealizedUtil;
+import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.NDaysPrice;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockBuilder;
+import com.finanalyzer.domain.StockExchange;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
+import com.finanalyzer.util.StringUtil;
 import com.google.gson.JsonObject;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.block.predicate.Predicate2;
 import com.gs.collections.api.list.MutableList;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
+import com.gs.collections.impl.set.mutable.UnifiedSet;
 
 public class UnRealizedPnLProcessor extends PnLProcessor 
 {
@@ -73,30 +82,86 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				this.stockName = stockName==null ? null : stockName.toUpperCase();
 			}
 
-			@Override
-			public FastList<Stock> execute()
+	@Override
+	public FastList<Stock> execute() {
+		FastList<Stock> stocks = FastList.newList();
+		Stock stock;
+
+		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
+
+		List<String> rowsWithoutHeaderAndTrailer = ReaderUtil.convertToList(this.fileItemIterator, true, true);
+		List<UnrealizedDbObject> entries = null;
+		
+		if (!rowsWithoutHeaderAndTrailer.isEmpty()) 
+		{
+			unrealizeddbOperations.deleteEntries();
+			entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
+		} 
+		else 
+		{
+			entries = unrealizeddbOperations.getEntries();
+		}
+
+		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
+		Set<String> noMapping = UnifiedSet.newSet();
+		for (UnrealizedDbObject dbObject : entries) {
+			String moneycontrolName = dbObject.getMoneycontrolName();
+			if(StringUtil.isValidValue(moneycontrolName))
 			{
-				// List<String> rows=
-				// ReaderUtil.converInputReaderToList(this.statusInputStream);
-				UnRealizedUtil unRealizedUtil = new UnRealizedUtil();
+				String buyDate = dbObject.getBuyDate();
+				double buyPriceDouble = dbObject.getBuyPrice();
+				long quantity = dbObject.getBuyQuantity();
 
-				// if("Excel".equals(this.sourceOfInfo))
-				List<String> rowsWithoutHeaderAndTrailer =ReaderUtil.convertToList(this.fileItemIterator, true, true);
-				if(!rowsWithoutHeaderAndTrailer.isEmpty())
+				stock = new StockBuilder().name(moneycontrolName)
+						.quantity((int) quantity).buyPrice((float) buyPriceDouble)
+						.buyDate(buyDate).build();
+
+				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries("moneycontrolName",moneycontrolName);
+
+				if (!scrips.isEmpty()) {
+					if (StringUtil.isValidValue(scrips.get(0).getBseId())) 
+					{
+						stock.addNames(StockExchange.BSE, scrips.get(0).getBseId());
+					}
+				} 
+				else 
 				{
-					unRealizedUtil = new UnRealizedUtil();
-					unRealizedUtil.removeAllEntities();
-					unRealizedUtil.insertData(rowsWithoutHeaderAndTrailer);
+					noMapping.add(moneycontrolName);
 				}
-				FastList<Stock> stocks = (FastList<Stock>) unRealizedUtil.retrieveAllRecords();
-				AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
-				allScripsUtil.convertNseIdToBse(stocks);
-
-				StockQuandlApiAdapter.stampLatestClosePriceAndDate(stocks);
-				allScripsUtil.convertBseIdToNse(stocks);
-				stocks.sortThis(NAME_QTY_DATE_COMPARATOR);
-				return stocks;
+				stocks.add(stock);		
 			}
+		}
+
+		if (!noMapping.isEmpty()) {
+			throw new RuntimeException("no mapping found for " + noMapping);
+		}
+		StockQuandlApiAdapter.stampLatestClosePriceAndDate(stocks);
+		stocks.sortThis(NAME_QTY_DATE_COMPARATOR);
+		return stocks;
+	}
+			
+
+//			@Override chakks
+//			public FastList<Stock> execute()
+//			{
+//				UnRealizedUtil unRealizedUtil = new UnRealizedUtil();
+//
+//				List<String> rowsWithoutHeaderAndTrailer =ReaderUtil.convertToList(this.fileItemIterator, true, true);
+//				if(!rowsWithoutHeaderAndTrailer.isEmpty())
+//				{
+//					unRealizedUtil = new UnRealizedUtil();
+//					unRealizedUtil.removeAllEntities();
+//					unRealizedUtil.insertData(rowsWithoutHeaderAndTrailer);
+//				}
+//				FastList<Stock> stocks = (FastList<Stock>) unRealizedUtil.retrieveAllRecords();
+//				AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
+//				allScripsUtil.convertNseIdToBse(stocks);
+//
+//				StockQuandlApiAdapter.stampLatestClosePriceAndDate(stocks);
+//				allScripsUtil.convertBseIdToNse(stocks);
+//				stocks.sortThis(NAME_QTY_DATE_COMPARATOR);
+//				return stocks;
+//			}
 
 			//	public FastList<Stock> execute()
 			//	{

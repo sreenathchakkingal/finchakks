@@ -5,10 +5,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
+import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.WatchListUtil;
 import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
+import com.google.appengine.api.datastore.Entity;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
@@ -50,6 +53,8 @@ implements Processor<List<Stock>>
 		return filteredStocks;
 	}
 
+	
+	
 	//  public List<Stock> execute()
 	//  {
 		//	  FastList<Stock> stocksWhichAreNRunningNMonthLowPrices = FastList.newList();

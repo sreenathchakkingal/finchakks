@@ -146,9 +146,7 @@ public class SimpleQuery
 			parameters.put("trim_end", this.end.get().toString());
 		}
 		parameters.put("column", String.valueOf(this.stockExchange.getQuandlClosePriceColumnPosition()));
-//		if(this.column.isPresent()) {
-//			parameters.put("column", this.column.get().toString());
-//		}
+
 		if(!this.collapse.equals(Collapse.NONE)) {
 			parameters.put("collapse", this.collapse.toString().toLowerCase());
 		}

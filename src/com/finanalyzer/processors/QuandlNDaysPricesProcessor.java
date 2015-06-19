@@ -11,9 +11,12 @@ import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.StockRatingsDb;
 import com.finanalyzer.db.WatchListUtil;
+import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.NDaysPrice;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
+import com.finanalyzer.domain.StockRatingValue;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.gs.collections.impl.list.mutable.FastList;
@@ -69,53 +72,48 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 	@Override
 	public List<Stock> execute()
 	{
-		WatchListUtil watchListUtil = new WatchListUtil();
-		FastList<Stock> stocks = watchListUtil.retrieveWatchListAsStocks(StockExchange.BSE);
+		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
+		final List<AllScripsDbObject> watchListedScrips = dbOperations.getEntries("isWatchListed", FastList.newListWith(String.valueOf(true)));
+		FastList<Stock> stocks = FastList.newList();
+		
+		for (AllScripsDbObject allScripsDbObject : watchListedScrips)
+		{
+			final Stock stock = new Stock(allScripsDbObject.getNseId(), StockExchange.NSE);
+			stock.addNames( StockExchange.BSE, allScripsDbObject.getBseId());
+			stock.setNumOfDays(this.numOfDays);
+			stock.setStockRatingValue(new StockRatingValue(allScripsDbObject.getRatingNameToValue()));
+			stocks.add(stock);
+		}
+		
 //		FastList<Stock> stocks = FastList.newListWith(
 //				new Stock("500331", StockExchange.BSE), new Stock("500790", StockExchange.BSE), new Stock("517354", StockExchange.BSE));
 		 
-		for (Stock stock : stocks)
-		{
-			stock.setNumOfDays(this.numOfDays);
-		}
-		
 		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, this.simpleMovingAverage);
-//		StockQuandlApiAdapter.stampNDaysGains(stocks, this.numOfDays);
-//		StockQuandlApiAdapter.stampSimpleMovingAverage(stocks, this.simpleMovingAverage);
-//		StockQuandlApiAdapter.stampLatestClosePriceAndDate(stocks);
-		AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
-		allScripsUtil.convertBseIdToNse(stocks);
 		StockRatingsDb stockRatingsDb = new StockRatingsDb();
 		stockRatingsDb.stampStockRatingValue(stocks);
 		Collections.sort(stocks, SIMPLE_AVG_NET_GAINS_COMPARATOR);
 		return stocks;
 	}
-
-	public NDaysPrice createNDaysPriceGain(List<String> rows, String nseStockId)
-	{
-		double overallGain = 0.0f;
-
-		Map<String, String> dateToCloseValue = new UnifiedMap<String, String>();
-		dateToCloseValue.put("NET GAIN", "");
-
-		int numberOfRows = rows.size();
-		for (int i = 1; i < numberOfRows - 1; i++)
-		{
-			float currentClosePrice = ReaderUtil.parseForClosePriceFromQuandl(rows.get(i)).floatValue();
-			float prevClosePrice;
-			if (i + 1 < rows.size())
-			{
-				prevClosePrice = ReaderUtil.parseForClosePriceFromQuandl(rows.get(i + 1)).floatValue();
-			} else
-			{
-				prevClosePrice = 0.0f;
-			}
-			float netGain = CalculatorUtil.getNetGain(currentClosePrice, prevClosePrice);
-			overallGain += netGain;
-			dateToCloseValue.put(ReaderUtil.parseForDate(rows.get(i)), PERCENTAGE_FORMAT.format(netGain));
-		}
-		dateToCloseValue.put("NET GAIN", PERCENTAGE_FORMAT.format(overallGain));
-		return new NDaysPrice(nseStockId, dateToCloseValue);
-	}
-
+	
+//	@Override
+//	public List<Stock> execute()
+//	{
+//		WatchListUtil watchListUtil = new WatchListUtil();
+//		FastList<Stock> stocks = watchListUtil.retrieveWatchListAsStocks(StockExchange.BSE);
+////		FastList<Stock> stocks = FastList.newListWith(
+////				new Stock("500331", StockExchange.BSE), new Stock("500790", StockExchange.BSE), new Stock("517354", StockExchange.BSE));
+//		 
+//		for (Stock stock : stocks)
+//		{
+//			stock.setNumOfDays(this.numOfDays);
+//		}
+//		
+//		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, this.simpleMovingAverage);
+//		AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
+//		allScripsUtil.convertBseIdToNse(stocks);
+//		StockRatingsDb stockRatingsDb = new StockRatingsDb();
+//		stockRatingsDb.stampStockRatingValue(stocks);
+//		Collections.sort(stocks, SIMPLE_AVG_NET_GAINS_COMPARATOR);
+//		return stocks;
+//	}
 }

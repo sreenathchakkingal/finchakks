@@ -1,19 +1,12 @@
 package com.finanalyzer.domain;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
-
-import com.finanalyzer.db.StockRatingsDb;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
@@ -49,6 +42,7 @@ public class Stock
 	private StockExchange stockExchange;
 	private int numOfDays;
 	private StockRatingValue stockRatingValue;
+	public Map<StockExchange, String> stockExchangeStocknameMap = UnifiedMap.newMap();
 
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
@@ -74,6 +68,7 @@ public class Stock
 	{
 		this.stockName=stockName;
 		this.stockExchange=stockExchange;
+		this.stockExchangeStocknameMap.put(stockExchange, stockName);
 	}
 	
 	public String getStockName()
@@ -124,7 +119,7 @@ public class Stock
 		{
 			return this.getDateToClosePrice().get(0).getDate();
 		}
-		return null;
+		return this.sellDate;
 	}
 
 	public void setSellDate(String sellDate)
@@ -597,6 +592,14 @@ public class Stock
 		this.stockRatingValue = stockRatingValue;
 	}
 	
+	public void addNames(StockExchange exchange, String stockName)
+	{
+		this.stockExchangeStocknameMap.put(exchange, stockName);
+	}
+	
+	public Map<StockExchange, String> getStockExchangeStocknameMap() {
+		return stockExchangeStocknameMap;
+	}
 	@Override
 	public String toString()
 	{

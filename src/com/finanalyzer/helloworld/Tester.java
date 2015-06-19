@@ -3,6 +3,7 @@ package com.finanalyzer.helloworld;
 import java.util.Comparator;
 
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
 
 public class Tester {
 
@@ -16,7 +17,7 @@ public class Tester {
 	
 	public static void main(String[] args) {
 		
-		System.out.println("Score : 5/6".substring("Score : ".length()));
+		System.out.println(AllScripsDbObject.class.getSimpleName());
 
 	}
 

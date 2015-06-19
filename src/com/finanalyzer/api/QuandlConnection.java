@@ -15,7 +15,6 @@ public class QuandlConnection
 	private static final String MULTI_QUERY_URL = "https://quandl.com/api/v1/multisets.json?columns=";
 	private static final Joiner.MapJoiner URL_ARG_JOINER = Joiner.on('&').withKeyValueSeparator("=");
 	private static final String TOKEN = "VHyaJFRgExWGKQYtacdP";
-	private static final int INDEX_OF_CLOSE_PRICE = 4;
 
 	//https://quandl.com/api/v1/multisets.csv?columns=WIKI.AAPL.4,DOE.RWTC.1&trim_start=2012-11-01&trim_end=2012-11-30
 	//https://www.quandl.com/api/v1/datasets/PRAGUESE/PX.csv?trim_start=2012-11-01&trim_end=2012-11-30

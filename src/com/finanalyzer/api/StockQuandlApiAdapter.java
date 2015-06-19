@@ -190,8 +190,8 @@ public class StockQuandlApiAdapter
 
 	private static void stampNDaysClosePrices(Stock stock, int numOfDays)
 	{
-		String stockName = stock.getStockName();
-		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stockName, numOfDays, stock.getStockExchange());
+//		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stock.getStockName(), numOfDays, stock.getStockExchange()); chakks
+		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stock.getStockExchangeStocknameMap().get(StockExchange.BSE), numOfDays, StockExchange.BSE); 
 		List<DateValueObject> dateValueObjects = transposeSingleQDataSet(qDataSet);
 		stock.setDateToClosePrice(dateValueObjects);
 	}

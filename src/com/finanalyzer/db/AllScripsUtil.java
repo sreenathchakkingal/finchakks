@@ -106,7 +106,6 @@ public class AllScripsUtil extends AbstractCoreDb
 			stock.setStockName(bseId);
 			stock.setStockExchange(StockExchange.BSE);
 		}
-
 	}
 
 }

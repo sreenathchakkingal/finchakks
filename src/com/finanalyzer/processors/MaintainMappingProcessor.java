@@ -1,40 +1,111 @@
 package com.finanalyzer.processors;
 
+import java.util.Arrays;
 import java.util.List;
 
-import com.finanalyzer.db.StockIdConverstionUtil;
-import com.finanalyzer.domain.MappingStockId;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
-public class MaintainMappingProcessor implements Processor<List<MappingStockId>>
+import com.finanalyzer.db.StockIdConverstionUtil;
+import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.db.jdo.PMF;
+import com.finanalyzer.domain.MappingStockId;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.util.StringUtil;
+import com.gs.collections.api.block.function.Function;
+import com.gs.collections.api.block.predicate.Predicate;
+import com.gs.collections.impl.list.mutable.FastList;
+
+public class MaintainMappingProcessor implements Processor<List<AllScripsDbObject>>
 {
+	private static final String NSE_ID = "nseId";
 	private final String moneyControlId;
 	private final String yahooId;
 	private final String nseId;
 	private final String[] selectedMappings;
 	private final boolean isDelete;
+	private String bseId;
 
-	public MaintainMappingProcessor(String moneyControlId, String yahooId, String nseId, String[] selectedMappings, boolean isDelete)
+	private static final Predicate<AllScripsDbObject> MONEYCONTROL_NAME_EXISTS = new Predicate<AllScripsDbObject>() {
+
+		@Override
+		public boolean accept(AllScripsDbObject scrip) {
+			
+			return StringUtil.isValidValue(scrip.getMoneycontrolName());
+		}
+	};
+	
+	public MaintainMappingProcessor(String moneyControlId, String yahooId, String nseId, String bseId, String[] selectedMappings, boolean isDelete)
 	{
 		this.moneyControlId=moneyControlId;
 		this.yahooId=yahooId;
 		this.nseId=nseId;
+		this.bseId=bseId;
 		this.selectedMappings = selectedMappings;
 		this.isDelete=isDelete;
 	}
 
 	@Override
-	public List<MappingStockId> execute()
+	public List<AllScripsDbObject> execute()
 	{
-		StockIdConverstionUtil stockIdConverstionUtil = new StockIdConverstionUtil();
+		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		if(this.isDelete)
 		{
-			stockIdConverstionUtil.deleteRecords(this.selectedMappings);
+			final List<AllScripsDbObject> entries = dbOperations.getEntries(NSE_ID,Arrays.asList(this.selectedMappings));
+			for(AllScripsDbObject dbObject : entries)
+			{
+				dbObject.setMoneycontrolName(null);	
+				dbObject.setYahooName(null);
+			}
 		}
 		else
 		{
-			stockIdConverstionUtil.insertConversion(this.moneyControlId, this.yahooId, this.nseId);
+			updateOrInsert();
 		}
-		return stockIdConverstionUtil.retrieveEntries();
+		FastList<AllScripsDbObject> allScripsDbObjects = FastList.newList(dbOperations.getEntries(NSE_ID));
+		return allScripsDbObjects.select(MONEYCONTROL_NAME_EXISTS);
 	}
+
+	private void updateOrInsert() {
+		if(StringUtil.isValidValue(this.moneyControlId)&& StringUtil.isValidValue(this.nseId))
+		{
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			try
+			{
+				Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+NSE_ID+")");
+				List<AllScripsDbObject> allScripsDbObjects  = (List<AllScripsDbObject>)q.execute(this.nseId);
+				if(!allScripsDbObjects.isEmpty())
+				{
+					allScripsDbObjects.get(0).setMoneycontrolName(this.moneyControlId);	
+					allScripsDbObjects.get(0).setNseId(this.nseId);
+					allScripsDbObjects.get(0).setYahooName(this.yahooId);
+					allScripsDbObjects.get(0).setBseId(this.bseId);
+				}
+				else
+				{
+					pm.makePersistent(new AllScripsDbObject(this.nseId,this.bseId, this.moneyControlId, this.yahooId));
+				}
+			}
+			finally
+			{
+				pm.close();
+			}
+		}
+	}
+	
+//	@Override chakks
+//	public List<MappingStockId> execute()
+//	{
+//		StockIdConverstionUtil stockIdConverstionUtil = new StockIdConverstionUtil();
+//		if(this.isDelete)
+//		{
+//			stockIdConverstionUtil.deleteRecords(this.selectedMappings);
+//		}
+//		else
+//		{
+//			stockIdConverstionUtil.insertConversion(this.moneyControlId, this.yahooId, this.nseId);
+//		}
+//		return stockIdConverstionUtil.retrieveEntries();
+//	}
 
 }

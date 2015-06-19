@@ -12,6 +12,7 @@ import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.processors.MaintainStockRatingsProcessor;
 import com.finanalyzer.processors.Processor;
 import com.finanalyzer.util.StringUtil;
@@ -28,14 +29,13 @@ public class MaintainStockRatingsServlet extends AbstractCoreServlet
 	{
 		
 		String stockName = request.getParameter("stockName");
-		boolean isAddOrUpdate = request.getParameter("Add/Update") != null;
+		boolean isAddOrUpdate = request.getParameter("addOrUpdate") != null;
 		
-		Processor<Stock> processor = new MaintainStockRatingsProcessor(
-		stockName, isAddOrUpdate, request.getParameterMap());
+		Processor<AllScripsDbObject> processor = new MaintainStockRatingsProcessor(stockName, isAddOrUpdate, request.getParameterMap());
 
-		Stock stock = processor.execute();
+		AllScripsDbObject allScripsDbObject = processor.execute();
 
-		request.setAttribute("stock", stock);
+		request.setAttribute("stock", allScripsDbObject);
 		this.despatchTo(request, response, "maintainStockRatings.jsp");
 	}
 }

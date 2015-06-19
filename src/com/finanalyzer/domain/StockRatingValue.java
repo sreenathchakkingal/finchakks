@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class StockRatingValue  
 {
 	private static final String SCORE = "Score : ";
+	
 	private Map<String, StockRatingValuesEnum> ratingToValue;
 	
 	
@@ -20,7 +24,7 @@ public class StockRatingValue
 		return ratingToValue;
 	}
 	
-	public List<String> getInferences()
+	public List<String> getInferences()//hack : make this a utility
 	{
 		int netRating = 0;
 		int validRatingCount = 0;

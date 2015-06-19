@@ -15,7 +15,7 @@
 		<c:if test="${not stock.isException}">
 			<tr>
 				<td>
-					<a href="http://finchakks.appspot.com/stockInfo?stockName=<c:out value='${stock.stockName}'/>">
+					<a href="http://finchakks.appspot.com/stockInfo?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
 						<c:out value='${stock.stockName}' />
 					</a>
 				</td>

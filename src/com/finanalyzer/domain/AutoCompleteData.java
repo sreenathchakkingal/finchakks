@@ -17,5 +17,11 @@ public class AutoCompleteData
 	public final String getValue() {
 		return this.value;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.label+" : "+this.value;
+	}
 
 }

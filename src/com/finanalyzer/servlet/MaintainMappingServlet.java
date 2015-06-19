@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.finanalyzer.domain.MappingStockId;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.processors.MaintainMappingProcessor;
 
 public class MaintainMappingServlet extends AbstractCoreServlet
@@ -20,10 +20,11 @@ public class MaintainMappingServlet extends AbstractCoreServlet
 		String moneyControlId = request.getParameter("moneyControlId");
 		String yahooBoId = request.getParameter("yahooBoId");
 		String nseId = request.getParameter("nseId");
+		String bseId = request.getParameter("bseId");
 		String[] selectedMappings = request.getParameterValues("selectedMappings");
 		boolean isDelete = "delete".equals(request.getParameter("action"));
-		MaintainMappingProcessor processor = new MaintainMappingProcessor(moneyControlId, yahooBoId, nseId,selectedMappings,isDelete);
-		List<MappingStockId> allMappingEntries = processor.execute();
+		MaintainMappingProcessor processor = new MaintainMappingProcessor(moneyControlId, yahooBoId, nseId, bseId, selectedMappings,isDelete);
+		List<AllScripsDbObject> allMappingEntries = processor.execute();
 		request.setAttribute("allMappingEntries",allMappingEntries);
 
 		this.despatchTo(request, response, "maintainMapping.jsp");

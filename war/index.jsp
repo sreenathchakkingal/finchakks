@@ -124,7 +124,7 @@
 <form action="test" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" value="Delete all stock ratings"></td>
+			<td><input type="submit" value="Test Db"></td>
 		</tr>
 	
 	</table>

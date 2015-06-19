@@ -104,7 +104,7 @@ public class WatchListUtil extends AbstractCoreDb
 
 	public void removeFromWatchList(String[] stocksToBeRemoved)
 	{
-		if (stocksToBeRemoved!=null && stocksToBeRemoved.length > 0)
+		if (StringUtil.isValidValue(stocksToBeRemoved))
 		{
 			Filter selectedEntities = new FilterPredicate(STOCK_ID, FilterOperator.IN, Arrays.asList(stocksToBeRemoved));
 			Query query = new Query(this.getTableName()).setFilter(selectedEntities);

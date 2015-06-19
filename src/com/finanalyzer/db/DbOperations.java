@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class DbOperations {
@@ -18,7 +19,8 @@ public class DbOperations {
 	
 	public final DatastoreService DATASTORE = DatastoreServiceFactory.getDatastoreService();
 	private static DbOperations instance;
-	private FastList<Entity> entities=null;
+	private List<Entity> entities=null;
+	private List<DbObject> records=null;
 	private DbOperations(){}
 
 	public static DbOperations getInstance()
@@ -44,6 +46,7 @@ public class DbOperations {
 		DATASTORE.put(entities);
 	}
 
+	//make this private after testing
 	public List<Entity> retrieveEntities(Query query, boolean refreshRetrieve) {
 		if(this.entities==null || refreshRetrieve)
 		{
@@ -51,9 +54,15 @@ public class DbOperations {
 		}
 		return this.entities;
 	}
-
-	public Entity retrieveEntity(Query query) {
-		return this.DATASTORE.prepare(query).asSingleEntity();
+	
+	public List<DbObject> retrieveRecords(Query query, boolean refreshRetrieve, Function entityToDbObjectConverter) {
+		List<Entity> entities;
+		if(this.records==null || refreshRetrieve)
+		{
+			entities=this.retrieveEntities(query, refreshRetrieve);	
+			this.records = ((FastList)entities).collect(entityToDbObjectConverter);
+		}
+		return this.records;
 	}
-
+	
 }

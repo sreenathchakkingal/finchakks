@@ -3,6 +3,7 @@ package com.finanalyzer.domain;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
+import com.gs.collections.api.block.function.Function;
 
 public abstract class DbObject {
 	
@@ -29,7 +30,5 @@ public abstract class DbObject {
 		return primaryKey;
 	}
 	
-	public abstract List<DbObject> remodelData();
-
-	public abstract DbObject convertToDbObject(Entity entity);
+	public abstract Function getDbObjectSelector();
 }

@@ -8,7 +8,9 @@
 			<td>YahooBoId</td>
 			<td><input type="text" name="yahooBoId"><br></td>
 			<td>NseId</td>
-			<td><input type="text" name="nseId"><br></td>
+			<td><input type="text" name="nseId" id="stockName"><br></td>
+			<td>BseId</td>
+			<td><input type="text" name="bseId" id="bseId"><br></td>
 		</tr>
 		<td><input type="submit" value="Submit"></td>
 	</form>
@@ -22,13 +24,15 @@
 					<td>MoneyControl Id</td>
 					<td>YAHOO BO Id</td>
 					<td>NSE Id</td>
+					<td>BSE Id</td>
 				</tr>
 				<c:forEach items="${allMappingEntries}" var="eachMappingEntry">
 					<tr>
 						<td><c:out value="${count}"/></td>
-						<td><input type="text" name="moneyControlId" value="<c:out value="${eachMappingEntry.moneyControlId}" />"></td>
-						<td><input type="text" name="yahooId" value="<c:out value="${eachMappingEntry.yahooId}" />"/> </td>
+						<td><input type="text" name="moneyControlId" value="<c:out value="${eachMappingEntry.moneycontrolName}" />"></td>
+						<td><input type="text" name="yahooId" value="<c:out value="${eachMappingEntry.yahooName}" />"/> </td>
 						<td><input type="text" name="nseId" value="<c:out value="${eachMappingEntry.nseId}" />"/></td>
+						<td><input type="text" name="bseId" value="<c:out value="${eachMappingEntry.bseId}" />"/></td>
 						<td><input type="checkbox" name="selectedMappings" value="<c:out value="${eachMappingEntry.nseId}"/>"/></td>
 					</tr>
 					<c:set var="count" value="${count + 1}" scope="page"/>

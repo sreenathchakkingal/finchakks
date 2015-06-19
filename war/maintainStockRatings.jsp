@@ -18,7 +18,7 @@
 			<td>Value</td>
 		</tr>
 		<c:set var="count" value="1" scope="page" />
-		<c:forEach items="${stock.stockRatingValue.ratingToValue}" var="ratingToValue">
+		<c:forEach items="${stock.ratingNameToValue}" var="ratingToValue">
 			<tr>
 				<td><c:out value="${count}"/></td>
 				<td><c:out value="${ratingToValue.key}" /></td>
@@ -31,7 +31,7 @@
 	<br /> <br />
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" name="Add/Update" value="Add/Update" />
+			<td><input type="submit" name="addOrUpdate" value="Add/Update" />
 			</td>
 		</tr>
 	</table>
@@ -41,7 +41,7 @@
 		<tr>
 			<td>Inferences</td>
 
-			<c:forEach items="${stock.stockRatingValue.inferences}" var="inference">
+			<c:forEach items="${stock.ratingInferences}" var="inference">
 				<tr>
 					<td><c:out value="${inference}" /></td>
 				</tr>

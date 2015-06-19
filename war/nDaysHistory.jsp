@@ -23,7 +23,9 @@
 				<tr>
 			</c:otherwise>
 		</c:choose>
-			<td><a href="http://finchakks.appspot.com/maintainStockRatings?Retrieve=Retrieve&stockName=<c:out value='${stock.stockName}'/>">
+			<!-- <td><a href="http://finchakks.appspot.com/maintainStockRatings?Retrieve=Retrieve&stockName=<c:out value='${stock.stockName}'/>" target="_blank">
+			 -->
+			 <td><a href="http://localhost:8888/maintainStockRatings?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
 			<c:out value='${stock.stockName}' /></td></a>
 			<td><c:out value='${stock.stockRatingValue.score}' /></td>
 			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized}" pattern="##.##" /></td>
@@ -59,7 +61,7 @@
 				</c:otherwise>
 			</c:choose>
 			
-			<td><a href="http://finchakks.appspot.com/stockInfo?stockName=<c:out value='${oneStockPrices.stockName}'/>">
+			<td><a href="http://finchakks.appspot.com/stockInfo?stockName=<c:out value='${oneStockPrices.stockName}'/>" target="_blank">
 			<c:out value='${oneStockPrices.stockName}' /></td></a>
 			<c:forEach items="${oneStockPrices.dateToCloseValue}" var="dateToCloseValues">
 				<td><c:out value="${dateToCloseValues.value}" /></td>
