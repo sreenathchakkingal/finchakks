@@ -49,19 +49,13 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 			}
 			int simpleMovingAvgDiff = (int) (stock1.getSimpleMovingAverageAndSellDeltaNormalized() * 1000 - stock2
 					.getSimpleMovingAverageAndSellDeltaNormalized() * 1000);
-			if (simpleMovingAvgDiff == 0)
+			int netGainDiff = (int) (stock1.getNetNDaysGain() * 1000 - stock2.getNetNDaysGain() * 1000);
+			int totalDiff = simpleMovingAvgDiff+netGainDiff;
+			if (totalDiff == 0)
 			{
-				int netGainDiff = (int) (stock1.getNetNDaysGain() * 1000 - stock2.getNetNDaysGain() * 1000);
-				if (netGainDiff == 0)
-				{
-					return stock1.getStockName().compareTo(stock2.getStockName());
-				}
-				return netGainDiff;
-			} else
-			{
-				return simpleMovingAvgDiff;
+				return stock1.getStockName().compareTo(stock2.getStockName());
 			}
-
+			return totalDiff;
 		}
 	};
 	
@@ -130,8 +124,8 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 			stock.setStockRatingValue(new StockRatingValue(allScripsDbObject.getRatingNameToValue()));
 			if(stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())!=null)
 			{
-				final Float investmentPercent = stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())/totalInvestment*100;
-				stock.setInvestmentPercent(investmentPercent);
+				final Float investmentRatio = stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())/totalInvestment;
+				stock.setInvestmentRatio(investmentRatio);
 			}
 			stocks.add(stock);
 		}

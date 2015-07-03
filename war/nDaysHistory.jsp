@@ -26,10 +26,10 @@
 		</c:choose>
 			<!-- <td><a href="http://finchakks.appspot.com/maintainStockRatings?Retrieve=Retrieve&stockName=<c:out value='${stock.stockName}'/>" target="_blank">
 			 -->
-			 <td><a href="http://localhost:8888/maintainStockRatings?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
+			 <td><a href="http://finchakks.appspot.com/maintainStockRatings?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
 			<c:out value='${stock.stockName}' /></td></a>
 			<td><c:out value='${stock.stockRatingValue.score}' /></td>
-			<td><c:out value='${stock.investmentPercent}' /></td>
+			<td><fmt:formatNumber value="${stock.investmentRatio}"  type="percent"  maxIntegerDigits="2" /></td>
 			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized}" pattern="##.##" /></td>
 			<td><fmt:formatNumber value="${stock.netNDaysGain}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice}" pattern="##.##" /></td>

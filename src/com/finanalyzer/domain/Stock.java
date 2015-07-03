@@ -29,7 +29,7 @@ public class Stock
 	private int quantity;
 	private int sellableQuantity=-1;
 	private float totalInvestment;
-	private float investmentPercent;
+	private float investmentRatio;
 	private float totalReturn;
 	private float totalReturnIfBank;
 	private boolean isException=false;
@@ -623,12 +623,14 @@ public class Stock
 		return stockExchangeStocknameMap;
 	}
 	
-	public float getInvestmentPercent() {
-		return investmentPercent;
+	public float getInvestmentRatio() {
+		return investmentRatio;
 	}
-	public void setInvestmentPercent(float investmentPercent) {
-		this.investmentPercent = investmentPercent;
+	
+	public void setInvestmentRatio(float investmentRatio) {
+		this.investmentRatio = investmentRatio;
 	}
+	
 	@Override
 	public String toString()
 	{
