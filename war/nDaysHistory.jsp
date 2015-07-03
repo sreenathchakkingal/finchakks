@@ -6,6 +6,7 @@
 	<tr>
 		<td>Stock Name</td>
 		<td>Score</td>
+		<td>Investment Percent</td>
 		<td>Decrease Simple Moving Avg(in %)</td>
 		<td>Net Gains</td>
 		<td>Latest Close Price</td>
@@ -28,6 +29,7 @@
 			 <td><a href="http://localhost:8888/maintainStockRatings?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
 			<c:out value='${stock.stockName}' /></td></a>
 			<td><c:out value='${stock.stockRatingValue.score}' /></td>
+			<td><c:out value='${stock.investmentPercent}' /></td>
 			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized}" pattern="##.##" /></td>
 			<td><fmt:formatNumber value="${stock.netNDaysGain}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice}" pattern="##.##" /></td>

@@ -103,14 +103,11 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			try {
 				Thread.sleep(3*1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} 
 		
-		
 		List<UnrealizedDbObject> entries = unrealizeddbOperations.getEntries("moneycontrolName");
-		
 		
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		Set<String> noMapping = UnifiedSet.newSet();

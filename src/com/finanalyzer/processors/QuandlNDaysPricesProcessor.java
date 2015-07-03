@@ -18,10 +18,17 @@ import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.ReaderUtil;
+import com.gs.collections.api.block.function.Function;
+import com.gs.collections.api.block.function.Function0;
+import com.gs.collections.api.block.function.Function2;
+import com.gs.collections.api.block.function.primitive.FloatFunction;
+import com.gs.collections.api.map.MutableMap;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
+import com.gs.collections.impl.utility.Iterate;
 
 public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 {
@@ -57,7 +64,39 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 
 		}
 	};
+	
+	private static final Function<UnrealizedDbObject, String> GROUP_BY_STOCKNAME = new Function<UnrealizedDbObject, String>() {
 
+		@Override
+		public String valueOf(UnrealizedDbObject unrealizedDbObject) {
+			return unrealizedDbObject.getMoneycontrolName();
+		}
+	};
+
+	private static final Function0<Float> INITAL_VALUE = new Function0<Float>() {
+		
+		@Override
+		public Float value() {
+			return Float.valueOf(0.0f);
+		}
+	};
+	
+	private static final Function2<Float, UnrealizedDbObject, Float> BUY_PRICE_AGGREGATOR = new Function2<Float, UnrealizedDbObject, Float>() {
+
+		@Override
+		public Float value(Float intialAmount, UnrealizedDbObject stock) {
+			return intialAmount+(float)stock.getBuyPrice()*stock.getBuyQuantity();
+		}
+
+	};
+	
+	private static final FloatFunction<UnrealizedDbObject> TOTAL_INVESMENT_AGGREGATOR = new FloatFunction<UnrealizedDbObject>() {
+		@Override
+		public float floatValueOf(UnrealizedDbObject unrealizedDbObject) {
+			return (float)unrealizedDbObject.getBuyPrice()*unrealizedDbObject.getBuyQuantity();
+		}
+	};
+	
 	public QuandlNDaysPricesProcessor(InputStream stocksInputStream, String numOfDays, String source)
 	{
 		this.stocksInputStream = stocksInputStream;
@@ -75,15 +114,25 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 	public List<Stock> execute()
 	{
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
+		JdoDbOperations<UnrealizedDbObject> unrealizedDbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 		final List<AllScripsDbObject> watchListedScrips = dbOperations.getEntries("isWatchListed", FastList.newListWith(String.valueOf(true)));
 		FastList<Stock> stocks = FastList.newList();
 		
+		final FastList<UnrealizedDbObject> entries = FastList.newList(unrealizedDbOperations.getEntries());
+		final MutableMap<String, Float> stocksAggregateByBuyPrice = entries.aggregateBy(GROUP_BY_STOCKNAME, INITAL_VALUE, BUY_PRICE_AGGREGATOR);
+		final float totalInvestment = (float)entries.sumOfFloat(TOTAL_INVESMENT_AGGREGATOR);
+
 		for (AllScripsDbObject allScripsDbObject : watchListedScrips)
 		{
 			final Stock stock = new Stock(allScripsDbObject.getNseId(), StockExchange.NSE);
 			stock.addNames( StockExchange.BSE, allScripsDbObject.getBseId());
 			stock.setNumOfDays(this.numOfDays);
 			stock.setStockRatingValue(new StockRatingValue(allScripsDbObject.getRatingNameToValue()));
+			if(stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())!=null)
+			{
+				final Float investmentPercent = stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())/totalInvestment*100;
+				stock.setInvestmentPercent(investmentPercent);
+			}
 			stocks.add(stock);
 		}
 		
@@ -91,8 +140,7 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 //				new Stock("500331", StockExchange.BSE), new Stock("500790", StockExchange.BSE), new Stock("517354", StockExchange.BSE));
 		 
 		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, this.simpleMovingAverage);
-//		StockRatingsDb stockRatingsDb = new StockRatingsDb();
-//		stockRatingsDb.stampStockRatingValue(stocks);
+		
 		Collections.sort(stocks, SIMPLE_AVG_NET_GAINS_COMPARATOR);
 		return stocks;
 	}

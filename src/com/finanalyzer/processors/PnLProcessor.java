@@ -105,8 +105,6 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 								newList.get(j).setBuyPrice(newList.get(j).getBuyPrice()/(newQuantity/oldQuantity));
 							}
 						}
-						//remove ith stock from the list
-//						newList.remove(stockAtIndex);
 					}
 					i++;
 				}
@@ -117,13 +115,7 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 		
 		FastList<Stock> result = FastList.newList();
 		
-		final FastList<Stock> bonusStocksRemoved = stockLinesWithBonusAdjusted.select(new Predicate<Stock>() {
-
-			@Override
-			public boolean accept(Stock stock) {
-				return stock.getBuyPrice()!=0.0;
-			}
-		});
+		final FastList<Stock> bonusStocksRemoved = stockLinesWithBonusAdjusted.reject(IS_ZERO_BUY_PRICE);
 		
 		result.addAll(bonusStocksRemoved);
 		result.addAll(stockLinesWithOutBonus);

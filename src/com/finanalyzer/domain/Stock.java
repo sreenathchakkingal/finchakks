@@ -29,6 +29,7 @@ public class Stock
 	private int quantity;
 	private int sellableQuantity=-1;
 	private float totalInvestment;
+	private float investmentPercent;
 	private float totalReturn;
 	private float totalReturnIfBank;
 	private boolean isException=false;
@@ -167,8 +168,11 @@ public class Stock
 
 	public float getSellPrice()
 	{
+		if(this.dateToClosePrice==null)
+		{
+			return this.sellPrice;
+		}
 		return this.dateToClosePrice.get(0).getValue();
-//		return this.sellPrice;
 	}
 
 	public void setSellPrice(float sellPrice)
@@ -617,6 +621,13 @@ public class Stock
 	
 	public Map<StockExchange, String> getStockExchangeStocknameMap() {
 		return stockExchangeStocknameMap;
+	}
+	
+	public float getInvestmentPercent() {
+		return investmentPercent;
+	}
+	public void setInvestmentPercent(float investmentPercent) {
+		this.investmentPercent = investmentPercent;
 	}
 	@Override
 	public String toString()
