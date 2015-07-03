@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.AllScripsUtil;
@@ -24,6 +25,7 @@ import com.gs.collections.impl.map.mutable.UnifiedMap;
 
 public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 {
+	private static final Logger LOG = Logger.getLogger(QuandlNDaysPricesProcessor.class.getName());
 	private static final NumberFormat PERCENTAGE_FORMAT = null;
 	protected InputStream stocksInputStream;
 	protected final int numOfDays;
@@ -89,8 +91,8 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 //				new Stock("500331", StockExchange.BSE), new Stock("500790", StockExchange.BSE), new Stock("517354", StockExchange.BSE));
 		 
 		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, this.simpleMovingAverage);
-		StockRatingsDb stockRatingsDb = new StockRatingsDb();
-		stockRatingsDb.stampStockRatingValue(stocks);
+//		StockRatingsDb stockRatingsDb = new StockRatingsDb();
+//		stockRatingsDb.stampStockRatingValue(stocks);
 		Collections.sort(stocks, SIMPLE_AVG_NET_GAINS_COMPARATOR);
 		return stocks;
 	}

@@ -124,12 +124,48 @@
 <form action="test" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" value="Test Db"></td>
+			<td><input type="submit" name="step1" value="Test Db:1. Delete All Scrips"></td>
 		</tr>
 	
 	</table>
 </form>
 
+<form action="test" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" name="step2" value="Test Db:2. Populate All Scrips"></td>
+		</tr>
+	
+	</table>
+</form>
+
+<form action="test" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" name="step3" value="Test Db:3. MoneyControl and yahoo names"></td>
+		</tr>
+	
+	</table>
+</form>
+
+<form action="test" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" name="step4" value="Test Db:4. update watch list to yes"></td>
+		</tr>
+	
+	</table>
+</form>
+
+
+<form action="test" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" name="step5" value="Test Db:5. update stock ratings"></td>
+		</tr>
+	
+	</table>
+</form>  
 
 
 

@@ -3,10 +3,14 @@ package com.finanalyzer.api;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import org.mortbay.log.Log;
 
 import com.finanalyzer.domain.DateValueObject;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
+import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
@@ -16,14 +20,8 @@ import com.gs.collections.impl.tuple.Tuples;
 
 public class StockQuandlApiAdapter
 {
-	@SuppressWarnings("serial")
-	public static Function<Stock, String> STOCK_NAME_COLLECTOR = new Function<Stock, String>() {
-		@Override
-		public String valueOf(Stock stock) {
-			return stock.getStockName();
-		}
-	};
-
+	private static final Logger LOG = Logger.getLogger(StockQuandlApiAdapter.class.getName());
+	
 	public static void stampNYearsClosePrices(Stock stock, Integer numberOfYears)
 	{
 		String stockName = stock.getStockName();
@@ -48,7 +46,7 @@ public class StockQuandlApiAdapter
 	{
 		StockExchange stockExchange = stocks.get(0).getStockExchange();
 		UnifiedSet<Stock> uniqueSetOfStocks = UnifiedSet.newSet(stocks);
-		UnifiedSet<String> uniqueListOfStockIdentiers = uniqueSetOfStocks.collect(STOCK_NAME_COLLECTOR);
+		UnifiedSet<String> uniqueListOfStockIdentiers = uniqueSetOfStocks.collect(Stock.STOCKNAME_SELECTOR);
 		QDataset qDataSet = QuandlApi.getCumulativeValue(uniqueListOfStockIdentiers, numberOfDays, stockExchange);
 		Map<String, List<DateValueObject>> transposedQDataSet = transposeMultiQDataSet(qDataSet, stockExchange);
 		enrichSimpleMovingAverage(stocks, transposedQDataSet, numberOfDays);
@@ -57,7 +55,7 @@ public class StockQuandlApiAdapter
 	public static void stampNDaysGains(List<Stock> stocks, int numOfDays)
 	{
 		StockExchange stockExchange = stocks.get(0).getStockExchange();//assumption when a list of stocks is passed all of them will the same stockExchangeids
-		UnifiedSet<String> uniqueListOfStockIdentiers = UnifiedSet.newSet(stocks).collect(STOCK_NAME_COLLECTOR);
+		UnifiedSet<String> uniqueListOfStockIdentiers = UnifiedSet.newSet(stocks).collect(Stock.STOCKNAME_SELECTOR);
 		QDataset qDataSet = QuandlApi.getNDaysGains(uniqueListOfStockIdentiers,numOfDays, stockExchange);
 		Map<String, List<DateValueObject>> transposedQDataSet = transposeMultiQDataSet(qDataSet, stockExchange);
 		enrichNDaysGains(stocks, transposedQDataSet);
@@ -182,6 +180,7 @@ public class StockQuandlApiAdapter
 				stampNDaysClosePrices(eachStock, numOfDays);	
 			}
 			catch(Throwable t){
+				LOG.warning("setIsException "+eachStock.getStockName());
 				eachStock.setIsException();
 			}
 		}

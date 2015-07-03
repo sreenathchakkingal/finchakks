@@ -1,6 +1,7 @@
 package com.finanalyzer.api;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.finanalyzer.util.UrlUtil;
 import com.google.appengine.labs.repackaged.com.google.common.base.Joiner;
@@ -9,6 +10,8 @@ import com.google.appengine.labs.repackaged.com.google.common.base.Joiner;
 
 public class QuandlConnection
 {
+	private static final Logger LOG = Logger.getLogger(QuandlConnection.class.getName());
+
 	private static final String QUESTION_MARK = "?";
 	private static final String SINGLE_QUERY_URL = "https://www.quandl.com/api/v1/datasets/%s%s.json?";
 	//	private static final String MULTI_QUERY_URL = "https://quandl.com/api/v1/multisets.json?transformation=rdiff&columns=";

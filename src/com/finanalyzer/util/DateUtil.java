@@ -26,12 +26,11 @@ public class DateUtil
 		return priorBusinessDate.isoDate().toString();
 	}
 
-	public static String getTodayBusinessDate()
-	{
-		org.jquantlib.time.Date todaysDate = new org.jquantlib.time.Date().todaysDate();
-		return todaysDate.isoDate().toString();
-	}
-
+//	public static String getTodayBusinessDate()
+//	{
+//		org.jquantlib.time.Date todaysDate = new org.jquantlib.time.Date().todaysDate();
+//		return todaysDate.isoDate().toString();
+//	}
 
 	public static String getFromDate(int number_of_days, String format)
 	{

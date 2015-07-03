@@ -20,12 +20,30 @@ public class TestServlet extends AbstractCoreServlet
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		JdoDbOperations dbOperations = new JdoDbOperations(); 
-//		dbOperations.populateAllScrips();
-//		dbOperations.updateStockIdConversion();
-//		dbOperations.populateWatchList();
-//		dbOperations.populateRatings();
-		dbOperations.populateScripsWithRatings();
+		JdoDbOperations dbOperations = new JdoDbOperations();
+		if(request.getParameter("step1")!=null)
+		{
+			dbOperations.deleteAllScrips();	
+		}
+		else if(request.getParameter("step2")!=null)
+		{
+			dbOperations.populateAllScrips();	
+		}
+		else if(request.getParameter("step3")!=null)
+		{
+			dbOperations.updateStockIdConversion();	
+		}		
+		else if(request.getParameter("step4")!=null)
+		{
+			dbOperations.populateWatchList();	
+		}	
+		else if(request.getParameter("step5")!=null)
+		{
+			dbOperations.populateScripsWithRatings();	
+		}	
+//		final boolean populateRatings = dbOperations.();
+//		final boolean populateScripsWithRatings = dbOperations.();
+		
 	}
 }
 

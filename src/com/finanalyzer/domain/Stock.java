@@ -1,10 +1,14 @@
 package com.finanalyzer.domain;
 
+import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
 import com.gs.collections.api.block.function.Function;
@@ -52,6 +56,20 @@ public class Stock
 		public String valueOf(Stock stock)
 		{
 			return stock.getStockName();
+		}
+	};
+	
+	public static final Function<Stock, Date> BUY_DATE_SELECTOR = new Function<Stock, Date>() {
+
+		@Override
+		public Date valueOf(Stock stock) {
+			try {
+				return DateUtil.YYYY_MM_DD_FORMAT.parse(stock.getBuyDate());
+			} catch (ParseException e) 
+			{
+				e.printStackTrace();
+				return null;
+			}
 		}
 	};
 	
@@ -609,6 +627,5 @@ public class Stock
 	{
 		return this.isException;
 	}
-	
 	
 }

@@ -7,12 +7,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.apache.commons.fileupload.FileItemIterator;
 
+import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
@@ -33,9 +35,12 @@ import com.gs.collections.api.list.MutableList;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.utility.Iterate;
 
 public class UnRealizedPnLProcessor extends PnLProcessor 
 {
+	private static final Logger LOG = Logger.getLogger(UnRealizedPnLProcessor.class.getName());
+	
 	private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("##.##");
 	private final String stockName;
 	private FileItemIterator fileItemIterator;
@@ -50,7 +55,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		}
 			};
 
-			private static final Comparator<Stock> NAME_QTY_DATE_COMPARATOR = new Comparator<Stock>() {
+			private static final Comparator<Stock> NAME_DATE_PRICE_COMPARATOR = new Comparator<Stock>() {
 				@Override
 				public int compare(Stock o1, Stock o2) {
 					if(o1.getStockName().equals(o2.getStockName()))
@@ -90,18 +95,23 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 
 		List<String> rowsWithoutHeaderAndTrailer = ReaderUtil.convertToList(this.fileItemIterator, true, true);
-		List<UnrealizedDbObject> entries = null;
-		
+
 		if (!rowsWithoutHeaderAndTrailer.isEmpty()) 
 		{
 			unrealizeddbOperations.deleteEntries();
-			entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
+			unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
+			try {
+				Thread.sleep(3*1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} 
-		else 
-		{
-			entries = unrealizeddbOperations.getEntries();
-		}
-
+		
+		
+		List<UnrealizedDbObject> entries = unrealizeddbOperations.getEntries("moneycontrolName");
+		
+		
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		Set<String> noMapping = UnifiedSet.newSet();
 		for (UnrealizedDbObject dbObject : entries) {
@@ -135,12 +145,14 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		if (!noMapping.isEmpty()) {
 			throw new RuntimeException("no mapping found for " + noMapping);
 		}
-		StockQuandlApiAdapter.stampLatestClosePriceAndDate(stocks);
-		stocks.sortThis(NAME_QTY_DATE_COMPARATOR);
-		return stocks;
+		
+		stocks.sortThis(NAME_DATE_PRICE_COMPARATOR);
+		final FastList<Stock> handleBonusScneario = handleBonusScneario(stocks);
+		
+		StockQuandlApiAdapter.stampLatestClosePriceAndDate(handleBonusScneario);
+		return handleBonusScneario;
 	}
 			
-
 //			@Override chakks
 //			public FastList<Stock> execute()
 //			{

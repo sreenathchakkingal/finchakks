@@ -140,7 +140,7 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public List<UnrealizedDbObject> insertUnrealizedDataFromMoneycontrol(List<String> rawDataDFromMoneyControl)
+	public void insertUnrealizedDataFromMoneycontrol(List<String> rawDataDFromMoneyControl)
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
@@ -173,7 +173,8 @@ public class JdoDbOperations<T> {
 				}
 				unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
 			}
-			return (List<UnrealizedDbObject>) pm.makePersistentAll(unrealizedDbObjects);	
+			
+			pm.makePersistentAll(unrealizedDbObjects);	
 		}
 		finally
 		{
@@ -186,6 +187,7 @@ public class JdoDbOperations<T> {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
+			
 			AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
 			
 			List<Entity> entities = allScripsUtil.freshRetrieveAllEntities();
@@ -211,7 +213,7 @@ public class JdoDbOperations<T> {
 
 	}
 	
-	public void updateStockIdConversion() {
+	public boolean updateStockIdConversion() {
 		
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
@@ -235,7 +237,8 @@ public class JdoDbOperations<T> {
 				{
 					System.out.println("not available for: "+eachMapping.getNseId());
 				}
-			}			
+			}
+			return true;
 		}
 		finally
 		{
@@ -243,7 +246,7 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public void populateWatchList()
+	public boolean populateWatchList()
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
@@ -253,13 +256,14 @@ public class JdoDbOperations<T> {
 			FastList<Entity> entities = FastList.newList(listUtil.freshRetrieveAllEntities());
 			final List<String> existingWatchListEntries = entities.collect(NSE_ID_COLLECTOR);
 			
-			Query q = pm.newQuery(this.dbObjectClass, ":p.contains("+"nseId"+")");
+			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+"nseId"+")");
 			List<AllScripsDbObject> matchingEntries = (List<AllScripsDbObject>)q.execute(existingWatchListEntries);
 			
 			for (AllScripsDbObject allScripsDbObject : matchingEntries)
 			{
 				allScripsDbObject.setWatchListed(true);
 			}
+			return true;
 		}
 		finally
 		{
@@ -267,7 +271,7 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public void populateRatings()
+	public boolean populateRatings()
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
@@ -282,6 +286,7 @@ public class JdoDbOperations<T> {
 				dbObjects.add(new RatingDbObject(ratingName));
 			}
 			pm.makePersistentAll(dbObjects);
+			return true;
 		}
 		
 		finally
@@ -290,7 +295,7 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public void populateScripsWithRatings()
+	public boolean populateScripsWithRatings()
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
@@ -312,6 +317,7 @@ public class JdoDbOperations<T> {
 				AllScripsDbObject matchingScrip = ((List<AllScripsDbObject>)q.execute(stockName)).get(0);
 				matchingScrip.setRatingNameToValue(ratingToValue);
 			}
+			return true;
 		}
 		
 		finally
@@ -319,6 +325,24 @@ public class JdoDbOperations<T> {
 			pm.close();
 		}
 	}
+
+	public void deleteAllScrips() {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query q = null;
+		try
+		{
+			q =pm.newQuery(AllScripsDbObject.class);
+			final List<T> entries =  (List<T>)q.execute();
+			pm.deletePersistentAll(entries);
+		}
+		finally
+		{
+			pm.close();
+		}
+		
+	}
+	
+	
 	
 	
 }
