@@ -164,7 +164,7 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 		}
 	}
 
-	//tactical replace with better utilties in gs collection
+	//tactical replace with better utilities in gs collection
 	private List<List<Stock>> getStocksWithAndWithoutBonus(final FastList<Stock> stocks) {
 		List<List<Stock>> stocksWithAndWithoutBonus = FastList.newList();
 		final List<Stock> stocksWithBonus = FastList.newList(); 

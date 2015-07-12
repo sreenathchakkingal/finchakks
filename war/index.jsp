@@ -1,7 +1,7 @@
 <%@include file="core.jsp" %>
 
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-	<form action="nDaysHistory" method="get" target="_blank">
+	<form action="nDaysHistory.do" method="get" target="_blank">
 		<tr>
 			<td>Number Of Days:</td>
 			<td><input type="text" name="numOfDays" value="6"><br></td>
@@ -16,7 +16,67 @@
 	</form>
 </table>
 <p></p>
-<form action="stockInfo" method="get" target="_blank">
+
+<form action="maintainStockRatings.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="Maintain Stock Ratings"></td>
+		</tr>
+	
+	</table>
+</form>
+
+<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+	<form action="unRealizedPnL.do" method="POST" enctype="multipart/form-data" target="_blank">
+		<tr>
+			<td><input type="file" name="file" accept=".csv"></td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="UnRealized PnL"></td>
+		</tr>
+	</form>
+</table>
+
+<p></p>
+<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+	<form action="realizedPnL.do" method="get" target="_blank">
+		<tr>
+			<td><input type="submit" value="Realized PnL"></td>
+		</tr>
+	</form>
+</table>
+
+<p></p>
+<form action="maintainWatchList.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+
+		<tr>
+			<td><input type="submit" value="Maintain Watch list"></td>
+		</tr>
+	</table>
+</form>
+
+<form action="maintainMapping.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+
+		<tr>
+			<td><input type="submit" value="Maintain Stock Id Mappings"></td>
+		</tr>
+
+	</table>
+</form>
+<p></p>
+
+<form action="maintainRating.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="Maintain Ratings"></td>
+		</tr>
+	
+	</table>
+</form>
+
+<form action="stockInfo.do" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 
 		<tr>
@@ -36,136 +96,18 @@
 </form>
 <p></p>
 
-<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-	<form action="unRealizedPnL" method="POST" enctype="multipart/form-data" target="_blank">
-		<tr>
-			<td><input type="file" name="file" accept=".csv"></td>
-		</tr>
-		<tr>
-			<td><input type="submit" value="UnRealized PnL"></td>
-		</tr>
-	</form>
-</table>
-
-<p></p>
-<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-	<form action="realizedPnL" method="get" target="_blank">
-		<tr>
-			<td><input type="submit" value="Realized PnL"></td>
-		</tr>
-	</form>
-</table>
-
-<p></p>
-<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-	<form action="nMonthsLow" method="get" target="_blank">
-		<tr>
-			<td>Number Of Months:</td>
-			<td><input type="text" name="numOfMonths"><br></td>
-		</tr>
-		<tr>
-			<td><input type="submit" value="Submit"></td>
-		</tr>
-	</form>
-</table>
-
-<p></p>
-
-<form action="maintainWatchList" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-
-		<tr>
-			<td><input type="submit" value="Maintain Watch list"></td>
-		</tr>
-	</table>
-</form>
-
-<form action="maintainMapping" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-
-		<tr>
-			<td><input type="submit" value="Maintain Stock Id Mappings"></td>
-		</tr>
-
-	</table>
-</form>
-<p></p>
-
-<form action="maintainRating" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" value="Maintain Ratings"></td>
-		</tr>
-	
-	</table>
-</form>
-<form action="maintainStockRatings" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" value="Maintain Stock Ratings"></td>
-		</tr>
-	
-	</table>
-</form>
 
 <br/>
 <hr> Testing Zone</hr>
 
-<form action="syncStockRatings" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" value="Sync Stock Ratings"></td>
-		</tr>
-	
-	</table>
-</form>
-
+<a href="hello.html">click</a>  
 
 <form action="test" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" name="step1" value="Test Db:1. Delete All Scrips"></td>
+			<td><input type="submit" value="Test"></td>
 		</tr>
 	
 	</table>
 </form>
-
-<form action="test" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" name="step2" value="Test Db:2. Populate All Scrips"></td>
-		</tr>
-	
-	</table>
-</form>
-
-<form action="test" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" name="step3" value="Test Db:3. MoneyControl and yahoo names"></td>
-		</tr>
-	
-	</table>
-</form>
-
-<form action="test" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" name="step4" value="Test Db:4. update watch list to yes"></td>
-		</tr>
-	
-	</table>
-</form>
-
-
-<form action="test" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" name="step5" value="Test Db:5. update stock ratings"></td>
-		</tr>
-	
-	</table>
-</form>  
-
-
 

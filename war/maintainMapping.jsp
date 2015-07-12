@@ -1,7 +1,7 @@
 <%@include file="core.jsp" %>
 
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-	<form action="maintainMapping" method="get">
+	<form action="maintainMapping.do" method="get">
 		<tr>
 			<td>MoneyControlId</td>
 			<td><input type="text" name="moneyControlId"><br></td>
@@ -17,7 +17,7 @@
 </table>
 <c:if test="${fn:length(allMappingEntries) > 0}">
 	<c:set var="count" value="1" scope="page" />
-		<form action="maintainMapping" method="get">
+		<form action="maintainMapping.do" method="get">
 			<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 				<tr>
 					<td>SL</td>
@@ -29,7 +29,7 @@
 				<c:forEach items="${allMappingEntries}" var="eachMappingEntry">
 					<tr>
 						<td><c:out value="${count}"/></td>
-						<td><input type="text" name="moneyControlId" value="<c:out value="${eachMappingEntry.moneycontrolName}" />"></td>
+						<td><input type="text" name="moneyControlIds" value="<c:out value="${eachMappingEntry.moneycontrolName}" />"></td>
 						<td><input type="text" name="yahooId" value="<c:out value="${eachMappingEntry.yahooName}" />"/> </td>
 						<td><input type="text" name="nseId" value="<c:out value="${eachMappingEntry.nseId}" />"/></td>
 						<td><input type="text" name="bseId" value="<c:out value="${eachMappingEntry.bseId}" />"/></td>

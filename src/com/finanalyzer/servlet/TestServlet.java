@@ -1,49 +1,45 @@
 package com.finanalyzer.servlet;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.ServletException;
+ 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.domain.StockRatingValue;
-import com.finanalyzer.domain.StockRatingValuesEnum;
-import com.finanalyzer.domain.jdo.AllScripsDbObject;
-import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
+ 
+import com.twilio.sdk.TwilioRestClient;
+import com.twilio.sdk.resource.factory.SmsFactory;
+import com.twilio.sdk.resource.instance.Account;
 
 public class TestServlet extends AbstractCoreServlet
 {
 	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		JdoDbOperations dbOperations = new JdoDbOperations();
-		if(request.getParameter("step1")!=null)
-		{
-			dbOperations.deleteAllScrips();	
+		try {
+			String ACCOUNT_SID = "AC52d77f234adb3ade2bca3dfc87d56dbe";
+			String AUTH_TOKEN = "79df249d22997663ca019140420ff484";
+ 
+			// Create a rest client
+			final TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
+ 
+			// Get the main account (The one we used to authenticate the client)
+			final Account mainAccount = client.getAccount();
+ 
+			// Send a text message
+			final SmsFactory smsFactory = mainAccount.getSmsFactory();
+			final Map<String, String> smsParams = new HashMap<String, String>();
+			smsParams.put("To", "+919632610300"); // The number to send the text to
+			smsParams.put("From", "+919632610300"); // A Twilio number you purchased
+			smsParams.put("Body", "This is a test message!");
+			smsFactory.create(smsParams);
+ 
+			response.getWriter().println("text sent!");
+ 
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e); 
 		}
-		else if(request.getParameter("step2")!=null)
-		{
-			dbOperations.populateAllScrips();	
-		}
-		else if(request.getParameter("step3")!=null)
-		{
-			dbOperations.updateStockIdConversion();	
-		}		
-		else if(request.getParameter("step4")!=null)
-		{
-			dbOperations.populateWatchList();	
-		}	
-		else if(request.getParameter("step5")!=null)
-		{
-			dbOperations.populateScripsWithRatings();	
-		}	
-//		final boolean populateRatings = dbOperations.();
-//		final boolean populateScripsWithRatings = dbOperations.();
-		
 	}
 }
 

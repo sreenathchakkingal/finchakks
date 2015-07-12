@@ -3,19 +3,38 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="E:/installed/jars/gs-collections-5.0.0/gs-collections-5.0.0.jar" sourcepath="E:/installed/jars/gs-collections-5.0.0/sources/gs-collections-5.0.0-sources.jar"/>
-	<classpathentry kind="lib" path="E:/installed/jars/gs-collections-5.0.0/gs-collections-api-5.0.0.jar" sourcepath="E:/installed/jars/gs-collections-5.0.0/sources"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.4-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="E:/installed/jars/jquantllib/jquantlib-0.2.4.jar"/>
-	<classpathentry kind="lib" path="E:/installed/jars/jquantllib/jquantlib-helpers-0.2.4.jar"/>
-	<classpathentry kind="lib" path="E:/installed/jars/jquantllib/jquantlib-samples-0.2.4.jar"/>
-	<classpathentry kind="lib" path="E:/installed/jars/jquantllib/jquantlib-samples-0.2.4-ubber.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.apache.commons.fileupload.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.apache.commons.io.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-beanutils-1.8.3.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org-apache-commons-logging.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-remote-api-1.5.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/com.springsource.org.apache.commons.fileupload-1.2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/com.springsource.org.apache.commons.httpclient-3.1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/com.springsource.org.apache.commons.logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/com.springsource.org.apache.log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/com.springsource.org.codehaus.jackson.mapper-1.0.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.asm-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.beans-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.context-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.core-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.expression-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.oxm-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.web-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.web.portlet-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.web.servlet-3.0.1.RELEASE-A.jar" sourcepath="E:/codebase/eclipseWorkspace/FinAnalyzer/war/WEB-INF/lib/sources/spring-web-3.0.5.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.springframework.web.struts-3.0.1.RELEASE-A.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gs-collections-5.0.0.jar" sourcepath="E:/installed/jars/gs-collections-5.0.0/sources/gs-collections-5.0.0-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gs-collections-api-5.0.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gs-collections-forkjoin-5.0.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gs-collections-testutils-5.0.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jquantlib-0.2.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jquantlib-helpers-0.2.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jquantlib-samples-0.2.4-ubber.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jquantlib-samples-0.2.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/twilio-java-sdk-4.4.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/http-core-4.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

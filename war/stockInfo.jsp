@@ -1,5 +1,7 @@
 <%@include file="core.jsp" %>
 
+message : ${message}
+
 Stock Name : <c:out value = "${stock.stockName}"/>
 <br/>
 Stock Number of Ups: <c:out value = "${stock.movement.ups}"/>

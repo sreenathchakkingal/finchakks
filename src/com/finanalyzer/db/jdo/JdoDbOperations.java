@@ -30,24 +30,8 @@ import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 
 public class JdoDbOperations<T> {
-	private final String ISIN = "isin";
-	private final String BSE_ID = "bseId";
-	private final String FAIR_VALUE = "fairValue";
-	private final String INDUSTRY = "industry";
-	public String STOCK_NAME = "stockName";
-	public final String NSE_ID = "nseId";
 	
 	private Class<T> dbObjectClass;
-	
-	private static final Function<Entity, String> NSE_ID_COLLECTOR = new Function<Entity, String>() {
-
-		@Override
-		public String valueOf(Entity entity) {
-			
-			return (String) entity.getProperty("stockId");
-		}
-	};
-
 	
 	public JdoDbOperations(Class<T> dbObjectClass)
 	{
@@ -195,12 +179,12 @@ public class JdoDbOperations<T> {
 			List<AllScripsDbObject> allscrips = FastList.newList(); 
 			for(Entity entity : entities)
 			{
-				String bse = (String) entity.getProperty(BSE_ID);
-				String fv = String.valueOf(entity.getProperty(FAIR_VALUE));
-				String ind = (String) entity.getProperty(INDUSTRY);
-				String isin = (String) entity.getProperty(ISIN);
-				String nse = (String) entity.getProperty(NSE_ID);
-				String stockName = (String) entity.getProperty(STOCK_NAME);
+				String bse = (String) entity.getProperty(AllScripsDbObject.BSE_ID);
+				String fv = String.valueOf(entity.getProperty(AllScripsDbObject.FAIR_VALUE));
+				String ind = (String) entity.getProperty(AllScripsDbObject.INDUSTRY);
+				String isin = (String) entity.getProperty(AllScripsDbObject.ISIN);
+				String nse = (String) entity.getProperty(AllScripsDbObject.NSE_ID);
+				String stockName = (String) entity.getProperty(AllScripsDbObject.STOCK_NAME);
 				allscrips.add(new AllScripsDbObject(nse, stockName, isin, bse, fv, ind));
 				
 			}
@@ -225,7 +209,7 @@ public class JdoDbOperations<T> {
 			
 			for (MappingStockId eachMapping : moneycontrolMappings)
 			{
-				q.setFilter("nseId == nseIdParam");
+				q.setFilter(AllScripsDbObject.NSE_ID+" == nseIdParam");
 				
 				List<AllScripsDbObject> result = (List<AllScripsDbObject>)q.execute(eachMapping.getNseId());
 				if(!result.isEmpty()){
@@ -254,9 +238,9 @@ public class JdoDbOperations<T> {
 			WatchListUtil listUtil = new WatchListUtil();
 			
 			FastList<Entity> entities = FastList.newList(listUtil.freshRetrieveAllEntities());
-			final List<String> existingWatchListEntries = entities.collect(NSE_ID_COLLECTOR);
+			final List<String> existingWatchListEntries = entities.collect(AllScripsDbObject.NSE_ID_COLLECTOR);
 			
-			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+"nseId"+")");
+			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
 			List<AllScripsDbObject> matchingEntries = (List<AllScripsDbObject>)q.execute(existingWatchListEntries);
 			
 			for (AllScripsDbObject allScripsDbObject : matchingEntries)
@@ -313,7 +297,7 @@ public class JdoDbOperations<T> {
 			for (String stockName : distinctStockNames)
 			{
 				final Map<String, StockRatingValuesEnum> ratingToValue = stockRatingsDb.getStockRatingValue(stockName).getRatingToValue();
-				q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+"nseId"+")");
+				q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
 				AllScripsDbObject matchingScrip = ((List<AllScripsDbObject>)q.execute(stockName)).get(0);
 				matchingScrip.setRatingNameToValue(ratingToValue);
 			}

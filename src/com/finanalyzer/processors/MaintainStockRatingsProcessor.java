@@ -18,6 +18,7 @@ import java.util.Map;
 
 
 
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -66,32 +67,38 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 	{
 		if(StringUtil.isValidValue(this.stockId) )
 		{
-			if(this.isAddOrUpdateAction)
+			PersistenceManager pm = null;
+			AllScripsDbObject matchingScrip = null;
+			try
 			{
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				AllScripsDbObject matchingScrip=null;
-				try
+				pm = PMF.get().getPersistenceManager();	
+				Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
+				List<AllScripsDbObject> matchingScrips = (List<AllScripsDbObject>)q.execute(FastList.newListWith(this.stockId));
+				matchingScrip = matchingScrips.get(0);
+				if(this.isAddOrUpdateAction)
 				{
 					Map<String, StockRatingValuesEnum> ratingNameToValue= getRatingToValuesFromClient();
-					Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+"nseId"+")");
-					List<AllScripsDbObject> matchingScrips = (List<AllScripsDbObject>)q.execute(FastList.newListWith(this.stockId));
-					matchingScrips.get(0).setRatingNameToValue(ratingNameToValue);
+					matchingScrip.setRatingNameToValue(ratingNameToValue);
 				}
-				finally
+
+				else //retrieve
 				{
-					pm.close();
+					if(matchingScrip.getRatingNameToValue().isEmpty())
+					{
+						matchingScrip.setRatingNameToValue(createDummyMap());
+					}
+					
 				}
-				return matchingScrip;
 			}
-			else //retrieve
+			finally
 			{
-				JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
-				final List<AllScripsDbObject> matchingScrips = FastList.newList(dbOperations.getEntries("nseId", this.stockId));
-				final AllScripsDbObject matchingScrip = matchingScrips.get(0);
-				return matchingScrip.getRatingNameToValue().isEmpty() ? createDummyMap() : matchingScrip;
+				pm.close();
 			}
+			return matchingScrip;
 		}
-		return createDummyMap();
+		AllScripsDbObject dummyObject = new AllScripsDbObject();
+		dummyObject.setRatingNameToValue(createDummyMap());
+		return dummyObject;
 	}
 	
 //	@Override
@@ -157,10 +164,12 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 	}
 
 	
-	private AllScripsDbObject createDummyMap()
+	private Map<String, StockRatingValuesEnum> createDummyMap()
 	{
-		JdoDbOperations<RatingDbObject> dbOperations = new JdoDbOperations<RatingDbObject>(RatingDbObject.class);
-		final List<RatingDbObject> ratingDbObjects = dbOperations.getEntries();
+		JdoDbOperations<RatingDbObject> ratingDbOperations = new JdoDbOperations<RatingDbObject>(RatingDbObject.class);
+		JdoDbOperations<AllScripsDbObject> allScripsDbObject = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
+		
+		final List<RatingDbObject> ratingDbObjects = ratingDbOperations.getEntries();
 
 		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
 
@@ -168,7 +177,8 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 		{
 			ratingsToValue.put(ratingDbObject.getRatingName(),StockRatingValuesEnum.NOT_RATED);
 		}
-		return new AllScripsDbObject(this.stockId, ratingsToValue);
+		
+		return ratingsToValue;
 	}
 
 	

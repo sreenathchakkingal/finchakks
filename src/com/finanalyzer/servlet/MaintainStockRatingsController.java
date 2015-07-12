@@ -8,6 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockRatingValue;
@@ -19,13 +23,14 @@ import com.finanalyzer.util.StringUtil;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 
-public class MaintainStockRatingsServlet extends AbstractCoreServlet
+@Controller  
+public class MaintainStockRatingsController
 {
 
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	@RequestMapping("/maintainStockRatings") 
+	public ModelAndView maintainStockRatings(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		
 		String stockName = request.getParameter("stockName");
@@ -35,7 +40,8 @@ public class MaintainStockRatingsServlet extends AbstractCoreServlet
 
 		AllScripsDbObject allScripsDbObject = processor.execute();
 
-		request.setAttribute("stock", allScripsDbObject);
-		this.despatchTo(request, response, "maintainStockRatings.jsp");
+//		request.setAttribute("stock", allScripsDbObject);
+		
+		return new ModelAndView("maintainStockRatings", "stock", allScripsDbObject);  
 	}
 }

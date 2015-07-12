@@ -16,6 +16,8 @@ import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.processors.YahooNDaysPricesProcessor;
 
 @SuppressWarnings("serial")
+//not used NdaysHistoryController is used. Can delete after few months of usage
+
 public class NdaysHistoryServlet extends AbstractCoreServlet
 {
 	@Override
@@ -37,13 +39,6 @@ public class NdaysHistoryServlet extends AbstractCoreServlet
 			request.setAttribute("nDaysPrices", nDaysPrices);
 			request.setAttribute("dates", dates);
 		} 
-		else
-		{
-			Processor<List<Stock>> processor = new QuandlNDaysPricesProcessor(numOfDays, simpleMovingAverage);
-			List<Stock> stocks = processor.execute();
-			request.setAttribute("stocks", stocks);
-			request.setAttribute("numOfDays", numOfDays);
-		}
 
 		this.despatchTo(request, response, "nDaysHistory.jsp");
 

@@ -1,6 +1,6 @@
  <%@include file="core.jsp" %>
 
-<form action="maintainRating" method="get">
+<form action="maintainRating.do" method="get">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
 			<td>Rating Name</td>

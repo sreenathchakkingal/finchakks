@@ -18,7 +18,6 @@ import com.gs.collections.impl.list.mutable.FastList;
 
 public class MaintainMappingProcessor implements Processor<List<AllScripsDbObject>>
 {
-	private static final String NSE_ID = "nseId";
 	private final String moneyControlId;
 	private final String yahooId;
 	private final String nseId;
@@ -51,7 +50,7 @@ public class MaintainMappingProcessor implements Processor<List<AllScripsDbObjec
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		if(this.isDelete)
 		{
-			final List<AllScripsDbObject> entries = dbOperations.getEntries(NSE_ID,Arrays.asList(this.selectedMappings));
+			final List<AllScripsDbObject> entries = dbOperations.getEntries(AllScripsDbObject.NSE_ID,Arrays.asList(this.selectedMappings));
 			for(AllScripsDbObject dbObject : entries)
 			{
 				dbObject.setMoneycontrolName(null);	
@@ -62,17 +61,17 @@ public class MaintainMappingProcessor implements Processor<List<AllScripsDbObjec
 		{
 			updateOrInsert();
 		}
-		FastList<AllScripsDbObject> allScripsDbObjects = FastList.newList(dbOperations.getEntries(NSE_ID));
+		FastList<AllScripsDbObject> allScripsDbObjects = FastList.newList(dbOperations.getEntries(AllScripsDbObject.NSE_ID));
 		return allScripsDbObjects.select(MONEYCONTROL_NAME_EXISTS);
 	}
 
 	private void updateOrInsert() {
-		if(StringUtil.isValidValue(this.moneyControlId)&& StringUtil.isValidValue(this.nseId))
+		if(StringUtil.isValidValue(this.moneyControlId)&& StringUtil.isValidValue(this.nseId)) //update
 		{
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try
 			{
-				Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+NSE_ID+")");
+				Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
 				List<AllScripsDbObject> allScripsDbObjects  = (List<AllScripsDbObject>)q.execute(this.nseId);
 				if(!allScripsDbObjects.isEmpty())
 				{
@@ -81,7 +80,7 @@ public class MaintainMappingProcessor implements Processor<List<AllScripsDbObjec
 					allScripsDbObjects.get(0).setYahooName(this.yahooId);
 					allScripsDbObjects.get(0).setBseId(this.bseId);
 				}
-				else
+				else //insert
 				{
 					pm.makePersistent(new AllScripsDbObject(this.nseId,this.bseId, this.moneyControlId, this.yahooId));
 				}

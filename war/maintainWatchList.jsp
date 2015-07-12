@@ -1,6 +1,6 @@
  <%@include file="core.jsp" %>
 
-<form action="maintainWatchList" method="get">
+<form action="maintainWatchList.do" method="get">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
 			<td>Stock Id -Nse</td>

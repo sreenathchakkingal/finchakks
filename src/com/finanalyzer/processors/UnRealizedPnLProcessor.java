@@ -81,11 +81,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				this.stockName = stockName==null ? null : stockName.toUpperCase();
 			}
 
-			public UnRealizedPnLProcessor(InputStream statusInputStream, String stockName)
-			{
-				super(statusInputStream);
-				this.stockName = stockName==null ? null : stockName.toUpperCase();
-			}
 
 	@Override
 	public FastList<Stock> execute() {
@@ -107,7 +102,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			}
 		} 
 		
-		List<UnrealizedDbObject> entries = unrealizeddbOperations.getEntries("moneycontrolName");
+		List<UnrealizedDbObject> entries = unrealizeddbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME);
 		
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		Set<String> noMapping = UnifiedSet.newSet();
@@ -123,7 +118,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						.quantity((int) quantity).buyPrice((float) buyPriceDouble)
 						.buyDate(buyDate).build();
 
-				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries("moneycontrolName",moneycontrolName);
+				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME,moneycontrolName);
 
 				if (!scrips.isEmpty()) {
 					if (StringUtil.isValidValue(scrips.get(0).getBseId())) 

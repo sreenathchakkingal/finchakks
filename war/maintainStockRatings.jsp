@@ -1,11 +1,11 @@
 <%@include file="core.jsp"%>
 
-<form action="maintainStockRatings" method="get">
+<form action="maintainStockRatings.do" method="get">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 
 		<tr>
 			<td>Stock Id -Nse</td>
-			<td><input type="text" name="stockName" id="stockName" value="<c:out value="${stock.stockName}" />"><br></td>
+			<td><input type="text" name="stockName" id="stockName" value="<c:out value="${stock.nseId}" />"><br></td>
 		</tr>
 		<td><input type="submit" name="Retrieve" value="Retrieve"></td>
 	</table>

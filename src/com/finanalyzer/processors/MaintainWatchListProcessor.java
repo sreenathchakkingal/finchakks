@@ -51,7 +51,7 @@ public class MaintainWatchListProcessor implements Processor<List<String>>
 		}
 		
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
-		final FastList<AllScripsDbObject> entries = FastList.newList(dbOperations.getEntries("nseId"));
+		final FastList<AllScripsDbObject> entries = FastList.newList(dbOperations.getEntries(AllScripsDbObject.NSE_ID));
 		return entries.collectIf(IS_WATCHLISTED, STOCK_NAME_COLLECTOR);
 	}
 
@@ -59,7 +59,7 @@ public class MaintainWatchListProcessor implements Processor<List<String>>
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
-			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+"nseId"+")");
+			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
 			final List<AllScripsDbObject> matchingEntries = (List<AllScripsDbObject>)q.execute(this.stocksIds);
 			for (AllScripsDbObject allScripsDbObject : matchingEntries)
 			{

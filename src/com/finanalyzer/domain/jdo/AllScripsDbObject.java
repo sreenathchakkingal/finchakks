@@ -8,6 +8,7 @@ import javax.jdo.annotations.Persistent;
 
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.google.appengine.api.datastore.Entity;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.procedure.Procedure;
 import com.gs.collections.api.block.procedure.Procedure2;
@@ -47,6 +48,30 @@ public class AllScripsDbObject {
 
 	@Persistent
 	private List<String> ratingNameToValue;
+
+	public static final String ISIN = "isin";
+
+	public static final String BSE_ID = "bseId";
+
+	public static final String FAIR_VALUE = "fairValue";
+
+	public static final String INDUSTRY = "industry";
+
+	public static final String STOCK_NAME = "stockName";
+
+	public static final String NSE_ID = "nseId";
+	
+	public static final String MONEY_CONTROL_NAME = "moneycontrolName";
+
+	public static final Function<Entity, String> NSE_ID_COLLECTOR = new Function<Entity, String>() {
+
+		@Override
+		public String valueOf(Entity entity) {
+			
+			return (String) entity.getProperty("stockId");
+		}
+	};
+
 	
 	public AllScripsDbObject(String nseId, String stockName, String isin,
 			String bseId, String moneycontrolName,String yahooName, String fairValue, String industry) 
@@ -72,9 +97,8 @@ public class AllScripsDbObject {
 		this(nseId, null, null, bseId, moneycontrolName, yahooName, null, null);
 	}
 	
-	public AllScripsDbObject(String stockId, Map<String, StockRatingValuesEnum> ratingNameToValue) {
-		this.nseId=stockId;
-		this.ratingNameToValue=transforMapToList(ratingNameToValue);
+	public AllScripsDbObject() {
+		
 	}
 
 	public String getNseId() {
@@ -189,6 +213,24 @@ public class AllScripsDbObject {
 	public List<String> getRatingInferences()
 	{
 		return new StockRatingValue(this.getRatingNameToValue()).getInferences();
+	}
+	
+	@Override
+	public boolean equals(Object object)
+	{
+		if (object instanceof AllScripsDbObject)
+		{
+			AllScripsDbObject that = (AllScripsDbObject)object;
+			return this.nseId.equals(that.nseId);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return this.nseId.hashCode();
 	}
 	
 	@Override

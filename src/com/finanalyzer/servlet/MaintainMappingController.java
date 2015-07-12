@@ -7,15 +7,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.processors.MaintainMappingProcessor;
 
-public class MaintainMappingServlet extends AbstractCoreServlet
+@Controller
+public class MaintainMappingController
 {
-	private static final long serialVersionUID = -1069537395124551413L;
-
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	@RequestMapping("/maintainMapping")
+	public ModelAndView maintainMapping(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		String moneyControlId = request.getParameter("moneyControlId");
 		String yahooBoId = request.getParameter("yahooBoId");
@@ -23,11 +26,11 @@ public class MaintainMappingServlet extends AbstractCoreServlet
 		String bseId = request.getParameter("bseId");
 		String[] selectedMappings = request.getParameterValues("selectedMappings");
 		boolean isDelete = "delete".equals(request.getParameter("action"));
+		
 		MaintainMappingProcessor processor = new MaintainMappingProcessor(moneyControlId, yahooBoId, nseId, bseId, selectedMappings,isDelete);
 		List<AllScripsDbObject> allMappingEntries = processor.execute();
-		request.setAttribute("allMappingEntries",allMappingEntries);
 
-		this.despatchTo(request, response, "maintainMapping.jsp");
+		return new ModelAndView("maintainMapping", "allMappingEntries",allMappingEntries);
 	}
 
 }

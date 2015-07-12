@@ -1,34 +1,32 @@
 package com.finanalyzer.helloworld;
 
-import java.util.Comparator;
+import com.twilio.sdk.TwilioRestClient;
+import com.twilio.sdk.TwilioRestException;
+import com.twilio.sdk.resource.factory.MessageFactory;
+import com.twilio.sdk.resource.instance.Message;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+ 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Tuple;
-
-import com.finanalyzer.domain.StockRatingValuesEnum;
-import com.finanalyzer.domain.jdo.AllScripsDbObject;
-import com.finanalyzer.util.CalculatorUtil;
-import com.gs.collections.api.block.procedure.Procedure;
-import com.gs.collections.api.list.MutableList;
-import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.multimap.list.FastListMultimap;
-
 public class Tester {
-
 	
-	public static void main(String[] args) {
-		List<Employee> newList = FastList.newListWith(new Employee(0), new Employee(1), new Employee(2), new Employee(3));
-		
-		for (int i=0; i<newList.size();i++)
-		{
-			if(newList.get(i).getId()==2)
-			{
-				newList.remove(i);
-			}
-		}
-		System.out.println(newList);
+		public static final String ACCOUNT_SID = "AC52d77f234adb3ade2bca3dfc87d56dbe";
+		  public static final String AUTH_TOKEN = "79df249d22997663ca019140420ff484";
+		 
+		  public static void main(String[] args) throws TwilioRestException {
+		    TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
+		 
+		    // Build a filter for the MessageList
+		    List<NameValuePair> params = new ArrayList<NameValuePair>();
+		    params.add(new BasicNameValuePair("Body", "My Test message"));
+		    params.add(new BasicNameValuePair("To", "+919632610300"));
+		    params.add(new BasicNameValuePair("From", "+919632610300"));
+		 
+		    MessageFactory messageFactory = client.getAccount().getMessageFactory();
+		    Message message = messageFactory.create(params);
+		    System.out.println(message.getSid());
 		
 	}
-	
-
 }
