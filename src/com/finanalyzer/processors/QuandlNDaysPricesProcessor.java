@@ -138,7 +138,6 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 					unrealizedDbObject.setIndustry(allScripsDbObject.getIndustry());
 					break;
 				}
-
 			}
 		}
 		

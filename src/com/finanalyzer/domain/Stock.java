@@ -18,29 +18,21 @@ import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 
-@PersistenceCapable
 public class Stock
 {
 
-	@Persistent
 	private String stockName;
 	
-	@Persistent
 	private List<DateValueObject> dividends;
 
-	@Persistent
 	private float investmentRatio;
 	
-	@Persistent
 	private float simpleMovingAverage;
 	
-	@Persistent
 	private List<DateValueObject> dateToClosePrice;
 	
-	@Persistent
 	private Map<String, Float> nDaysGains;
 	
-	@Persistent
 	private float sellPrice;
 	
 	private int ups;

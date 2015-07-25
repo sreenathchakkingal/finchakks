@@ -4,16 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-
 import com.gs.collections.impl.list.mutable.FastList;
 
-@PersistenceCapable
 public class StockRatingValue  
 {
-	@Persistent
-	private String grade;
 
 	private static final String SCORE = "Score : ";
 	
@@ -48,9 +42,7 @@ public class StockRatingValue
 			}
 		}
 		
-		this.grade = netRating + "/" + validRatingCount;
-		
-		inferences.add(SCORE + this.grade);
+		inferences.add(SCORE + netRating + "/" + validRatingCount);
 		inferences.add("Total Ratings : " + ratingsCount);
 		inferences.add("Not Rated Count : " + notRatedCount);
 		return inferences;
@@ -58,6 +50,6 @@ public class StockRatingValue
 	
 	public String getScore()
 	{
-		return this.grade;
+		return getInferences().get(0).substring(SCORE.length());
 	}
 }
