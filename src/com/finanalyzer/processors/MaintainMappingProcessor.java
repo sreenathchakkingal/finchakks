@@ -13,7 +13,6 @@ import com.finanalyzer.domain.MappingStockId;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.function.Function;
-import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class MaintainMappingProcessor implements Processor<List<AllScripsDbObject>>
@@ -25,15 +24,6 @@ public class MaintainMappingProcessor implements Processor<List<AllScripsDbObjec
 	private final boolean isDelete;
 	private String bseId;
 
-	private static final Predicate<AllScripsDbObject> MONEYCONTROL_NAME_EXISTS = new Predicate<AllScripsDbObject>() {
-
-		@Override
-		public boolean accept(AllScripsDbObject scrip) {
-			
-			return StringUtil.isValidValue(scrip.getMoneycontrolName());
-		}
-	};
-	
 	public MaintainMappingProcessor(String moneyControlId, String yahooId, String nseId, String bseId, String[] selectedMappings, boolean isDelete)
 	{
 		this.moneyControlId=moneyControlId;
@@ -62,7 +52,7 @@ public class MaintainMappingProcessor implements Processor<List<AllScripsDbObjec
 			updateOrInsert();
 		}
 		FastList<AllScripsDbObject> allScripsDbObjects = FastList.newList(dbOperations.getEntries(AllScripsDbObject.NSE_ID));
-		return allScripsDbObjects.select(MONEYCONTROL_NAME_EXISTS);
+		return allScripsDbObjects.select(AllScripsDbObject.MONEYCONTROL_NAME_EXISTS);
 	}
 
 	private void updateOrInsert() {

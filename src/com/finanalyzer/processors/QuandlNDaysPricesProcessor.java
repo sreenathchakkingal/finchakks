@@ -2,6 +2,7 @@ package com.finanalyzer.processors;
 
 import java.io.InputStream;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,10 +22,12 @@ import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.ReaderUtil;
+import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.function.Function0;
 import com.gs.collections.api.block.function.Function2;
 import com.gs.collections.api.block.function.primitive.FloatFunction;
+import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.map.MutableMap;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
@@ -32,8 +35,6 @@ import com.gs.collections.impl.utility.Iterate;
 
 public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 {
-	private static final Logger LOG = Logger.getLogger(QuandlNDaysPricesProcessor.class.getName());
-	private static final NumberFormat PERCENTAGE_FORMAT = null;
 	protected InputStream stocksInputStream;
 	protected final int numOfDays;
 	private int simpleMovingAverage;
@@ -64,6 +65,14 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 		@Override
 		public String valueOf(UnrealizedDbObject unrealizedDbObject) {
 			return unrealizedDbObject.getMoneycontrolName();
+		}
+	};
+	
+	private static final Function<UnrealizedDbObject, String> GROUP_BY_INDUSTRY = new Function<UnrealizedDbObject, String>() {
+
+		@Override
+		public String valueOf(UnrealizedDbObject unrealizedDbObject) {
+			return unrealizedDbObject.getIndustry();
 		}
 	};
 
@@ -109,24 +118,62 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 	{
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		JdoDbOperations<UnrealizedDbObject> unrealizedDbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
-		final List<AllScripsDbObject> watchListedScrips = dbOperations.getEntries("isWatchListed", FastList.newListWith(String.valueOf(true)));
+		final FastList<AllScripsDbObject> allScrips = FastList.newList(dbOperations.getEntries());
+		final List<AllScripsDbObject> watchListedScrips = allScrips.select(AllScripsDbObject.IS_WATCHLISTED);
+		final List<AllScripsDbObject> allScripsWithValidMoneyControlName = allScrips.select(AllScripsDbObject.MONEYCONTROL_NAME_EXISTS);
+		
 		FastList<Stock> stocks = FastList.newList();
 		
-		final FastList<UnrealizedDbObject> entries = FastList.newList(unrealizedDbOperations.getEntries());
-		final MutableMap<String, Float> stocksAggregateByBuyPrice = entries.aggregateBy(GROUP_BY_STOCKNAME, INITAL_VALUE, BUY_PRICE_AGGREGATOR);
-		final float totalInvestment = (float)entries.sumOfFloat(TOTAL_INVESMENT_AGGREGATOR);
+		final FastList<UnrealizedDbObject> unrealizedDbObjects = FastList.newList(unrealizedDbOperations.getEntries());
+		final MutableMap<String, Float> investmentAggregatedByStockname = unrealizedDbObjects.aggregateBy(GROUP_BY_STOCKNAME, INITAL_VALUE, BUY_PRICE_AGGREGATOR);
+		
+		
+		for (UnrealizedDbObject unrealizedDbObject: unrealizedDbObjects)
+		{
+			String moneycontrolName = unrealizedDbObject.getMoneycontrolName();
+			for (AllScripsDbObject allScripsDbObject : allScripsWithValidMoneyControlName)
+			{
+				if(moneycontrolName.equals(allScripsDbObject.getMoneycontrolName()))
+				{
+					unrealizedDbObject.setIndustry(allScripsDbObject.getIndustry());
+					break;
+				}
+
+			}
+		}
+		
+		final MutableMap<String, Float> investmentAggregatedByIndustry= unrealizedDbObjects.aggregateBy(GROUP_BY_INDUSTRY, INITAL_VALUE, BUY_PRICE_AGGREGATOR);
+		
+		final float totalInvestment = (float)unrealizedDbObjects.sumOfFloat(TOTAL_INVESMENT_AGGREGATOR);
 
 		for (AllScripsDbObject allScripsDbObject : watchListedScrips)
 		{
 			final Stock stock = new Stock(allScripsDbObject.getNseId(), StockExchange.NSE);
 			stock.addNames( StockExchange.BSE, allScripsDbObject.getBseId());
+			stock.setIndustry(allScripsDbObject.getIndustry());
 			stock.setNumOfDays(this.numOfDays);
 			stock.setStockRatingValue(new StockRatingValue(allScripsDbObject.getRatingNameToValue()));
-			if(stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())!=null)
+			
+			final String moneycontrolName = allScripsDbObject.getMoneycontrolName();
+			
+			if(investmentAggregatedByStockname.get(moneycontrolName)!=null)
 			{
-				final Float investmentRatio = stocksAggregateByBuyPrice.get(allScripsDbObject.getMoneycontrolName())/totalInvestment;
+				final Float investmentRatio = investmentAggregatedByStockname.get(moneycontrolName)/totalInvestment;
 				stock.setInvestmentRatio(investmentRatio);
 			}
+			
+			String industry = allScripsDbObject.getIndustry();
+
+			if(StringUtil.isValidValue(industry))
+			{
+				final Float investmentInIndustry = investmentAggregatedByIndustry.get(industry);
+				if(investmentInIndustry !=null)
+				{
+					final Float industryInvestmentRatio=investmentInIndustry/totalInvestment;
+					stock.setIndustryInvestmentRatio(industryInvestmentRatio);					
+				}
+			}
+			
 			stocks.add(stock);
 		}
 		

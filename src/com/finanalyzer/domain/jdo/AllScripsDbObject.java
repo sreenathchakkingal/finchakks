@@ -8,8 +8,10 @@ import javax.jdo.annotations.Persistent;
 
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.finanalyzer.util.StringUtil;
 import com.google.appengine.api.datastore.Entity;
 import com.gs.collections.api.block.function.Function;
+import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.block.procedure.Procedure;
 import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.impl.list.mutable.FastList;
@@ -48,6 +50,23 @@ public class AllScripsDbObject {
 
 	@Persistent
 	private List<String> ratingNameToValue;
+
+	public static final Predicate<AllScripsDbObject> IS_WATCHLISTED = new Predicate<AllScripsDbObject>() {
+	
+		@Override
+		public boolean accept(AllScripsDbObject allScripsDbObject) {
+			return allScripsDbObject.isWatchListed();
+		}
+	};
+
+	public static final Predicate<AllScripsDbObject> MONEYCONTROL_NAME_EXISTS = new Predicate<AllScripsDbObject>() {
+	
+		@Override
+		public boolean accept(AllScripsDbObject scrip) {
+			
+			return StringUtil.isValidValue(scrip.getMoneycontrolName());
+		}
+	};
 
 	public static final String ISIN = "isin";
 

@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,7 +20,7 @@ import com.finanalyzer.processors.YahooNDaysPricesProcessor;
 @SuppressWarnings("serial")
 //not used NdaysHistoryController is used. Can delete after few months of usage
 
-public class NdaysHistoryServlet extends AbstractCoreServlet
+public class NdaysHistoryServlet extends HttpServlet
 {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -40,8 +42,14 @@ public class NdaysHistoryServlet extends AbstractCoreServlet
 			request.setAttribute("dates", dates);
 		} 
 
-		this.despatchTo(request, response, "nDaysHistory.jsp");
+	    RequestDispatcher requestDispatcher = request.getRequestDispatcher("nDaysHistory.jsp");
+	    requestDispatcher.forward(request, response);
 
+	}
+	
+	public InputStream getResourceAsStream(String fileName)
+	{
+		return getServletContext().getResourceAsStream("/WEB-INF/data/"+fileName);
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.finanalyzer.processors;
 
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Comparator;
@@ -9,16 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
 import org.apache.commons.fileupload.FileItemIterator;
 
-import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.NDaysPrice;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockBuilder;
@@ -35,7 +29,6 @@ import com.gs.collections.api.list.MutableList;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
-import com.gs.collections.impl.utility.Iterate;
 
 public class UnRealizedPnLProcessor extends PnLProcessor 
 {

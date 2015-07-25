@@ -18,6 +18,8 @@ public class UnrealizedDbObject {
 	@Persistent
 	private String buyQuantity;
 
+	private String industry;
+
 	public UnrealizedDbObject(String moneycontrolName, String buyDate, double buyPrice, int buyQuantity) {
 		this.moneycontrolName = moneycontrolName;
 		this.buyDate = buyDate;
@@ -41,6 +43,15 @@ public class UnrealizedDbObject {
 		return Long.valueOf(buyQuantity);
 	}
 	
+	public void setIndustry(String industry) {
+		this.industry=industry;
+		
+	}
+	
+	public String getIndustry() {
+		return industry;
+	}
+
 	@Override
 	public String toString()
 	{

@@ -6,9 +6,11 @@
 	<tr>
 		<td>Stock Name</td>
 		<td>Score</td>
-		<td>Investment Percent</td>
-		<td>Decrease Simple Moving Avg(in %)</td>
+		<td>Investment</td>
+		<td>Industry Investment</td>
+		<td>Decrease Simple Moving Avg</td>
 		<td>Net Gains</td>
+		<td>Industry</td>
 		<td>Latest Close Price</td>
 		<td>50 day Simple Moving Avg</td>
 		<c:forEach items="${stocks[0].dates}" var="date">
@@ -24,14 +26,14 @@
 				<tr>
 			</c:otherwise>
 		</c:choose>
-			<!-- <td><a href="http://finchakks.appspot.com/maintainStockRatings?Retrieve=Retrieve&stockName=<c:out value='${stock.stockName}'/>" target="_blank">
-			 -->
-			 <td><a href="http://finchakks.appspot.com/maintainStockRatings?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
+			 <td><a href="http://finchakks.appspot.com/maintainStockRatings.do?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
 			<c:out value='${stock.stockName}' /></td></a>
 			<td><c:out value='${stock.stockRatingValue.score}' /></td>
 			<td><fmt:formatNumber value="${stock.investmentRatio}"  type="percent"  maxIntegerDigits="2" /></td>
-			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized}" pattern="##.##" /></td>
+			<td><fmt:formatNumber value="${stock.industryInvestmentRatio}"  type="percent"  maxIntegerDigits="2" /></td>
+			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized}" type="percent"  maxIntegerDigits="2" /></td>
 			<td><fmt:formatNumber value="${stock.netNDaysGain}" pattern="#,###.##" /></td>
+			<td><c:out value='${stock.industry}' /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice}" pattern="##.##" /></td>
 			<td><fmt:formatNumber value="${stock.simpleMovingAverage}" pattern="##.##" /></td>
 			<c:forEach items="${stock.nDaysGains}" var="nthDayGain">

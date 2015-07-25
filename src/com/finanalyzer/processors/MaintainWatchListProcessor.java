@@ -9,7 +9,6 @@ import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.gs.collections.api.block.function.Function;
-import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class MaintainWatchListProcessor implements Processor<List<String>>
@@ -24,14 +23,6 @@ public class MaintainWatchListProcessor implements Processor<List<String>>
 		@Override
 		public String valueOf(AllScripsDbObject allScripsDbObject) {
 			return allScripsDbObject.getNseId();
-		}
-	};
-	
-	public static final Predicate<AllScripsDbObject> IS_WATCHLISTED = new Predicate<AllScripsDbObject>() {
-
-		@Override
-		public boolean accept(AllScripsDbObject allScripsDbObject) {
-			return allScripsDbObject.isWatchListed();
 		}
 	};
 	
@@ -52,7 +43,7 @@ public class MaintainWatchListProcessor implements Processor<List<String>>
 		
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		final FastList<AllScripsDbObject> entries = FastList.newList(dbOperations.getEntries(AllScripsDbObject.NSE_ID));
-		return entries.collectIf(IS_WATCHLISTED, STOCK_NAME_COLLECTOR);
+		return entries.collectIf(AllScripsDbObject.IS_WATCHLISTED, STOCK_NAME_COLLECTOR);
 	}
 
 	private void updateEntry() {

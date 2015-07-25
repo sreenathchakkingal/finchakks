@@ -9,8 +9,12 @@ import javax.jdo.annotations.Persistent;
 
 import com.gs.collections.impl.list.mutable.FastList;
 
+@PersistenceCapable
 public class StockRatingValue  
 {
+	@Persistent
+	private String grade;
+
 	private static final String SCORE = "Score : ";
 	
 	private Map<String, StockRatingValuesEnum> ratingToValue;
@@ -43,7 +47,10 @@ public class StockRatingValue
 				netRating = netRating + value.getRating();
 			}
 		}
-		inferences.add(SCORE + netRating + "/" + validRatingCount);
+		
+		this.grade = netRating + "/" + validRatingCount;
+		
+		inferences.add(SCORE + this.grade);
 		inferences.add("Total Ratings : " + ratingsCount);
 		inferences.add("Not Rated Count : " + notRatedCount);
 		return inferences;
@@ -51,6 +58,6 @@ public class StockRatingValue
 	
 	public String getScore()
 	{
-		return getInferences().get(0).substring(SCORE.length());
+		return this.grade;
 	}
 }

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
 import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
@@ -15,21 +18,43 @@ import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 
+@PersistenceCapable
 public class Stock
 {
+
+	@Persistent
 	private String stockName;
+	
+	@Persistent
+	private List<DateValueObject> dividends;
+
+	@Persistent
+	private float investmentRatio;
+	
+	@Persistent
+	private float simpleMovingAverage;
+	
+	@Persistent
+	private List<DateValueObject> dateToClosePrice;
+	
+	@Persistent
+	private Map<String, Float> nDaysGains;
+	
+	@Persistent
+	private float sellPrice;
+	
 	private int ups;
 	private int downs;
 	private float averageInterestReturn;
 	private String buyDate;
 	private float buyPrice;
 	private String sellDate;
-	private float sellPrice;
+	
 	private float sellPriceBank;
 	private int quantity;
 	private int sellableQuantity=-1;
 	private float totalInvestment;
-	private float investmentRatio;
+	
 	private float totalReturn;
 	private float totalReturnIfBank;
 	private boolean isException=false;
@@ -37,17 +62,18 @@ public class Stock
 	private String reportedNetProfitOpinion;
 	private String debtToEquityOpinion;
 	private List<InterestReturn> interestReturns;
-	private List<DateValueObject> dividends;
+	
 	private float returnTillDate=Float.MAX_VALUE;
-	private Map<String, Float> nDaysGains;
-	private float simpleMovingAverage;
-	private List<DateValueObject> dateToClosePrice;
+	
+	
 	private Adjustment splitAdjustment;
 	private Adjustment bonusAdjustment;
 	private StockExchange stockExchange;
 	private int numOfDays;
 	private StockRatingValue stockRatingValue;
 	public Map<StockExchange, String> stockExchangeStocknameMap = UnifiedMap.newMap();
+	private String industry;
+	private Float industryInvestmentRatio;
 
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
@@ -631,6 +657,22 @@ public class Stock
 		this.investmentRatio = investmentRatio;
 	}
 	
+	public void setIndustry(String industry) {
+		this.industry=industry;
+	}
+	
+	public String getIndustry() {
+		return industry;
+	}
+	
+	public void setIndustryInvestmentRatio(Float industryInvestmentRatio) {
+		this.industryInvestmentRatio=industryInvestmentRatio;
+	}
+	
+	public Float getIndustryInvestmentRatio() {
+		return industryInvestmentRatio;
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -640,5 +682,7 @@ public class Stock
 	{
 		return this.isException;
 	}
+	
+
 	
 }
