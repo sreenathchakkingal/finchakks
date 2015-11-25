@@ -37,14 +37,15 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 	private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("##.##");
 	private final String stockName;
 	private FileItemIterator fileItemIterator;
-	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER = new Predicate<Stock>()
+	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER_NON_BONUS = new Predicate<Stock>()
 			{
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public boolean accept(Stock stock)
 		{
-			return stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH;
+			final boolean maturityGreaterThanQuarter = stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH;
+			return maturityGreaterThanQuarter && stock.getBuyPrice()>=0.1; 
 		}
 			};
 
@@ -214,7 +215,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				float totalReturns = 0.0f;
 				float totalInvestment = 0.0f;
 
-				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER);
+				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER_NON_BONUS);
 
 				for (Stock stock : stocksWithMaturityMoreThanAQuarter)
 				{
