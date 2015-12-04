@@ -30,9 +30,9 @@
 			<c:out value='${stock.stockName}' /></td></a>
 			<td><c:out value='${stock.stockRatingValue.score}' /></td>
 			<td><fmt:formatNumber value="${stock.investmentRatio}"  type="percent"  maxIntegerDigits="2" /></td>
-			<td><fmt:formatNumber value="${stock.industryInvestmentRatio}"  type="percent"  maxIntegerDigits="2" /></td>
+			<td><fmt:formatNumber value="${stock.industryInvestmentRatio}"  type="percent"  maxIntegerDigits="3" /></td>
 			<td><fmt:formatNumber value="${(stock.sellPrice-stock.simpleMovingAverage)/stock.simpleMovingAverage}" type="percent"  maxIntegerDigits="2" /></td>
-			<td><fmt:formatNumber value="${stock.netNDaysGain}" type="percent"  maxIntegerDigits="2" /></td>
+			<td><fmt:formatNumber value="${stock.netNDaysGain}" type="percent"  maxIntegerDigits="2" /></td> 
 			<td><c:out value='${stock.industry}' /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice}" pattern="##.##" /></td>
 			<td><fmt:formatNumber value="${stock.simpleMovingAverage}" pattern="##.##" /></td>

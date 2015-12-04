@@ -50,6 +50,17 @@ public class AllScripsDbObject {
 
 	@Persistent
 	private List<String> ratingNameToValue;
+	
+	@Persistent
+	private String isBlackListed;
+
+	public static final Function<AllScripsDbObject, String> STOCK_NAME_COLLECTOR = new Function<AllScripsDbObject, String>() {
+	
+		@Override
+		public String valueOf(AllScripsDbObject allScripsDbObject) {
+			return allScripsDbObject.getNseId();
+		}
+	};
 
 	public static final Predicate<AllScripsDbObject> IS_WATCHLISTED = new Predicate<AllScripsDbObject>() {
 	
@@ -59,6 +70,16 @@ public class AllScripsDbObject {
 		}
 	};
 
+
+	public static final Predicate<AllScripsDbObject> IS_BLACKLISTED = new Predicate<AllScripsDbObject>() {
+	
+		@Override
+		public boolean accept(AllScripsDbObject allScripsDbObject) {
+			return allScripsDbObject.isBlackListed();
+		}
+	};
+
+	
 	public static final Predicate<AllScripsDbObject> MONEYCONTROL_NAME_EXISTS = new Predicate<AllScripsDbObject>() {
 	
 		@Override
@@ -192,6 +213,15 @@ public class AllScripsDbObject {
 		this.isWatchListed = String.valueOf(isWatchListed);
 	}
 	
+	
+	public boolean isBlackListed() {
+		return Boolean.valueOf(this.isBlackListed);
+	}
+
+	public void setBlackListed(boolean isBlackListed) {
+		this.isBlackListed = String.valueOf(isBlackListed);
+	}
+
 	public Map<String, StockRatingValuesEnum> getRatingNameToValue() {
 		return transforListToMap(this.ratingNameToValue);
 	}

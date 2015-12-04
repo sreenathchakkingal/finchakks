@@ -73,22 +73,32 @@
 		</c:choose>
 			<td><c:out value="${stockSummary.stockName}"></c:out></td>
 			<td><fmt:formatNumber value="${stockSummary.returnTillDate}" pattern="#,###.##" /></td>
-			<td><c:out value="${stockSummary.sellableQuantity} out of ${stockSummary.quantity}"></c:out></td>
+			<td>
+			<fmt:formatNumber value="${stockSummary.sellableQuantity}"  pattern="#,###"/>
+	 		out of
+			<fmt:formatNumber value="${stockSummary.quantity}"  pattern="#,###.##"/>
+			</td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalInvestment}" pattern="#,##,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturn}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
 			<c:set var="sum" value="${sum + stockSummary.totalReturn-stockSummary.totalReturnIfBank}" />
+			<c:set var="totalReturnIfBank" value="${totalReturnIfBank + stockSummary.totalReturnIfBank}" />
+			<c:set var="totalReturn" value="${totalReturn + stockSummary.totalReturn}" />
 			<c:set var="totalInvestment" value="${totalInvestment + stockSummary.totalInvestment}" />
 			<c:set var="averageReturn" value="${averageReturn + stockSummary.returnTillDate*stockSummary.totalInvestment}" />
 		</tr>
 	</c:forEach>
 	<br>
-	Net Diff(Stocks vs Bank): <fmt:formatNumber value="${sum}" pattern="#,###.##" />
+	Net Returns: <fmt:formatNumber value="${averageReturn/totalInvestment}" pattern="#,###.##" />
 	<br/>
 	Net Investment: <fmt:formatNumber value="${totalInvestment}" pattern="#,###.##" />
 	<br/>
-	Net Returns: <fmt:formatNumber value="${averageReturn/totalInvestment}" pattern="#,###.##" />
+	Total Return: <fmt:formatNumber value="${totalReturn}" pattern="#,###.##" />
+	<br/>
+	Total Return(If Bank): <fmt:formatNumber value="${totalReturnIfBank}" pattern="#,###.##" />
+	<br/>
+	Net Diff(Stocks vs Bank): <fmt:formatNumber value="${sum}" pattern="#,###.##" />
 	<br/>
 </table>
   
@@ -133,7 +143,7 @@
 			<td><c:out value="${stock.stockName}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.returnTillDate}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${(stock.sellPrice- stock.bankSellPrice) * stock.quantity}" pattern="#,###.##" /></td>
-			<td><c:out value="${stock.quantity}"></c:out></td>
+			<td><fmt:formatNumber value="${stock.quantity}" pattern="#,###.##" /></td>
 			<td><c:out value="${stock.buyDate}"></c:out></td>
 			<td><c:out value="${stock.buyPrice}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.buyPrice * stock.quantity}" pattern="#,###.##" /></td>
@@ -148,3 +158,4 @@
 		</tr>
 	</c:forEach>
 </table>
+

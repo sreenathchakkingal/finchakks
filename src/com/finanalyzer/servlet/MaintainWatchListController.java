@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.finanalyzer.domain.NDaysPrice;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.processors.MaintainProcessor;
 import com.finanalyzer.processors.MaintainWatchListProcessor;
 import com.finanalyzer.processors.Processor;
 import com.finanalyzer.processors.YahooNDaysPricesProcessor;
@@ -22,7 +24,7 @@ import com.gs.collections.impl.list.mutable.FastList;
 @Controller
 public class MaintainWatchListController
 {
-	@RequestMapping("/maintainWatchList")
+	@RequestMapping("/maintainWatchList1")
 	public ModelAndView maintainWatchList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		String stockId = request.getParameter("stockIdToBeAdded");
@@ -34,7 +36,9 @@ public class MaintainWatchListController
 		{
 			stockIds =isAddRequest ? FastList.newListWith(stockId) : Arrays.asList(stockIdsToBeRemoved);	
 		}
-		Processor<List<String>> maintainWatchListProcessor = new MaintainWatchListProcessor(stockIds,isWriteRequest, isAddRequest);
+		
+		MaintainProcessor maintainWatchListProcessor = new MaintainWatchListProcessor
+				(stockIds,isWriteRequest, isAddRequest, AllScripsDbObject.IS_WATCHLISTED);
 		List<String> stocks = maintainWatchListProcessor.execute();
 		
 		return new ModelAndView("maintainWatchList","stocks",stocks );

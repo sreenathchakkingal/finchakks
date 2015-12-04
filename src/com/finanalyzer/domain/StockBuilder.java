@@ -60,7 +60,7 @@ public class StockBuilder
     return this;
   }
   
-  public StockBuilder quantity(int quantity)
+  public StockBuilder quantity(float quantity)
   {
     this.stock.setQuantity(quantity);
     return this;
@@ -114,7 +114,7 @@ public class StockBuilder
     return this;
   }
   
-  public StockBuilder sellableQuantity(int sellableQuantity)
+  public StockBuilder sellableQuantity(float sellableQuantity)
   {
     this.stock.setSellableQuantity(sellableQuantity);
     return this;

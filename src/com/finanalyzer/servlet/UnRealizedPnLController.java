@@ -48,7 +48,7 @@ public class UnRealizedPnLController extends PnlController
 
 			FastList<Stock> stocks = processor.execute();
 
-			PartitionMutableList<Stock> stocksPartitioned = stocks.partition(UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER_NON_BONUS);
+			PartitionMutableList<Stock> stocksPartitioned = stocks.partition(UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER_OR_BONUS);
 
 			List<Stock> requestedStockDetail = processor.getRequestedStockStatusInfo(stocksPartitioned.getSelected());
 

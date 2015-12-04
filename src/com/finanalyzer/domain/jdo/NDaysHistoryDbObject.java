@@ -16,6 +16,9 @@ public class NDaysHistoryDbObject {
 	private String investmentPercent;
 	
 	@Persistent
+	private String industryInvestment;
+	
+	@Persistent
 	private String decreaseSMV;
 	
 	@Persistent
@@ -23,6 +26,5 @@ public class NDaysHistoryDbObject {
 	
 	@Persistent
 	private String latestClosePrice;
-
 }
 

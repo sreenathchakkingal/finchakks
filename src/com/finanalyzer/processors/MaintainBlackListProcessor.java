@@ -12,10 +12,10 @@ import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
-public class MaintainWatchListProcessor extends MaintainProcessor
+public class MaintainBlackListProcessor extends MaintainProcessor
 {
 
-	public MaintainWatchListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, Predicate predicate) 
+	public MaintainBlackListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, Predicate predicate) 
 	{
 		super(stockIds, isWriteRequest, isAddRequest, predicate);
 	}
@@ -27,11 +27,11 @@ public class MaintainWatchListProcessor extends MaintainProcessor
 		{
 			if(this.isAddRequest)
 			{
-				allScripsDbObject.setWatchListed(true);	
+				allScripsDbObject.setBlackListed(true);	
 			}
 			else
 			{
-				allScripsDbObject.setWatchListed(false);
+				allScripsDbObject.setBlackListed(false);
 			}
 		}
 	}

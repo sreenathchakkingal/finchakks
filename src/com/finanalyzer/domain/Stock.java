@@ -43,8 +43,8 @@ public class Stock
 	private String sellDate;
 	
 	private float sellPriceBank;
-	private int quantity;
-	private int sellableQuantity=-1;
+	private float quantity;
+	private float sellableQuantity=-1;
 	private float totalInvestment;
 	
 	private float totalReturn;
@@ -174,12 +174,12 @@ public class Stock
 		this.buyPrice = buyPrice;
 	}
 
-	public int getQuantity()
+	public float getQuantity()
 	{
 		return this.quantity;
 	}
 
-	public void setQuantity(int quantity)
+	public void setQuantity(float quantity)
 	{
 		this.quantity = quantity;
 	}
@@ -402,7 +402,7 @@ public class Stock
 		return this.stockName==null ? 13 : this.stockName.hashCode();
 	}
 
-	public int getSellableQuantity()
+	public float getSellableQuantity()
 	{
 		if(this.sellableQuantity==-1)
 		{
@@ -416,7 +416,7 @@ public class Stock
 		return this.getDifferenceBetweeBuyDateAndSellDate() > DateUtil.NUMBER_OF_DAYS_IN_YEAR;
 	}
 
-	public void setSellableQuantity(int sellableQuantity)
+	public void setSellableQuantity(float sellableQuantity)
 	{
 		this.sellableQuantity = sellableQuantity;
 	}
@@ -493,7 +493,7 @@ public class Stock
 		{
 			netGain=netGain+eachDayGain;	
 		}
-		return netGain;
+		return netGain/100.0f;
 
 	}
 

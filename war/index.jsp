@@ -47,11 +47,23 @@
 </table>
 
 <p></p>
-<form action="maintainWatchList.do" method="get" target="_blank">
+<form action="maintainList.do" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 
 		<tr>
+			<input type="hidden" name="action" value="watchList" />
 			<td><input type="submit" value="Maintain Watch list"></td>
+		</tr>
+	</table>
+</form>
+<p></p>
+
+<form action="maintainList.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+
+		<tr>
+			<input type="hidden" name="action" value="blackList" />
+			<td><input type="submit" value="Maintain Black list"></td>
 		</tr>
 	</table>
 </form>
@@ -100,14 +112,32 @@
 <br/>
 <hr> Testing Zone</hr>
 
-<a href="hello.html">click</a>  
-
-<form action="test" method="get" target="_blank">
+<form action="count.do" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" value="Test"></td>
+			<td><input type="submit" value="count .do Submit"></td>
 		</tr>
-	
 	</table>
 </form>
+
+
+<form action="addCount.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+					<td>Num</td>
+			<td><input type="text" value="5"><br></td>
+			<td><input type="submit" value="add .do Submit"></td>
+		</tr>
+	</table>
+</form>
+
+
+<form action="addCount.do" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="addCount.do without param"></td>
+		</tr>
+	</table>
+</form>
+
 

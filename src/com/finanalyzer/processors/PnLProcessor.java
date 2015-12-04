@@ -83,14 +83,14 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 				{
 					if(stockAtIndex.getBuyPrice()==0.0f)
 					{
-						int sumOfQuantityTillIndex =0;
+						float sumOfQuantityTillIndex =0;
 						for(int j=0; j<i;j++)
 						{
 							if (newList.get(j).getBuyPrice() != 0.0) {
 								sumOfQuantityTillIndex = sumOfQuantityTillIndex+ newList.get(j).getQuantity();
 							}
 						}
-						float ratio=stockAtIndex.getQuantity()/sumOfQuantityTillIndex;
+						float ratio=(float) stockAtIndex.getQuantity()/sumOfQuantityTillIndex;
 						
 						//increment by the ratio of bonus till i
 						for(int j=0; j<i;j++)
@@ -98,8 +98,8 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 							if(newList.get(j).getBuyPrice()!=0.0)
 							{
 								
-								final int oldQuantity = newList.get(j).getQuantity();
-								final int newQuantity = (int)(oldQuantity+oldQuantity*ratio);
+								final float oldQuantity = newList.get(j).getQuantity();
+								final float newQuantity = oldQuantity+oldQuantity*ratio;
 								newList.get(j).setQuantity(newQuantity);
 								
 								newList.get(j).setBuyPrice(newList.get(j).getBuyPrice()/(newQuantity/oldQuantity));

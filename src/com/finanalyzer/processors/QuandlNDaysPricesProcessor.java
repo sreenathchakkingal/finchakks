@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.datanucleus.util.StringUtils;
+
 import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.StockRatingsDb;
@@ -35,6 +37,7 @@ import com.gs.collections.impl.utility.Iterate;
 
 public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 {
+	private static final int DEFAULT_NUMBER_OF_DAYS = 6;
 	protected InputStream stocksInputStream;
 	protected final int numOfDays;
 	private int simpleMovingAverage;
@@ -109,7 +112,7 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 
 	public QuandlNDaysPricesProcessor(String numOfDays, String simpleMovingAverage)
 	{
-		this.numOfDays = Integer.valueOf(numOfDays);
+		this.numOfDays = StringUtils.isEmpty(numOfDays)? DEFAULT_NUMBER_OF_DAYS : Integer.valueOf(numOfDays);
 		this.simpleMovingAverage = Integer.valueOf(simpleMovingAverage);
 	}
 

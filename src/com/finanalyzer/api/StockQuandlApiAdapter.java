@@ -13,10 +13,15 @@ import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.function.Function;
+import com.gs.collections.api.block.procedure.Procedure;
+import com.gs.collections.api.block.procedure.Procedure2;
+import com.gs.collections.api.collection.MutableCollection;
+import com.gs.collections.api.multimap.MutableMultimap;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 import com.gs.collections.impl.tuple.Tuples;
+import com.gs.collections.impl.utility.Iterate;
 
 public class StockQuandlApiAdapter
 {
@@ -171,22 +176,44 @@ public class StockQuandlApiAdapter
 			stampNDaysClosePrices(stocks, 5);
 	}
 	
-	public static void stampNDaysClosePrices(List<Stock> stocks, int numOfDays)
+	public static void stampNDaysClosePrices(List<Stock> stocks, final int numOfDays)
 	{
-		for (Stock eachStock: stocks)
-		{
-			try
-			{
-				stampNDaysClosePrices(eachStock, numOfDays);	
+		final MutableMultimap<String, Stock> stocksGroupedByName = Iterate.groupBy(stocks, Stock.STOCKNAME_SELECTOR);
+		
+		stocksGroupedByName.forEachKey(new Procedure<String>() {
+
+			@Override
+			public void value(String stockName) {
+				final MutableCollection<Stock> stocksWithSameName = stocksGroupedByName.get(stockName);
+				try
+				{
+					stampNDaysClosePrices(stocksWithSameName, numOfDays);	
+				}
+				catch(Throwable t)
+				{
+					for (Stock eachStock : stocksWithSameName)
+					{
+						LOG.warning("setIsException "+eachStock.getStockName());
+						eachStock.setIsException();
+					}
+				}
 			}
-			catch(Throwable t){
-				LOG.warning("setIsException "+eachStock.getStockName());
-				eachStock.setIsException();
-			}
-		}
+		});
 		
 	}
 
+	private static void stampNDaysClosePrices(MutableCollection<Stock>  stocks, int numOfDays)
+	{
+		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stocks.getFirst().getStockExchangeStocknameMap().get(StockExchange.BSE), numOfDays, StockExchange.BSE); 
+		List<DateValueObject> dateValueObjects = transposeSingleQDataSet(qDataSet);
+		for (Stock stock : stocks)
+		{
+			stock.setDateToClosePrice(dateValueObjects);	
+		}
+		
+	}
+	
+	//remove after few days
 	private static void stampNDaysClosePrices(Stock stock, int numOfDays)
 	{
 //		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stock.getStockName(), numOfDays, stock.getStockExchange()); chakks

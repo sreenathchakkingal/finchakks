@@ -37,15 +37,14 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 	private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("##.##");
 	private final String stockName;
 	private FileItemIterator fileItemIterator;
-	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER_NON_BONUS = new Predicate<Stock>()
+	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER_OR_BONUS = new Predicate<Stock>()
 			{
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public boolean accept(Stock stock)
 		{
-			final boolean maturityGreaterThanQuarter = stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH;
-			return maturityGreaterThanQuarter && stock.getBuyPrice()>=0.1; 
+			return stock.getBuyPrice()<0.1|| stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH; 
 		}
 			};
 
@@ -139,74 +138,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		return handleBonusScneario;
 	}
 			
-//			@Override chakks
-//			public FastList<Stock> execute()
-//			{
-//				UnRealizedUtil unRealizedUtil = new UnRealizedUtil();
-//
-//				List<String> rowsWithoutHeaderAndTrailer =ReaderUtil.convertToList(this.fileItemIterator, true, true);
-//				if(!rowsWithoutHeaderAndTrailer.isEmpty())
-//				{
-//					unRealizedUtil = new UnRealizedUtil();
-//					unRealizedUtil.removeAllEntities();
-//					unRealizedUtil.insertData(rowsWithoutHeaderAndTrailer);
-//				}
-//				FastList<Stock> stocks = (FastList<Stock>) unRealizedUtil.retrieveAllRecords();
-//				AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
-//				allScripsUtil.convertNseIdToBse(stocks);
-//
-//				StockQuandlApiAdapter.stampLatestClosePriceAndDate(stocks);
-//				allScripsUtil.convertBseIdToNse(stocks);
-//				stocks.sortThis(NAME_QTY_DATE_COMPARATOR);
-//				return stocks;
-//			}
-
-			//	public FastList<Stock> execute()
-			//	{
-			//		List<String> rows = ReaderUtil.converInputReaderToList(this.statusInputStream);
-			//		FastList<Stock> stocks = FastList.newList();
-			//		for (String row : rows)
-			//		{
-			//			Stock stock = convertRowToStockObject(row);
-			//			if (stock != null)
-			//			{
-			//				stocks.add(stock);
-			//			}
-			//		}
-			//		for (Stock stock : stocks)
-			//		{
-			//			try
-			//			{
-			//				if("Net".equals(this.source))
-			//				{
-			//					IdConverterUtil.stampYahooId(stocks, this.idMappingInputStream);
-			//					stampSellDateAndLatestClosePrice(stock);
-			//				}
-			//
-			//			} catch (Throwable e)
-			//			{
-			//				e.printStackTrace();
-			//			}
-			//		}
-			//		
-			//		return stocks;
-			//	}
-
-			//	private String stampSellDateAndLatestClosePrice(Stock stock)
-			//	{
-			//		List<String> historicPrices = UrlUtil.getHistoricPricesFromYahoo(DateUtil.NUMBER_OF_DAYS_IN_MONTH, stock.getStockName());
-			//		NDaysPrice latestDayPrice = getLatestClosePrice(historicPrices, stock.getStockName());
-			//		String sellDate = null;
-			//		double latestClosePrice = 0.0D;
-			//		for (Map.Entry<String, String> entry : latestDayPrice.getDateToCloseValue().entrySet())
-			//		{
-			//			sellDate = (String) entry.getKey();
-			//			latestClosePrice = Double.valueOf((String) entry.getValue()).doubleValue();
-			//		}
-			//		stock.setSellDate(sellDate);
-			//		stock.setSellPrice(latestClosePrice);
-			//		return sellDate;
-			//	}
 
 			public JsonObject getStockInvestmentChart(Collection<Stock> stocksSummary)
 			{
@@ -215,7 +146,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				float totalReturns = 0.0f;
 				float totalInvestment = 0.0f;
 
-				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER_NON_BONUS);
+				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER_OR_BONUS);
 
 				for (Stock stock : stocksWithMaturityMoreThanAQuarter)
 				{
@@ -318,5 +249,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						build();
 				return stock;
 			}
+			
 }
 

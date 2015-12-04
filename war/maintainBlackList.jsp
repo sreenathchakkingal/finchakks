@@ -7,7 +7,7 @@
 			<td><input type="text" name="stockIdToBeAdded" id="stockName"><br></td>
 		</tr>
 		<tr>
-		<input type="hidden" name="action" value="watchList" />
+		<input type="hidden" name="action" value="blackList" />
 		<td><input type="submit" value="Delete/Add"/></td>
 		</tr>
 	</table>
