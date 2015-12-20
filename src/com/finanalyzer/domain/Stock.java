@@ -6,12 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-
-import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
 import com.gs.collections.api.block.function.Function;
@@ -20,7 +15,6 @@ import com.gs.collections.impl.map.mutable.UnifiedMap;
 
 public class Stock
 {
-
 	private String stockName;
 	
 	private List<DateValueObject> dividends;
@@ -34,6 +28,7 @@ public class Stock
 	private Map<String, Float> nDaysGains;
 	
 	private float sellPrice;
+	private String duration;
 	
 	private int ups;
 	private int downs;
@@ -66,6 +61,8 @@ public class Stock
 	public Map<StockExchange, String> stockExchangeStocknameMap = UnifiedMap.newMap();
 	private String industry;
 	private Float industryInvestmentRatio;
+
+	private boolean isBlackListed;
 
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
@@ -134,7 +131,7 @@ public class Stock
 		{
 			String dateFrom = this.dividends.get(this.dividends.size() - 1).getDate();
 			String dateTo = this.dividends.get(0).getDate();
-			int numberOfDays = DateUtil.differenceBetweenTwoDates(dateTo, dateFrom);
+			int numberOfDays = DateUtil.differenceBetweenDates(dateTo, dateFrom);
 			return numberOfDays / DateUtil.NUMBER_OF_DAYS_IN_MONTH / this.dividends.size();
 		}
 		return 0;
@@ -423,7 +420,7 @@ public class Stock
 
 	public int getDifferenceBetweeBuyDateAndSellDate()
 	{
-		return this.getSellDate() == null ? 0 : DateUtil.differenceBetweenTwoDates(this.getSellDate(), this.getBuyDate());
+		return this.getSellDate() == null ? 0 : DateUtil.differenceBetweenDates(this.getSellDate(), this.getBuyDate());
 	}
 
 	public boolean isReturnTillDateMoreThanExpected(float expected)
@@ -662,7 +659,19 @@ public class Stock
 	}
 	
 	public Float getIndustryInvestmentRatio() {
-		return industryInvestmentRatio;
+		return industryInvestmentRatio==null ? 0f : industryInvestmentRatio ;
+	}
+	
+	public boolean isBlackListed() {
+		return isBlackListed;
+	}
+	public void setBlackListed(boolean isBlackListed) {
+		this.isBlackListed = isBlackListed;
+	}
+	
+//	dummy method - because ndayhistorydbobject has this.
+	public String getDuration() {
+		return "";
 	}
 	
 	@Override

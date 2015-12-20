@@ -1,5 +1,6 @@
 package com.finanalyzer.processors;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -10,6 +11,7 @@ import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.utility.Iterate;
 
 public abstract class MaintainProcessor implements Processor<List<String>>
 {
@@ -17,14 +19,16 @@ public abstract class MaintainProcessor implements Processor<List<String>>
 	public final  boolean isAddRequest;
 	public final boolean isWriteRequest;
 	public final List<String> stocksIds;
-	public final Predicate predicate;
+	public final String predicateField;
+	public final String predicateValue;
 	
-	public MaintainProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, Predicate predicate) 
+	public MaintainProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, String predicateField, String predicateValue) 
 	{
 		this.stocksIds=stockIds;
 		this.isWriteRequest = isWriteRequest;
 		this.isAddRequest = isAddRequest;
-		this.predicate = predicate;
+		this.predicateField = predicateField;
+		this.predicateValue= predicateValue;
 	}
 
 	@Override
@@ -51,10 +55,12 @@ public abstract class MaintainProcessor implements Processor<List<String>>
 
 	private List<String> retreiveAllMatchingRecords() {
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
-		final FastList<AllScripsDbObject> entries = FastList.newList(dbOperations.getEntries(AllScripsDbObject.NSE_ID));
-		return entries.collectIf(this.predicate, AllScripsDbObject.STOCK_NAME_COLLECTOR);
+		final List<AllScripsDbObject> persistedBlackListedEntries = dbOperations.getEntries("isBlackListed", "true");
+		return (List<String>) Iterate.collect(persistedBlackListedEntries, AllScripsDbObject.NSE_STOCK_NAME_COLLECTOR);
+//		return entries.collectIf(this.predicate, AllScripsDbObject.STOCK_NAME_COLLECTOR);
 	}
 
 	public abstract void  updateEntry(List<AllScripsDbObject> matchingEntries);
 	
 }
+

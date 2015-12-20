@@ -30,8 +30,6 @@ public class MaintainController
 	@RequestMapping("/maintainList")
 	public ModelAndView maintainWatchList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-//	public ModelAndView maintainWatchList(@RequestParam String stockIdToBeAdded, @RequestParam String[] stockIdsToBeRemoved,
-//			@RequestParam(value = "actionName", required = false) String actionName ) {
 		
 		String stockIdToBeAdded = request.getParameter("stockIdToBeAdded");
 		String[] stockIdsToBeRemoved = request.getParameterValues("stockIdsToBeRemoved");
@@ -49,13 +47,13 @@ public class MaintainController
 		if("watchList".equals(actionName))
 		{
 			maintainProcessor = new MaintainWatchListProcessor
-					(stockIds,isWriteRequest, isAddRequest, AllScripsDbObject.IS_WATCHLISTED);
+					(stockIds,isWriteRequest, isAddRequest, "isWatchListed", "true");
 			viewName="maintainWatchList";
 		}
 		else
 		{
 			maintainProcessor = new MaintainBlackListProcessor
-					(stockIds,isWriteRequest, isAddRequest, AllScripsDbObject.IS_BLACKLISTED);	
+					(stockIds,isWriteRequest, isAddRequest, "isBlackListed", "true");	
 			viewName="maintainBlackList";
 		}
 		List<String> stocks = maintainProcessor.execute();

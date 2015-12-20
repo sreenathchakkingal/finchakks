@@ -1,6 +1,6 @@
 package com.finanalyzer.servlet;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,42 +9,40 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-import com.finanalyzer.domain.Stock;
-import com.finanalyzer.processors.UnRealizedPnLProcessor;
-import com.finanalyzer.util.DateUtil;
-import com.gs.collections.api.block.predicate.Predicate;
+import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.gs.collections.api.block.procedure.Procedure;
+import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.parallel.ParallelIterate;
 import com.gs.collections.impl.utility.Iterate;
+import com.gs.collections.impl.utility.ListIterate;
 
-public class InitalizeController implements Controller{
-	
+public class InitalizeController implements Controller {
+
 	@Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse res) throws Exception {
-if(false)
-{
-	PnlController controller = new PnlController();
-	if(controller.isAuthorizedUser(request))
-	{
-		UnRealizedPnLProcessor unRealizedPnLProcessor = new UnRealizedPnLProcessor(null, null);
-		final List<Stock> unrealizedCalculatedStocks = unRealizedPnLProcessor.execute();
+	public ModelAndView handleRequest(HttpServletRequest request,
+			HttpServletResponse res) throws Exception {
 		
-		final Collection<Stock> lowReturnStocks = Iterate.select(unrealizedCalculatedStocks, new Predicate<Stock>() {
+		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries();
+		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
+		
+		JdoDbOperations<NDaysHistoryDbObject>  nDaysHistoryDbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
+		final List<NDaysHistoryDbObject> ndaysHistoryDbObjects =nDaysHistoryDbOperations.getEntries();
+		Collections.sort(ndaysHistoryDbObjects, NDaysHistoryDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
+		
+		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
+		final List<UnrealizedDetailDbObject> unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName asc, buyDate desc");
 
-			@Override
-			public boolean accept(Stock stock) {
-				final int differenceBetweenTwoDates = DateUtil.differenceBetweenTwoDates(DateUtil.getCurrentDay(), stock.getBuyDate());
-				return stock.getReturnTillDate()<10.0f && differenceBetweenTwoDates>90;
-			}
-		});
+		ModelAndView modelAndView = new ModelAndView("index");
+		modelAndView.addObject("stocks", ndaysHistoryDbObjects);
+		modelAndView.addObject("stocksSummary", blackListedStocks);
+		modelAndView.addObject("stocksDetail", unrealizedDetailObjects);
 		
-		return new ModelAndView("index", "stocks", lowReturnStocks);  	
-	}
-		
-	return controller.handleUnAuthUser(request);
-	
-}
-		return new ModelAndView("index");  	
+		return modelAndView;
 
 	}
-
 }

@@ -9,9 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.processors.Processor;
 import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
+import com.finanalyzer.util.Adapter;
 
 @Controller  
 public class NDaysHistoryController {
@@ -20,12 +23,20 @@ public class NDaysHistoryController {
     public ModelAndView nDaysHistory(HttpServletRequest request,HttpServletResponse res) {  
 		String numOfDays = request.getParameter("numOfDays");
 		String simpleMovingAverage = request.getParameter("simpleMovingAverage");
-
+		
 		Processor<List<Stock>> processor = new QuandlNDaysPricesProcessor(numOfDays, simpleMovingAverage);
 		List<Stock> stocks = processor.execute();
 		
-//		request.setAttribute("stocks", stocks);
+		persistResult(stocks);
 		
-        return new ModelAndView("nDaysHistory", "stocks", stocks);  
-    }  
+		return new ModelAndView("nDaysHistory", "stocks", stocks);  
+    }
+
+	private void persistResult(List<Stock> stocks) 
+	{
+		List<NDaysHistoryDbObject> ndaysHistoryDbObjects = Adapter.stockToNdaysHistoryDbObject(stocks);
+		JdoDbOperations<NDaysHistoryDbObject>  dbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
+		dbOperations.deleteEntries();
+		dbOperations.insertEntries(ndaysHistoryDbObjects);
+	}  
 }

@@ -2,6 +2,7 @@ package com.finanalyzer.processors;
 
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -122,15 +123,17 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 		return result;  
 	}
 	
-	public FastList<Stock> fetchStockSummaryStatus(FastList<Stock> stockLines)
+	public List<Stock> fetchStockSummaryStatus(List<Stock> stockLines)
 	{
 		UnifiedMap<String, Stock> map = UnifiedMap.newMap();
 
 		aggregateStocks(map, stockLines);
 		
-		FastList<Stock> stockSummary =FastList.newList(map.values());
+		final List<Stock> stockSummary = FastList.newList(map.values());
 
-		return stockSummary.sortThis(STOCK_NAME_COMPARATOR);
+		Collections.sort(stockSummary, STOCK_NAME_COMPARATOR);
+		return stockSummary;
+		
 	}
 
 	private void aggregateStocks(UnifiedMap<String, Stock> map, final List<Stock> stockLines) {
@@ -153,7 +156,7 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 						returnTillDate(avgInterestReturn).
 						quantity(existingStock.getQuantity() + stock.getQuantity()).
 						sellableQuantity(existingStock.getSellableQuantity() + stock.getSellableQuantity()).
-						sellDate(stock.getSellDate()).buyDate(stock.getBuyDate()).
+						sellDate(stock.getSellDate()).buyDate(stock.getBuyDate()).blackListed(stock.isBlackListed()).
 						build();
 
 				map.put(stock.getStockName(), stockTemp);

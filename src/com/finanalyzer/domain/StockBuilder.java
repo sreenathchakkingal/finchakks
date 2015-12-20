@@ -126,6 +126,11 @@ public class StockBuilder
     return this;
   }
   
+  public StockBuilder blackListed(boolean isBlackListed)
+  {
+    this.stock.setBlackListed(isBlackListed);
+    return this;
+  }
   
   public Stock build()
   {

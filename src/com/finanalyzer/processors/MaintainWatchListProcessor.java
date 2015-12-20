@@ -15,9 +15,9 @@ import com.gs.collections.impl.list.mutable.FastList;
 public class MaintainWatchListProcessor extends MaintainProcessor
 {
 
-	public MaintainWatchListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, Predicate predicate) 
+	public MaintainWatchListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, String predicateField, String predicateValue) 
 	{
-		super(stockIds, isWriteRequest, isAddRequest, predicate);
+		super(stockIds, isWriteRequest, isAddRequest,  predicateField, predicateValue);
 	}
 
 	@Override	

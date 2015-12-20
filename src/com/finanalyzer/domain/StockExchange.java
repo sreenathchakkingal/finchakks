@@ -2,7 +2,7 @@ package com.finanalyzer.domain;
 
 public enum StockExchange
 {
-	BSE("BSE.BOM", 4, "BSE/BOM"), NSE("NSE.", 5, "NSE/");
+	BSE("BSE.BOM", 4, "BSE/BOM"), NSE("NSE.", 5, "NSE/"), MONEY_CONTROL(null, 0, null);
 
 	private String quandlMultisetPrefix;
 	private int quandlClosePriceColumnPosition;

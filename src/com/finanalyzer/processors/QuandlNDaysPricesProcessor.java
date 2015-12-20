@@ -1,43 +1,31 @@
 package com.finanalyzer.processors;
 
 import java.io.InputStream;
-import java.text.NumberFormat;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 import org.datanucleus.util.StringUtils;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
-import com.finanalyzer.db.AllScripsUtil;
-import com.finanalyzer.db.StockRatingsDb;
-import com.finanalyzer.db.WatchListUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.domain.NDaysPrice;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
-import com.finanalyzer.util.CalculatorUtil;
-import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.function.Function0;
 import com.gs.collections.api.block.function.Function2;
 import com.gs.collections.api.block.function.primitive.FloatFunction;
-import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.map.MutableMap;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.utility.Iterate;
 
 public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 {
 	private static final int DEFAULT_NUMBER_OF_DAYS = 6;
+	private static final int DEFAULT_SMV_DAYS =50;
 	protected InputStream stocksInputStream;
 	protected final int numOfDays;
 	private int simpleMovingAverage;
@@ -113,7 +101,7 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 	public QuandlNDaysPricesProcessor(String numOfDays, String simpleMovingAverage)
 	{
 		this.numOfDays = StringUtils.isEmpty(numOfDays)? DEFAULT_NUMBER_OF_DAYS : Integer.valueOf(numOfDays);
-		this.simpleMovingAverage = Integer.valueOf(simpleMovingAverage);
+		this.simpleMovingAverage = StringUtils.isEmpty(simpleMovingAverage)? DEFAULT_SMV_DAYS : Integer.valueOf(simpleMovingAverage);
 	}
 
 	@Override
@@ -122,7 +110,7 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
 		JdoDbOperations<UnrealizedDbObject> unrealizedDbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 		final FastList<AllScripsDbObject> allScrips = FastList.newList(dbOperations.getEntries());
-		final List<AllScripsDbObject> watchListedScrips = allScrips.select(AllScripsDbObject.IS_WATCHLISTED);
+		final List<AllScripsDbObject> watchListedScrips = allScrips.select(AllScripsDbObject.IS_WATCHLISTED);//remove sublist after testing
 		final List<AllScripsDbObject> allScripsWithValidMoneyControlName = allScrips.select(AllScripsDbObject.MONEYCONTROL_NAME_EXISTS);
 		
 		FastList<Stock> stocks = FastList.newList();
@@ -150,13 +138,16 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 
 		for (AllScripsDbObject allScripsDbObject : watchListedScrips)
 		{
+			final String moneycontrolName = allScripsDbObject.getMoneycontrolName();
+			
 			final Stock stock = new Stock(allScripsDbObject.getNseId(), StockExchange.NSE);
 			stock.addNames( StockExchange.BSE, allScripsDbObject.getBseId());
+			stock.addNames(StockExchange.MONEY_CONTROL, moneycontrolName);
 			stock.setIndustry(allScripsDbObject.getIndustry());
 			stock.setNumOfDays(this.numOfDays);
 			stock.setStockRatingValue(new StockRatingValue(allScripsDbObject.getRatingNameToValue()));
 			
-			final String moneycontrolName = allScripsDbObject.getMoneycontrolName();
+			
 			
 			if(investmentAggregatedByStockname.get(moneycontrolName)!=null)
 			{
@@ -188,25 +179,4 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 		return stocks;
 	}
 	
-//	@Override
-//	public List<Stock> execute()
-//	{
-//		WatchListUtil watchListUtil = new WatchListUtil();
-//		FastList<Stock> stocks = watchListUtil.retrieveWatchListAsStocks(StockExchange.BSE);
-////		FastList<Stock> stocks = FastList.newListWith(
-////				new Stock("500331", StockExchange.BSE), new Stock("500790", StockExchange.BSE), new Stock("517354", StockExchange.BSE));
-//		 
-//		for (Stock stock : stocks)
-//		{
-//			stock.setNumOfDays(this.numOfDays);
-//		}
-//		
-//		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, this.simpleMovingAverage);
-//		AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
-//		allScripsUtil.convertBseIdToNse(stocks);
-//		StockRatingsDb stockRatingsDb = new StockRatingsDb();
-//		stockRatingsDb.stampStockRatingValue(stocks);
-//		Collections.sort(stocks, SIMPLE_AVG_NET_GAINS_COMPARATOR);
-//		return stocks;
-//	}
 }

@@ -1,5 +1,6 @@
 package com.finanalyzer.db.jdo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,6 @@ import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.StockRatingsDb;
-import com.finanalyzer.db.WatchListUtil;
 import com.finanalyzer.domain.MappingStockId;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
@@ -38,10 +38,6 @@ public class JdoDbOperations<T> {
 		this.dbObjectClass=dbObjectClass;
 	}
 	
-	public JdoDbOperations() {
-		
-	}
-
 	public List<T> getEntries()
 	{
 		return this.getEntries(null);
@@ -53,6 +49,7 @@ public class JdoDbOperations<T> {
 		try
 		{
 			Query q = pm.newQuery(this.dbObjectClass);
+			
 			if(sortBy!=null)
 			{
 				q.setOrdering(sortBy);	
@@ -117,6 +114,18 @@ public class JdoDbOperations<T> {
 		try
 		{
 			return pm.makePersistent(dbObject);
+		}
+		finally
+		{
+			pm.close();
+		}
+	}
+	
+	public Collection<T> insertEntries (List<T> dbObjects) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try
+		{
+			return pm.makePersistentAll(dbObjects);
 		}
 		finally
 		{
@@ -230,31 +239,6 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public boolean populateWatchList()
-	{
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try
-		{
-			WatchListUtil listUtil = new WatchListUtil();
-			
-			FastList<Entity> entities = FastList.newList(listUtil.freshRetrieveAllEntities());
-			final List<String> existingWatchListEntries = entities.collect(AllScripsDbObject.NSE_ID_COLLECTOR);
-			
-			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
-			List<AllScripsDbObject> matchingEntries = (List<AllScripsDbObject>)q.execute(existingWatchListEntries);
-			
-			for (AllScripsDbObject allScripsDbObject : matchingEntries)
-			{
-				allScripsDbObject.setWatchListed(true);
-			}
-			return true;
-		}
-		finally
-		{
-			pm.close();
-		}
-	}
-	
 	public boolean populateRatings()
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -325,8 +309,5 @@ public class JdoDbOperations<T> {
 		}
 		
 	}
-	
-	
-	
 	
 }

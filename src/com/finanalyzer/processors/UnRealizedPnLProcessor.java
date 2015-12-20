@@ -1,5 +1,6 @@
 package com.finanalyzer.processors;
 
+import java.io.Reader;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Comparator;
@@ -19,6 +20,9 @@ import com.finanalyzer.domain.StockBuilder;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.util.Adapter;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
@@ -29,6 +33,7 @@ import com.gs.collections.api.list.MutableList;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.utility.Iterate;
 
 public class UnRealizedPnLProcessor extends PnLProcessor 
 {
@@ -83,8 +88,8 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 
 		List<String> rowsWithoutHeaderAndTrailer = ReaderUtil.convertToList(this.fileItemIterator, true, true);
-
-		if (!rowsWithoutHeaderAndTrailer.isEmpty()) 
+		
+		if ( isSanityChecksPassed(rowsWithoutHeaderAndTrailer)) 
 		{
 			unrealizeddbOperations.deleteEntries();
 			unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
@@ -114,9 +119,11 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME,moneycontrolName);
 
 				if (!scrips.isEmpty()) {
-					if (StringUtil.isValidValue(scrips.get(0).getBseId())) 
+					final AllScripsDbObject aScrip = scrips.get(0);
+					if (StringUtil.isValidValue(aScrip.getBseId())) 
 					{
-						stock.addNames(StockExchange.BSE, scrips.get(0).getBseId());
+						stock.addNames(StockExchange.BSE, aScrip.getBseId());
+						stock.setBlackListed(aScrip.isBlackListed());
 					}
 				} 
 				else 
@@ -138,6 +145,13 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		return handleBonusScneario;
 	}
 			
+
+	private boolean isSanityChecksPassed(List<String> rowsWithoutHeaderAndTrailer) {
+		boolean isNotEmpty= rowsWithoutHeaderAndTrailer.isEmpty();
+         boolean hasCommas= rowsWithoutHeaderAndTrailer.contains(",");
+		return isNotEmpty && hasCommas;
+	}
+
 
 			public JsonObject getStockInvestmentChart(Collection<Stock> stocksSummary)
 			{
@@ -171,13 +185,14 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			}
 
 			@SuppressWarnings("serial")
-			public List<Stock> getRequestedStockStatusInfo(MutableList<Stock> stocksSummary)
+			public List<Stock> getRequestedStockStatusInfo(List<Stock> stocksSummary)
 			{
 				if (this.stockName==null || "".equals(this.stockName))
 				{
 					return stocksSummary;
 				}
-				return stocksSummary.selectWith(new Predicate2<Stock, String>()
+				
+				final List<Stock> requestedStockSummary =(List<Stock>) Iterate.selectWith(stocksSummary, new Predicate2<Stock, String>()
 						{
 					@Override
 					public boolean accept(Stock stock, String interestedStock)
@@ -185,6 +200,10 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						return interestedStock.equalsIgnoreCase(stock.getStockName());
 					}
 						}, this.stockName);
+				
+				return requestedStockSummary;
+				
+				
 			}
 
 			public JsonObject getRequestedStockInvestmentChart(JsonObject stockInvestmentChart)
@@ -215,40 +234,19 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				return new NDaysPrice(stock, dateToCloseValue);
 			}
 
-			private Stock convertRowToStockObject(String row)
+
+			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary) 
 			{
-				Stock stock = null;
-				String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(",");
-				String name = ReaderUtil.parseStockName(stockAttributes[0]);
-				StockIdConverstionUtil stockIdConverstionUtil = new StockIdConverstionUtil();
-				String nseId = stockIdConverstionUtil.getNseIdForMoneyControlId(name);
-				int quantityColumnPosition = 5;
-				int quantity =  Integer.valueOf(stockAttributes[quantityColumnPosition]).intValue();
-
-				int invoicePriceColumnPosition =  6;
-				float buyPrice = Float.valueOf(stockAttributes[invoicePriceColumnPosition]);
-
-				int invoiceDateColumnPosition = 7;
-				String invoiceDate=stockAttributes[invoiceDateColumnPosition];
-
-				String buyDate;
-				if(invoiceDate.contains("/"))
-				{
-					buyDate = DateUtil.convertToStandardFormat("d/M/yyyy",invoiceDate);
-				}
-				else
-				{
-					buyDate = DateUtil.convertToStandardFormat("dd-MM-yyyy",invoiceDate);
-				}
-
-				//			double sellPrice = Double.valueOf(stockAttributes[1]).doubleValue();
-				//			String sellDate = DateUtil.getTodaysDate(DateUtil.YYYY_MM_DD_FORMAT);
-
-				stock = new StockBuilder().name(nseId).quantity(quantity).buyPrice(buyPrice).buyDate(buyDate).
-						//					sellDate(sellDate).sellPrice(sellPrice).
-						build();
-				return stock;
+				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
+				JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
+				dbSummaryOperations.deleteEntries();
+				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
+				
+				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = Adapter.stockToUnrealizedDetailDbObject(stocksDetail);
+				JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
+				dbDetailOperations.deleteEntries();
+				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
+				
 			}
-			
 }
 

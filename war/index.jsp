@@ -1,5 +1,36 @@
 <%@include file="core.jsp" %>
 
+<table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
+	<tr>
+		<td>Stock Name</td>
+		<td>Avg Interest Return</td>
+		<td>Sellable Quantity
+		<td>Diff Of Return - Bank</td>
+		<td>Total Investment</td>
+		<td>Total Return</td>
+		<td>Total Return If Bank</td>
+	</tr>
+	
+	<c:forEach items="${stocksSummary}" var="stockSummary">
+			<td><c:out value="${stockSummary.moneycontrolName}"></c:out></td>
+			<td><fmt:formatNumber value="${stockSummary.returnTillDate}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${stockSummary.quantity}"  pattern="#,###.##"/></td>
+			<td><fmt:formatNumber value="${stockSummary.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${stockSummary.totalInvestment}" pattern="#,##,###.##" /></td>
+			<td><fmt:formatNumber value="${stockSummary.totalReturn}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
+		</tr>
+	</c:forEach>
+	
+</table>
+<p></p>
+
+<%@include file="nDaysHistory.jsp" %>
+<p></p>
+
+<%@include file="unRealizedPnLDetails.jsp" %>
+<p></p>
+
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 	<form action="nDaysHistory.do" method="get" target="_blank">
 		<tr>
@@ -32,6 +63,7 @@
 			<td><input type="file" name="file" accept=".csv"></td>
 		</tr>
 		<tr>
+		<input type="hidden" name="triggerFrom" value="manual"/> 
 			<td><input type="submit" value="UnRealized PnL"></td>
 		</tr>
 	</form>
@@ -112,32 +144,11 @@
 <br/>
 <hr> Testing Zone</hr>
 
-<form action="count.do" method="get" target="_blank">
+<form action="combineNDaysHistoryAndUnrealized" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" value="count .do Submit"></td>
+			<td><input type="submit" value="Submit"></td>
 		</tr>
 	</table>
 </form>
-
-
-<form action="addCount.do" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-					<td>Num</td>
-			<td><input type="text" value="5"><br></td>
-			<td><input type="submit" value="add .do Submit"></td>
-		</tr>
-	</table>
-</form>
-
-
-<form action="addCount.do" method="get" target="_blank">
-	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
-		<tr>
-			<td><input type="submit" value="addCount.do without param"></td>
-		</tr>
-	</table>
-</form>
-
 

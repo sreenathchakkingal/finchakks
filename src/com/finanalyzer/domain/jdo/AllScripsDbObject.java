@@ -54,7 +54,7 @@ public class AllScripsDbObject {
 	@Persistent
 	private String isBlackListed;
 
-	public static final Function<AllScripsDbObject, String> STOCK_NAME_COLLECTOR = new Function<AllScripsDbObject, String>() {
+	public static final Function<AllScripsDbObject, String> NSE_STOCK_NAME_COLLECTOR = new Function<AllScripsDbObject, String>() {
 	
 		@Override
 		public String valueOf(AllScripsDbObject allScripsDbObject) {
@@ -62,6 +62,15 @@ public class AllScripsDbObject {
 		}
 	};
 
+
+	public static final Function<AllScripsDbObject, String> MONEY_CONTROL_STOCK_NAME_COLLECTOR = new Function<AllScripsDbObject, String>() {
+	
+		@Override
+		public String valueOf(AllScripsDbObject allScripsDbObject) {
+			return allScripsDbObject.getMoneycontrolName();
+		}
+	};
+	
 	public static final Predicate<AllScripsDbObject> IS_WATCHLISTED = new Predicate<AllScripsDbObject>() {
 	
 		@Override
@@ -71,15 +80,6 @@ public class AllScripsDbObject {
 	};
 
 
-	public static final Predicate<AllScripsDbObject> IS_BLACKLISTED = new Predicate<AllScripsDbObject>() {
-	
-		@Override
-		public boolean accept(AllScripsDbObject allScripsDbObject) {
-			return allScripsDbObject.isBlackListed();
-		}
-	};
-
-	
 	public static final Predicate<AllScripsDbObject> MONEYCONTROL_NAME_EXISTS = new Predicate<AllScripsDbObject>() {
 	
 		@Override

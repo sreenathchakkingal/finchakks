@@ -4,11 +4,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class StockRatingValue  
 {
 
+	private String score;
+	
 	private static final String SCORE = "Score : ";
 	
 	private Map<String, StockRatingValuesEnum> ratingToValue;
@@ -50,6 +55,7 @@ public class StockRatingValue
 	
 	public String getScore()
 	{
-		return getInferences().get(0).substring(SCORE.length());
+		this.score = getInferences().get(0).substring(SCORE.length());
+		return this.score;
 	}
 }
