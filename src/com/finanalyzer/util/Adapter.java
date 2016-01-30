@@ -82,7 +82,7 @@ public class Adapter {
 			.sellPrice(stock.getSellPrice())
 			.bankSellPrice(stock.getBankSellPrice())
 			.quantity(stock.getQuantity())
-			.sellDate(stock.getSellDate())
+			.duration(DateUtil.approxDurationInMonthsAndYears(stock.getBuyDate()))
 			.build();
 			
 			unrealizedSummaryDbObjects.add(unrealizedDetailDbObject);

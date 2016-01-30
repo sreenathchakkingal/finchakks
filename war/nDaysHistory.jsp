@@ -36,7 +36,7 @@
 			<td><fmt:formatNumber value="${stock.returnTillDate}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.buyPrice}" pattern="#,###.##" /></td>
 			<td><c:out value='${stock.duration}' /></td>
-			<td><fmt:formatNumber value="${(stock.sellPrice-stock.simpleMovingAverage)/stock.simpleMovingAverage}" type="percent"  maxIntegerDigits="2" /></td>
+			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized/100}" type="percent"  maxIntegerDigits="2" /></td>
 			<td><fmt:formatNumber value="${stock.netNDaysGain}" type="percent"  maxIntegerDigits="2" /></td> 
 			<td><c:out value='${stock.industry}' /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice}" pattern="##.##" /></td>

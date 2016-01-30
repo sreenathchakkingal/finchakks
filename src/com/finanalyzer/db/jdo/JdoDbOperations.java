@@ -133,7 +133,7 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public void insertUnrealizedDataFromMoneycontrol(List<String> rawDataDFromMoneyControl)
+	public List<UnrealizedDbObject> insertUnrealizedDataFromMoneycontrol(List<String> rawDataDFromMoneyControl)
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
@@ -167,7 +167,7 @@ public class JdoDbOperations<T> {
 				unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
 			}
 			
-			pm.makePersistentAll(unrealizedDbObjects);	
+			return (List<UnrealizedDbObject>) pm.makePersistentAll(unrealizedDbObjects);	
 		}
 		finally
 		{

@@ -15,9 +15,9 @@ public class NDaysHistoryDbObject {
 		@Override
 		public int compare(NDaysHistoryDbObject stock1, NDaysHistoryDbObject stock2)
 		{
-			float totalForStock1 = stock1.getSimpleMovingAverageAndSellDeltaNormalized()  +stock1.getNetNDaysGain() * 100;
-			float totalForStock2 = stock2.getSimpleMovingAverageAndSellDeltaNormalized() + stock2.getNetNDaysGain() * 100;
-			int totalDiff = (int)(totalForStock1-totalForStock2);
+			int totalForStock1 = Math.round(stock1.getSimpleMovingAverageAndSellDeltaNormalized())  + Math.round(stock1.getNetNDaysGain() * 100);
+			int totalForStock2 =Math.round(stock2.getSimpleMovingAverageAndSellDeltaNormalized()) + Math.round(stock2.getNetNDaysGain() * 100);
+			int totalDiff = totalForStock1-totalForStock2;
 			if (totalDiff == 0)
 			{
 				return stock1.getStockName().compareTo(stock2.getStockName());

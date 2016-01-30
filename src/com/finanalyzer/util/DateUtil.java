@@ -32,22 +32,25 @@ public class DateUtil
 		return 0;
 	}
 	
-	public static String approxDurationInMonthsAndYears(String date2)
+	public static String todaysDate()
 	{
-		final int differenceBetweenTwoDates = DateUtil.differenceBetweenDates(YYYY_MM_DD_FORMAT.format(new Date()), date2);
+		return YYYY_MM_DD_FORMAT.format(new Date());
+	}
+	
+	public static String approxDurationInMonthsAndYears(String fromDate)
+	{
+		final int differenceBetweenTwoDates = DateUtil.differenceBetweenDates(YYYY_MM_DD_FORMAT.format(new Date()), fromDate);
 		String result = "";
 		int numberOfYears = differenceBetweenTwoDates/365;
+		
 		if(numberOfYears>0)
 		{
-			result=result+numberOfYears+"Y ";
+			result=numberOfYears+"Y ";
 		}
 		
 		int numberOfMonths = (differenceBetweenTwoDates%365)/30;
-		
-		if(numberOfMonths>0)
-		{
-			result=result+numberOfMonths+"M ";
-		}
+		result=result+numberOfMonths+"M ";
+
 		return result;
 	}
 	

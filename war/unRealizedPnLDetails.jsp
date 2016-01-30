@@ -1,5 +1,3 @@
-<%@include file="core.jsp" %>
-
 <p>Details</p>
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
 	<tr>
@@ -10,7 +8,7 @@
 		<td>Buy Date</td>
 		<td>Buy Price</td>
 		<td>Total Buy Price</td>
-		<td>Sell Date</td>
+		<td>Duration</td>
 		<td>Sell Price</td>
 		<td>Sell Price If Bank</td>
 		<td>Total Sell Price</td>
@@ -42,7 +40,7 @@
 			<td><c:out value="${stock.buyDate}"></c:out></td>
 			<td><c:out value="${stock.buyPrice}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.buyPrice * stock.quantity}" pattern="#,###.##" /></td>
-			<td><c:out value="${stock.sellDate}"></c:out></td>
+			<td><c:out value="${stock.duration}"></c:out></td>
 			<td><c:out value="${stock.sellPrice}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.bankSellPrice}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice * stock.quantity}" pattern="#,###.##" /></td>

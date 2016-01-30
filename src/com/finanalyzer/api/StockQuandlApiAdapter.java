@@ -194,7 +194,7 @@ public class StockQuandlApiAdapter
 					for (Stock eachStock : stocksWithSameName)
 					{
 						LOG.warning("setIsException "+eachStock.getStockName());
-						eachStock.setIsException();
+						eachStock.setIsException("Exception from Quandl");
 					}
 				}
 			}
@@ -211,14 +211,5 @@ public class StockQuandlApiAdapter
 			stock.setDateToClosePrice(dateValueObjects);	
 		}
 		
-	}
-	
-	//remove after few days
-	private static void stampNDaysClosePrices(Stock stock, int numOfDays)
-	{
-//		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stock.getStockName(), numOfDays, stock.getStockExchange()); chakks
-		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stock.getStockExchangeStocknameMap().get(StockExchange.BSE), numOfDays, StockExchange.BSE); 
-		List<DateValueObject> dateValueObjects = transposeSingleQDataSet(qDataSet);
-		stock.setDateToClosePrice(dateValueObjects);
 	}
 }

@@ -12,27 +12,24 @@ import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
-public class MaintainWatchListProcessor extends MaintainProcessor
-{
+public class MaintainWatchListProcessor extends MaintainProcessor {
 
-	public MaintainWatchListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, String predicateField, String predicateValue) 
+	public MaintainWatchListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest) 
 	{
-		super(stockIds, isWriteRequest, isAddRequest,  predicateField, predicateValue);
+		super(stockIds, isWriteRequest, isAddRequest,  "isWatchListed", "true");
 	}
 
-	@Override	
-	public void updateEntry(List<AllScripsDbObject> matchingEntries)
+	@Override
+	public void updateEntry(List<AllScripsDbObject> matchingEntries) 
 	{
-		for (AllScripsDbObject allScripsDbObject : matchingEntries)
+		for (AllScripsDbObject allScripsDbObject : matchingEntries) 
 		{
-			if(this.isAddRequest)
-			{
-				allScripsDbObject.setWatchListed(true);	
-			}
-			else
-			{
-				allScripsDbObject.setWatchListed(false);
-			}
+			allScripsDbObject.setWatchListed(this.isAddRequest);
 		}
+	}
+
+	@Override
+	public String getViewName() {
+		return "maintainWatchList";
 	}
 }

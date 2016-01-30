@@ -27,8 +27,8 @@ public class UnrealizedDetailDbObjectBuilder {
 	}
 	
 	
-	public UnrealizedDetailDbObjectBuilder sellDate(String sellDate) {
-		this.unrealizedDetailDbObject.setSellDate(sellDate);
+	public UnrealizedDetailDbObjectBuilder duration(String duration) {
+		this.unrealizedDetailDbObject.setDuration(duration);
 		return this;
 	}
 	

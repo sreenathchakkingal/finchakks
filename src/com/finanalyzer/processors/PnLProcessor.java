@@ -32,7 +32,7 @@ import com.gs.collections.impl.set.mutable.SetAdapter;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 import com.gs.collections.impl.utility.Iterate;
 
-public class PnLProcessor implements Processor<FastList<Stock>>
+public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 {
 	public final InputStream statusInputStream;
 
@@ -60,12 +60,12 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 	}
 	
 	@Override
-	public FastList<Stock> execute()
+	public Pair<List<Stock>, List<Stock>> execute()
 	{
 		throw new RuntimeException("execute method not implemented");
 	}
 	
-	protected FastList<Stock> handleBonusScneario(FastList<Stock> stockLines) 
+	protected FastList<Stock> handleBonusScneario(List<Stock> stockLines) 
 	{
 		final List<Stock> stockLinesWithOutBonus = getStocksWithAndWithoutBonus(stockLines).get(0);
 		final List<Stock> stockLinesWithBonus = getStocksWithAndWithoutBonus(stockLines).get(1);
@@ -91,6 +91,7 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 								sumOfQuantityTillIndex = sumOfQuantityTillIndex+ newList.get(j).getQuantity();
 							}
 						}
+						
 						float ratio=(float) stockAtIndex.getQuantity()/sumOfQuantityTillIndex;
 						
 						//increment by the ratio of bonus till i
@@ -168,12 +169,12 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 	}
 
 	//tactical replace with better utilities in gs collection
-	private List<List<Stock>> getStocksWithAndWithoutBonus(final FastList<Stock> stocks) {
+	private List<List<Stock>> getStocksWithAndWithoutBonus(final List<Stock> stocks) {
 		List<List<Stock>> stocksWithAndWithoutBonus = FastList.newList();
 		final List<Stock> stocksWithBonus = FastList.newList(); 
 		List<Stock> stocksWithoutBonus = FastList.newList();
 		
-		final UnifiedSet<String> stockNamesWithBonus = getStockNamesWithBonus(stocks);
+		final List<String> stockNamesWithBonus = getStockNamesWithBonus(stocks);
 		
 		for (Stock stock : stocks)
 		{
@@ -193,9 +194,9 @@ public class PnLProcessor implements Processor<FastList<Stock>>
 		return stocksWithAndWithoutBonus;
 	}
 
-	private UnifiedSet<String> getStockNamesWithBonus(final FastList<Stock> stocks) {
-		UnifiedSet<String> stockNamesWithBonus = UnifiedSet.newSet();
-		stocks.collectIf(IS_ZERO_BUY_PRICE, Stock.STOCKNAME_SELECTOR, stockNamesWithBonus)	;
+	private List<String> getStockNamesWithBonus(final List<Stock> stocks) {
+		List<String> stockNamesWithBonus = FastList.newList();
+		Iterate.collectIf(stocks, IS_ZERO_BUY_PRICE, Stock.STOCKNAME_SELECTOR, stockNamesWithBonus);
 		return stockNamesWithBonus;
 	}
 	

@@ -64,6 +64,8 @@ public class Stock
 
 	private boolean isBlackListed;
 
+	private String exceptionComment="";
+
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
 	{
@@ -348,11 +350,16 @@ public class Stock
 		return this.isException;
 	}
 
-	public void setIsException()
+	public void setIsException(String exceptionComment)
 	{
 		this.isException = true;
+		this.exceptionComment=" "+exceptionComment;
 	}
 
+	public String getExceptionComment() {
+		return exceptionComment;
+	}
+	
 	public String getGraphToEquityOpinion()
 	{
 		return this.graphToEquityOpinion;
@@ -671,19 +678,18 @@ public class Stock
 	
 //	dummy method - because ndayhistorydbobject has this.
 	public String getDuration() {
-		return "";
+		return DateUtil.approxDurationInMonthsAndYears(this.getBuyDate());
 	}
 	
-	@Override
-	public String toString()
-	{
-		return this.stockName;
-	}
 	public boolean isException()
 	{
 		return this.isException;
 	}
 	
-
+	@Override
+	public String toString()
+	{
+		return this.stockName+" Qty: "+this.getQuantity()+" Buy Date: "+this.getBuyDate()+" Buy Price: "+this.getBuyPrice();
+	}
 	
 }

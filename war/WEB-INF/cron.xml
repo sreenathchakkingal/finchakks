@@ -6,19 +6,19 @@
 	<cron>
 		<url>/unRealizedPnL</url>
 		<description>unRealizedPnL</description>
-		<schedule>every day 21:00</schedule>
+		<schedule>every day 21:30</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>
 	<cron>
 		<url>/nDaysHistory</url>
 		<description>nDaysHistory</description>
-		<schedule>every day 21:30</schedule>
+		<schedule>every day 21:45</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>
 	<cron>
 		<url>/combineNDaysHistoryAndUnrealized</url>
 		<description>nDaysHistory</description>
-		<schedule>every day 22:30</schedule>
+		<schedule>every day 22:00</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>	
 </cronentries>

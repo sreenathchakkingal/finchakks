@@ -33,51 +33,23 @@ public class MaintainController
 		
 		String stockIdToBeAdded = request.getParameter("stockIdToBeAdded");
 		String[] stockIdsToBeRemoved = request.getParameterValues("stockIdsToBeRemoved");
-		String actionName = request.getParameter("watchList");
+		String actionName = request.getParameter("action");
 		
 		boolean isAddRequest = StringUtil.isValidValue(stockIdToBeAdded);
 		boolean isWriteRequest = isAddRequest || StringUtil.isValidValue(stockIdsToBeRemoved);
 		List<String> stockIds =null;
+		
 		if(isWriteRequest)
 		{
 			stockIds =isAddRequest ? FastList.newListWith(stockIdToBeAdded) : Arrays.asList(stockIdsToBeRemoved);	
 		}
-		MaintainProcessor maintainProcessor=null;
-		String viewName;
-		if("watchList".equals(actionName))
-		{
-			maintainProcessor = new MaintainWatchListProcessor
-					(stockIds,isWriteRequest, isAddRequest, "isWatchListed", "true");
-			viewName="maintainWatchList";
-		}
-		else
-		{
-			maintainProcessor = new MaintainBlackListProcessor
-					(stockIds,isWriteRequest, isAddRequest, "isBlackListed", "true");	
-			viewName="maintainBlackList";
-		}
+		
+		MaintainProcessor maintainProcessor="watchList".equals(actionName) ? new MaintainWatchListProcessor(stockIds,isWriteRequest, isAddRequest) : 
+			new MaintainBlackListProcessor(stockIds,isWriteRequest, isAddRequest);
+		
 		List<String> stocks = maintainProcessor.execute();
 		
-		return new ModelAndView(viewName,"stocks",stocks );
+		return new ModelAndView(maintainProcessor.getViewName(),"stocks",stocks );
 	}
-//
-//	public ModelAndView maintainWatchList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-//	{
-//		String stockId = request.getParameter("stockIdToBeAdded");
-//		String[] stockIdsToBeRemoved = request.getParameterValues("stockIdsToBeRemoved");
-//		boolean isAddRequest = StringUtil.isValidValue(stockId);
-//		boolean isWriteRequest = isAddRequest || StringUtil.isValidValue(stockIdsToBeRemoved);
-//		List<String> stockIds =null;
-//		if(isWriteRequest)
-//		{
-//			stockIds =isAddRequest ? FastList.newListWith(stockId) : Arrays.asList(stockIdsToBeRemoved);	
-//		}
-//		
-//		MaintainProcessor maintainWatchListProcessor = new MaintainWatchListProcessor
-//				(stockIds,isWriteRequest, isAddRequest, AllScripsDbObject.IS_WATCHLISTED);
-//		List<String> stocks = maintainWatchListProcessor.execute();
-//		
-//		return new ModelAndView("maintainWatchList","stocks",stocks );
-//	}
 
 }

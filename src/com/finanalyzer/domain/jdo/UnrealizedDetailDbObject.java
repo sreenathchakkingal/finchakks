@@ -20,7 +20,7 @@ public class UnrealizedDetailDbObject {
 	private float buyPrice;
 
 	@Persistent
-	private String sellDate;
+	private String duration;
 	
 	@Persistent
 	private float sellPrice;
@@ -101,12 +101,12 @@ public class UnrealizedDetailDbObject {
 		this.quantity = quantity;
 	}
 
-	public String getSellDate() {
-		return sellDate;
+	public String getDuration() {
+		return duration;
 	}
 
-	public void setSellDate(String sellDate) {
-		this.sellDate = sellDate;
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 
 	public float getSellableQuantity() {
@@ -131,6 +131,12 @@ public class UnrealizedDetailDbObject {
 
 	public void setMaturityIsCloseToAnYear(boolean isMaturityIsCloseToAnYear) {
 		this.isMaturityIsCloseToAnYear = isMaturityIsCloseToAnYear;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return this.stockName+" Qty: "+this.getQuantity()+" Duration: "+this.getDuration()+" Buy Date: "+this.getBuyDate()+" Buy Price: "+this.getBuyPrice();
 	}
 	
 }

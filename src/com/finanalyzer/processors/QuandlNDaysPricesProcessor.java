@@ -147,8 +147,6 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 			stock.setNumOfDays(this.numOfDays);
 			stock.setStockRatingValue(new StockRatingValue(allScripsDbObject.getRatingNameToValue()));
 			
-			
-			
 			if(investmentAggregatedByStockname.get(moneycontrolName)!=null)
 			{
 				final Float investmentRatio = investmentAggregatedByStockname.get(moneycontrolName)/totalInvestment;

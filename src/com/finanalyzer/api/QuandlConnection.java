@@ -26,6 +26,7 @@ public class QuandlConnection
 		String args = URL_ARG_JOINER.join(sq.getParameterMap());
 		String url = this.withAuthToken(String.format(SINGLE_QUERY_URL,sq.getStockExchange().getSingleDatePrefix(),sq.getQCode())+args);
 		System.out.println("url : "+url);
+		LOG.info("url : "+url);
 		return new QDataset(UrlUtil.getResponseAsString(url));
 	}
 

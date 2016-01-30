@@ -147,7 +147,7 @@
 <form action="combineNDaysHistoryAndUnrealized" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" value="Submit"></td>
+			<td><input type="submit" value="combineNDaysHistoryAndUnrealized"></td>
 		</tr>
 	</table>
 </form>

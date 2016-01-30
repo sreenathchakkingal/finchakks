@@ -90,12 +90,6 @@ public class StockBuilder
     return this;
   }
   
-  public StockBuilder setIsException()
-  {
-    this.stock.setIsException();
-    return this;
-  }
-  
   public StockBuilder graphToEquityOpinion(String graphToEquityOpinion)
   {
     this.stock.setGraphToEquityOpinion(graphToEquityOpinion);

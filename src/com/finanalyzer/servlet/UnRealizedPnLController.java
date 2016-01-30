@@ -1,6 +1,7 @@
 package com.finanalyzer.servlet;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +23,11 @@ import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.Adapter;
 import com.google.gson.JsonObject;
 import com.gs.collections.api.partition.list.PartitionMutableList;
+import com.gs.collections.api.tuple.Pair;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.utility.Iterate;
 
 @Controller  
 public class UnRealizedPnLController extends PnlController
@@ -58,13 +61,15 @@ public class UnRealizedPnLController extends PnlController
 
 			UnRealizedPnLProcessor processor = new UnRealizedPnLProcessor(fileItemIterator, stockName);
 
-			FastList<Stock> stocks = processor.execute();
+			Pair<List<Stock>,List<Stock>> nonExceptionAndExceptionStocks = processor.execute();
 
-			PartitionMutableList<Stock> stocksPartitioned = stocks.partition(UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER_OR_BONUS);
+			List<Stock> stocks = nonExceptionAndExceptionStocks.getOne();
+			List<Stock> exceptionStocks  = nonExceptionAndExceptionStocks.getTwo();
+			
+			List<Stock> requestedStockDetail = processor.getRequestedStockStatusInfo(stocks);
 
-			List<Stock> requestedStockDetail = processor.getRequestedStockStatusInfo(stocksPartitioned.getSelected());
-
-			List<Stock> stocksSummary = processor.fetchStockSummaryStatus((FastList<Stock>) stocksPartitioned.getSelected());
+			final List<Stock> stocksWithMaturityMoreThanAQuarter = (List<Stock>)Iterate.select(stocks, UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER);
+			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocksWithMaturityMoreThanAQuarter);
 			List<Stock> requestedStockSummary = processor.getRequestedStockStatusInfo(stocksSummary);
 
 			JsonObject stockInvestmentChart = processor.getStockInvestmentChart(stocksSummary);
@@ -73,7 +78,7 @@ public class UnRealizedPnLController extends PnlController
 			Map<String, Object> result = UnifiedMap.newMap();
 			result.put("stocksDetail", requestedStockDetail);
 			result.put("stocksSummary", requestedStockSummary);
-			result.put("stocksException", UnifiedSet.newSet(stocksPartitioned.getRejected()));
+			result.put("stocksException", UnifiedSet.newSet(exceptionStocks));
 			result.put("stockInvestmentChart", requestedStockInvestmentChart);
 			
 			processor.persistResults(stocks, stocksSummary);

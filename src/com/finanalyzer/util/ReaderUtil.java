@@ -32,7 +32,7 @@ public class ReaderUtil
 	{
 		List<String> rows = convertToList(object);
 		int startIndex = isRemoveHeader ? 1 : 0;
-		int endIndex = isRemoveTrailer ? rows.size()-1 : rows.size();
+		int endIndex = isRemoveTrailer ? rows.size()-2 : rows.size();//for realized this needs to be rows.size-1 -hack remove this later on 
 		if (endIndex> startIndex)
 		{
 			return rows.subList(startIndex, endIndex);	

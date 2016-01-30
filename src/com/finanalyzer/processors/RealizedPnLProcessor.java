@@ -7,7 +7,9 @@ import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockBuilder;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
+import com.gs.collections.api.tuple.Pair;
 import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.tuple.Tuples;
 
 public class RealizedPnLProcessor extends PnLProcessor
 {
@@ -18,15 +20,16 @@ public class RealizedPnLProcessor extends PnLProcessor
 	}
 
 	@Override
-	public FastList<Stock> execute()
+	public Pair<List<Stock>, List<Stock>> execute()
 	{
 		List<String> rowsWithoutHeader= ReaderUtil.convertToList(this.statusInputStream, true, false);
-		FastList<Stock> stocks = FastList.newList();
+		List<Stock> stocks = FastList.newList();
+		List<Stock> dummyList = FastList.newList();
 		for (String eachRow : rowsWithoutHeader)
 		{
 			stocks.add(this.convertRowToStockObject(eachRow));
 		}
-		return stocks;
+		return Tuples.pair(stocks,dummyList);
 	}
 
 

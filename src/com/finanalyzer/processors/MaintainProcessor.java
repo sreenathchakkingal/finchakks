@@ -55,12 +55,14 @@ public abstract class MaintainProcessor implements Processor<List<String>>
 
 	private List<String> retreiveAllMatchingRecords() {
 		JdoDbOperations<AllScripsDbObject> dbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
-		final List<AllScripsDbObject> persistedBlackListedEntries = dbOperations.getEntries("isBlackListed", "true");
+		final List<AllScripsDbObject> persistedBlackListedEntries = dbOperations.getEntries(this.predicateField, this.predicateValue);
 		return (List<String>) Iterate.collect(persistedBlackListedEntries, AllScripsDbObject.NSE_STOCK_NAME_COLLECTOR);
 //		return entries.collectIf(this.predicate, AllScripsDbObject.STOCK_NAME_COLLECTOR);
 	}
 
 	public abstract void  updateEntry(List<AllScripsDbObject> matchingEntries);
+	
+	public abstract String  getViewName();
 	
 }
 

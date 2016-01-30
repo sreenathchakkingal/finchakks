@@ -32,7 +32,7 @@ public class CombineNDaysHistoryAndUnrealizedController{
 		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
 
 		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries();
-		final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = unrealizedDetailDbOperations.getEntries("buyDate desc");
+		final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = unrealizedDetailDbOperations.getEntries("buyDate asc");
 		
 		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
 		List<NDaysHistoryDbObject> ndaysHistoryDbObjects =null;
@@ -56,7 +56,7 @@ public class CombineNDaysHistoryAndUnrealizedController{
 				{
 					if(unrealizedDetailDbObject.getStockName().equals(ndaysHistoryDbObject.getMoneyControlName()))
 					{
-						ndaysHistoryDbObject.setDuration(DateUtil.approxDurationInMonthsAndYears(unrealizedDetailDbObject.getBuyDate()));
+						ndaysHistoryDbObject.setDuration(unrealizedDetailDbObject.getDuration());
 						ndaysHistoryDbObject.setBuyPrice(unrealizedDetailDbObject.getBuyPrice());
 					}
 				}

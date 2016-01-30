@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.processors.RealizedPnLProcessor;
 import com.finanalyzer.processors.StockInfoProcessor;
+import com.gs.collections.api.tuple.Pair;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 
@@ -36,7 +37,8 @@ public class RealizedPnLController extends PnlController
 			InputStream statusInputStream = context.getResourceAsStream("/WEB-INF/data/RealizedPnL.csv");
 			RealizedPnLProcessor processor = new RealizedPnLProcessor(statusInputStream);
 
-			FastList<Stock> stocks = processor.execute();
+			Pair<List<Stock>,List<Stock>> nonExceptionAndExceptionStocks = processor.execute();
+			List<Stock> stocks = nonExceptionAndExceptionStocks.getOne();
 
 			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocks);
 			Map<String, List<Stock>> result = UnifiedMap.newMap();	

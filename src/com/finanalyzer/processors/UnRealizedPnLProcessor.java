@@ -30,9 +30,12 @@ import com.google.gson.JsonObject;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.block.predicate.Predicate2;
 import com.gs.collections.api.list.MutableList;
+import com.gs.collections.api.partition.list.PartitionMutableList;
+import com.gs.collections.api.tuple.Pair;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
 
 public class UnRealizedPnLProcessor extends PnLProcessor 
@@ -42,14 +45,14 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 	private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("##.##");
 	private final String stockName;
 	private FileItemIterator fileItemIterator;
-	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER_OR_BONUS = new Predicate<Stock>()
+	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER = new Predicate<Stock>()
 			{
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public boolean accept(Stock stock)
 		{
-			return stock.getBuyPrice()<0.1|| stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH; 
+			return stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH; 
 		}
 			};
 
@@ -81,29 +84,22 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 
 
 	@Override
-	public FastList<Stock> execute() {
-		FastList<Stock> stocks = FastList.newList();
+	public Pair<List<Stock>, List<Stock>> execute() {
+		List<Stock> stocks = FastList.newList();
 		Stock stock;
 
 		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 
 		List<String> rowsWithoutHeaderAndTrailer = ReaderUtil.convertToList(this.fileItemIterator, true, true);
-		
-		if ( isSanityChecksPassed(rowsWithoutHeaderAndTrailer)) 
+		List<UnrealizedDbObject> entries = null;
+		if (isSanityChecksPassed(rowsWithoutHeaderAndTrailer)) 
 		{
 			unrealizeddbOperations.deleteEntries();
-			unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
-			try {
-				Thread.sleep(3*1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
 		} 
 		
-		List<UnrealizedDbObject> entries = unrealizeddbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME);
-		
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
-		Set<String> noMapping = UnifiedSet.newSet();
+		List<Stock> exceptionStocks = FastList.newList();
 		for (UnrealizedDbObject dbObject : entries) {
 			String moneycontrolName = dbObject.getMoneycontrolName();
 			if(StringUtil.isValidValue(moneycontrolName))
@@ -114,42 +110,42 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 
 				stock = new StockBuilder().name(moneycontrolName)
 						.quantity((int) quantity).buyPrice((float) buyPriceDouble)
-						.buyDate(buyDate).build();
+						.buyDate(buyDate).sellDate(DateUtil.todaysDate()).build();
 
 				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME,moneycontrolName);
 
-				if (!scrips.isEmpty()) {
+				if (!scrips.isEmpty()) 
+				{
 					final AllScripsDbObject aScrip = scrips.get(0);
 					if (StringUtil.isValidValue(aScrip.getBseId())) 
 					{
 						stock.addNames(StockExchange.BSE, aScrip.getBseId());
 						stock.setBlackListed(aScrip.isBlackListed());
+						stocks.add(stock);
 					}
 				} 
 				else 
 				{
-					noMapping.add(moneycontrolName);
+					stock.setIsException("No mapping found");
+					exceptionStocks.add(stock);
 				}
-				stocks.add(stock);		
 			}
 		}
 
-		if (!noMapping.isEmpty()) {
-			throw new RuntimeException("no mapping found for " + noMapping);
-		}
+		Iterate.sortThis(stocks, NAME_DATE_PRICE_COMPARATOR);
 		
-		stocks.sortThis(NAME_DATE_PRICE_COMPARATOR);
-		final FastList<Stock> handleBonusScneario = handleBonusScneario(stocks);
+		final List<Stock> bonusScnearioHandledStocks = handleBonusScneario(stocks);
 		
-		StockQuandlApiAdapter.stampLatestClosePriceAndDate(handleBonusScneario);
-		return handleBonusScneario;
+		StockQuandlApiAdapter.stampLatestClosePriceAndDate(bonusScnearioHandledStocks);
+		
+		final Pair<List<Stock>, List<Stock>> stocksAndExceptions = Tuples.pair(bonusScnearioHandledStocks, exceptionStocks);
+		
+		return stocksAndExceptions;
 	}
 			
-
+	//hack remove later - 'manual' is passed from the UI.
 	private boolean isSanityChecksPassed(List<String> rowsWithoutHeaderAndTrailer) {
-		boolean isNotEmpty= rowsWithoutHeaderAndTrailer.isEmpty();
-         boolean hasCommas= rowsWithoutHeaderAndTrailer.contains(",");
-		return isNotEmpty && hasCommas;
+		return (!"manual".equals(rowsWithoutHeaderAndTrailer.get(0)));
 	}
 
 
@@ -160,14 +156,14 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				float totalReturns = 0.0f;
 				float totalInvestment = 0.0f;
 
-				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER_OR_BONUS);
+//				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER);
 
-				for (Stock stock : stocksWithMaturityMoreThanAQuarter)
+				for (Stock stock : stocksSummary)
 				{
 					totalReturns +=stock.getReturnTillDate();
 					totalInvestment += Math.abs(stock.getTotalInvestment());
 				}
-				for (Stock stock : stocksWithMaturityMoreThanAQuarter)
+				for (Stock stock : stocksSummary)
 				{
 					try
 					{
@@ -237,16 +233,15 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 
 			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary) 
 			{
-				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
-				JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
-				dbSummaryOperations.deleteEntries();
-				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
-				
 				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = Adapter.stockToUnrealizedDetailDbObject(stocksDetail);
 				JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
 				dbDetailOperations.deleteEntries();
 				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
-				
+
+				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
+				JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
+				dbSummaryOperations.deleteEntries();
+				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
 			}
 }
 

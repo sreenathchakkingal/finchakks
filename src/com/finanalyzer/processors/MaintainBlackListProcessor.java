@@ -15,9 +15,9 @@ import com.gs.collections.impl.list.mutable.FastList;
 public class MaintainBlackListProcessor extends MaintainProcessor
 {
 
-	public MaintainBlackListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest, String predicateField, String predicateValue) 
+	public MaintainBlackListProcessor(List<String> stockIds, boolean isWriteRequest, boolean isAddRequest) 
 	{
-		super(stockIds, isWriteRequest, isAddRequest, predicateField, predicateValue);
+		super(stockIds, isWriteRequest, isAddRequest, "isBlackListed", "true");
 	}
 
 	@Override	
@@ -25,14 +25,12 @@ public class MaintainBlackListProcessor extends MaintainProcessor
 	{
 		for (AllScripsDbObject allScripsDbObject : matchingEntries)
 		{
-			if(this.isAddRequest)
-			{
-				allScripsDbObject.setBlackListed(true);	
-			}
-			else
-			{
-				allScripsDbObject.setBlackListed(false);
-			}
+			allScripsDbObject.setBlackListed(this.isAddRequest);	
 		}
+	}
+
+	@Override
+	public String getViewName() {
+		return "maintainBlackList";
 	}
 }

@@ -1,5 +1,4 @@
 <%@include file="core.jsp" %>
-<%@include file="exception.jsp" %>
 
   <head>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -33,14 +32,18 @@
   </head>
   
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" >
-	<tr>
-		<td>Not computing unrealized for these</td>
-	</tr>
-	<c:forEach items="${stocksException}" var="stock">
+	<c:if test="${not empty stocksException}">
 		<tr>
-			<td><c:out value="${stock.stockName}"></c:out></td>
+			<td>Not computing unrealized for these</td>
 		</tr>
-	</c:forEach>
+		<c:forEach items="${stocksException}" var="stock">
+			<tr>
+				<td><c:out value="${stock.stockName}"/></td>
+				<td><c:out value="${stock.exceptionComment}"/></td>
+				</td>
+			</tr>
+		</c:forEach>
+	</c:if>
 </table>
 
 <table>
