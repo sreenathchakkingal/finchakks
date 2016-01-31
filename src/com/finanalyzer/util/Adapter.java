@@ -8,6 +8,7 @@ import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.builder.UnrealizedDetailDbObjectBuilder;
+import com.finanalyzer.domain.builder.UnrealizedSummaryDbObjectBuilder;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
@@ -51,10 +52,19 @@ public class Adapter {
 			
 			final String stockName = stock.getStockName();
 			
+			final UnrealizedSummaryDbObjectBuilder unrealizedSummaryBuilder = new UnrealizedSummaryDbObjectBuilder(); 
+			
 			final UnrealizedSummaryDbObject unrealizedSummaryDbObject = 
-					new UnrealizedSummaryDbObject(stockName, stock.getReturnTillDate(), stock.getQuantity(),
-							stock.getTotalInvestment(), stock.getTotalReturn(), stock.getTotalReturnIfBank(), 
-							stock.getIndustry(), stock.isBlackListed());
+			unrealizedSummaryBuilder
+			.stockName(stockName)
+			.returnTillDate(stock.getReturnTillDate())
+			.quantity(stock.getQuantity())
+			.sellableQuantity(stock.getSellableQuantity())
+			.totalInvestment(stock.getTotalInvestment())
+			.totalReturn(stock.getTotalReturn())
+			.totalReturnIfBank(stock.getTotalReturnIfBank())
+			.industry(stock.getIndustry())
+			.isBlackListed(stock.isBlackListed()).build();
 			
 			unrealizedSummaryDbObjects.add(unrealizedSummaryDbObject);
 		}

@@ -46,7 +46,7 @@ public class CombineNDaysHistoryAndUnrealizedController{
 			{
 				for (UnrealizedSummaryDbObject unrealizedSummaryDbObject :  unrealizedSummaryDbObjects)
 				{
-					if(unrealizedSummaryDbObject.getMoneycontrolName().equals(ndaysHistoryDbObject.getMoneyControlName()))
+					if(unrealizedSummaryDbObject.getStockName().equals(ndaysHistoryDbObject.getMoneyControlName()))
 					{
 						ndaysHistoryDbObject.setReturnTillDate(unrealizedSummaryDbObject.getReturnTillDate());
 					}

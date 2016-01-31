@@ -12,7 +12,7 @@
 	</tr>
 	
 	<c:forEach items="${blackListedStocks}" var="blackListedStock">
-			<td><c:out value="${blackListedStock.moneycontrolName}"></c:out></td>
+			<td><c:out value="${blackListedStock.stockName}"></c:out></td>
 			<td><fmt:formatNumber value="${blackListedStock.returnTillDate}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${blackListedStock.quantity}"  pattern="#,###.##"/></td>
 			<td><fmt:formatNumber value="${blackListedStock.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>

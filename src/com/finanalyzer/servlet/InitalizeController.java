@@ -29,7 +29,7 @@ public class InitalizeController implements Controller {
 			HttpServletResponse res) throws Exception {
 		
 		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
-		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries("moneycontrolName");
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries("stockName");
 		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
 		
 		JdoDbOperations<NDaysHistoryDbObject>  nDaysHistoryDbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
@@ -46,7 +46,7 @@ public class InitalizeController implements Controller {
 		modelAndView.addObject("stocks", ndaysHistoryDbObjects);
 		modelAndView.addObject("blackListedStocks", blackListedStocks);
 		modelAndView.addObject("stocksDetail", unrealizedDetailObjects);
-//		modelAndView.addObject("stocksSummary", unrealizedSummaryDbObjects);
+		modelAndView.addObject("stocksSummary", unrealizedSummaryDbObjects);
 		modelAndView.addObject("profitAndLoss", profitAndLossDbObject);
 		
 		

@@ -12,7 +12,7 @@ import com.gs.collections.api.block.predicate.Predicate;
 public class UnrealizedSummaryDbObject {
 
 	@Persistent
-	private String moneycontrolName;
+	private String stockName; //moneycontrol name
 	
 	@Persistent
 	private float returnTillDate;
@@ -20,6 +20,9 @@ public class UnrealizedSummaryDbObject {
 	@Persistent
 	private float quantity;
 	
+	@Persistent
+	private float sellableQuantity;
+		
 	@Persistent
 	private float totalInvestment;
 	
@@ -43,29 +46,16 @@ public class UnrealizedSummaryDbObject {
 		}
 	};
 	
-	public UnrealizedSummaryDbObject(String moneycontrolName,
-			float returnTillDate, float quantity, float totalInvestment,
-			float totalReturn, float totalReturnIfBank, String industry, boolean isBlackListed) {
-		this.moneycontrolName = moneycontrolName;
-		this.returnTillDate = returnTillDate;
-		this.quantity = quantity;
-		this.totalInvestment = totalInvestment;
-		this.totalReturn = totalReturn;
-		this.totalReturnIfBank = totalReturnIfBank;
-		this.industry = industry;
-		this.isBlackListed = isBlackListed;
-	}
-
-	public String getMoneycontrolName() {
-		return moneycontrolName;
-	}
-
 	public float getReturnTillDate() {
 		return returnTillDate;
 	}
 
 	public float getQuantity() {
 		return quantity;
+	}
+
+	public float getSellableQuantity() {
+		return sellableQuantity;
 	}
 
 	public float getTotalInvestment() {
@@ -87,5 +77,46 @@ public class UnrealizedSummaryDbObject {
 	public boolean isBlackListed() {
 		return isBlackListed;
 	}
+
+	public void setReturnTillDate(float returnTillDate) {
+		this.returnTillDate = returnTillDate;
+	}
+
+	public void setQuantity(float quantity) {
+		this.quantity = quantity;
+	}
+
+	public void setSellableQuantity(float sellableQuantity) {
+		this.sellableQuantity = sellableQuantity;
+	}
+	
+	public void setTotalInvestment(float totalInvestment) {
+		this.totalInvestment = totalInvestment;
+	}
+
+	public void setTotalReturn(float totalReturn) {
+		this.totalReturn = totalReturn;
+	}
+
+	public void setTotalReturnIfBank(float totalReturnIfBank) {
+		this.totalReturnIfBank = totalReturnIfBank;
+	}
+
+	public void setIndustry(String industry) {
+		this.industry = industry;
+	}
+
+	public void setBlackListed(boolean isBlackListed) {
+		this.isBlackListed = isBlackListed;
+	}
+
+	public String getStockName() {
+		return stockName;
+	}
+
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
+	}
+	
 }
 
