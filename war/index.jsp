@@ -11,24 +11,30 @@
 		<td>Total Return If Bank</td>
 	</tr>
 	
-	<c:forEach items="${stocksSummary}" var="stockSummary">
-			<td><c:out value="${stockSummary.moneycontrolName}"></c:out></td>
-			<td><fmt:formatNumber value="${stockSummary.returnTillDate}" pattern="#,###.##" /></td>
-			<td><fmt:formatNumber value="${stockSummary.quantity}"  pattern="#,###.##"/></td>
-			<td><fmt:formatNumber value="${stockSummary.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
-			<td><fmt:formatNumber value="${stockSummary.totalInvestment}" pattern="#,##,###.##" /></td>
-			<td><fmt:formatNumber value="${stockSummary.totalReturn}" pattern="#,###.##" /></td>
-			<td><fmt:formatNumber value="${stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
+	<c:forEach items="${blackListedStocks}" var="blackListedStock">
+			<td><c:out value="${blackListedStock.moneycontrolName}"></c:out></td>
+			<td><fmt:formatNumber value="${blackListedStock.returnTillDate}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.quantity}"  pattern="#,###.##"/></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalInvestment}" pattern="#,##,###.##" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalReturn}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalReturnIfBank}" pattern="#,###.##" /></td>
 		</tr>
 	</c:forEach>
 	
 </table>
 <p></p>
 
+<%@include file="profitAndLoss.jsp" %>
+<p></p>
+
 <%@include file="nDaysHistory.jsp" %>
 <p></p>
 
 <%@include file="unRealizedPnLDetails.jsp" %>
+<p></p>
+
+<%@include file="unRealizedPnLSummary.jsp" %>
 <p></p>
 
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1">

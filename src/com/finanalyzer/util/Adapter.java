@@ -7,11 +7,11 @@ import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.builder.StockBuilder;
+import com.finanalyzer.domain.builder.UnrealizedDetailDbObjectBuilder;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
-import com.finanalyzer.domain.jdo.builder.UnrealizedDetailDbObjectBuilder;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class Adapter {

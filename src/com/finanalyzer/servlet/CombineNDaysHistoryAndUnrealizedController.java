@@ -67,11 +67,11 @@ public class CombineNDaysHistoryAndUnrealizedController{
 			pm.close();
 		}
 		
-		Collections.sort(ndaysHistoryDbObjects, NDaysHistoryDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
+//		Collections.sort(ndaysHistoryDbObjects, NDaysHistoryDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
 
 		ModelAndView modelAndView = new ModelAndView("test");
-		modelAndView.addObject("stocks", ndaysHistoryDbObjects);
-		modelAndView.addObject("stocksSummary", blackListedStocks);
+//		modelAndView.addObject("stocks", ndaysHistoryDbObjects);
+//		modelAndView.addObject("stocksSummary", blackListedStocks);
 		
 		return modelAndView;
 	}

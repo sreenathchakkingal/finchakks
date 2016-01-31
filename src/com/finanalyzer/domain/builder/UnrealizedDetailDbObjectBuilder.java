@@ -1,4 +1,4 @@
-package com.finanalyzer.domain.jdo.builder;
+package com.finanalyzer.domain.builder;
 
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 

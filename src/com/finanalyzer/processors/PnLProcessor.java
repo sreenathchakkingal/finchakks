@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.helloworld.Employee;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
@@ -194,6 +196,33 @@ public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 		return stocksWithAndWithoutBonus;
 	}
 
+	public ProfitAndLossDbObject getProfitAndLoss(List<Stock> stocksSummary) {
+		float totalReturnVsIfBank = 0.0f;
+		float totalReturnIfBank = 0.0f;
+		float totalReturn = 0.0f;
+		float totalInvestment = 0.0f;
+		float averageReturn = 0.0f;
+		
+		for(Stock eachStockSummary : stocksSummary)
+		{
+			totalReturnVsIfBank = totalReturnVsIfBank+eachStockSummary.getTotalReturn()-eachStockSummary.getTotalReturnIfBank();
+			totalReturnIfBank = totalReturnIfBank+eachStockSummary.getTotalReturnIfBank();
+			totalReturn = totalReturn + eachStockSummary.getTotalReturn();
+			totalInvestment = totalInvestment + eachStockSummary.getTotalInvestment();
+			averageReturn = averageReturn + eachStockSummary.getReturnTillDate() * eachStockSummary.getTotalInvestment() * .01f;
+		}
+		
+		return new ProfitAndLossBuilder()
+		.averageReturn(averageReturn/totalInvestment)
+		.totalInvestment(totalInvestment)
+		.totalReturn(totalReturn)
+		.totalReturnIfBank(totalReturnIfBank)
+		.totalReturnVsIfBank(totalReturnVsIfBank)
+		.build();
+		
+	}
+	
+	
 	private List<String> getStockNamesWithBonus(final List<Stock> stocks) {
 		List<String> stockNamesWithBonus = FastList.newList();
 		Iterate.collectIf(stocks, IS_ZERO_BUY_PRICE, Stock.STOCKNAME_SELECTOR, stockNamesWithBonus);

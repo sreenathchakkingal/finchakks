@@ -11,8 +11,10 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.processors.PnLProcessor;
 import com.gs.collections.api.block.procedure.Procedure;
 import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.impl.list.mutable.FastList;
@@ -27,7 +29,7 @@ public class InitalizeController implements Controller {
 			HttpServletResponse res) throws Exception {
 		
 		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
-		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries();
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries("moneycontrolName");
 		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
 		
 		JdoDbOperations<NDaysHistoryDbObject>  nDaysHistoryDbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
@@ -37,10 +39,16 @@ public class InitalizeController implements Controller {
 		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
 		final List<UnrealizedDetailDbObject> unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName asc, buyDate desc");
 
+		JdoDbOperations<ProfitAndLossDbObject> profitAndLossDbOperations = new JdoDbOperations<>(ProfitAndLossDbObject.class);
+		final ProfitAndLossDbObject profitAndLossDbObject = profitAndLossDbOperations.getEntries().get(0);
+
 		ModelAndView modelAndView = new ModelAndView("index");
 		modelAndView.addObject("stocks", ndaysHistoryDbObjects);
-		modelAndView.addObject("stocksSummary", blackListedStocks);
+		modelAndView.addObject("blackListedStocks", blackListedStocks);
 		modelAndView.addObject("stocksDetail", unrealizedDetailObjects);
+//		modelAndView.addObject("stocksSummary", unrealizedSummaryDbObjects);
+		modelAndView.addObject("profitAndLoss", profitAndLossDbObject);
+		
 		
 		return modelAndView;
 

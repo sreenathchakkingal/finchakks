@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.domain.ProfitAndLoss;
 import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.Adapter;
@@ -73,7 +73,7 @@ public class UnRealizedPnLController extends PnlController
 			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocksWithMaturityMoreThanAQuarter);
 			List<Stock> requestedStockSummary = processor.getRequestedStockStatusInfo(stocksSummary);
 			
-			ProfitAndLoss profitAndLoss = processor.getProfitAndLoss(stocksSummary);
+			ProfitAndLossDbObject profitAndLoss = processor.getProfitAndLoss(stocksSummary);
 			
 			JsonObject stockInvestmentChart = processor.getStockInvestmentChart(stocksSummary);
 			JsonObject requestedStockInvestmentChart = processor.getRequestedStockInvestmentChart(stockInvestmentChart);
@@ -85,7 +85,7 @@ public class UnRealizedPnLController extends PnlController
 			result.put("stockInvestmentChart", requestedStockInvestmentChart);
 			result.put("profitAndLoss", profitAndLoss);
 			
-			processor.persistResults(stocks, stocksSummary);
+			processor.persistResults(stocks, stocksSummary, profitAndLoss);
 			
 			return new ModelAndView("unRealizedPnL", result);
 		}

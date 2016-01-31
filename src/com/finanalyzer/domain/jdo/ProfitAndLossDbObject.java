@@ -1,11 +1,25 @@
-package com.finanalyzer.domain;
+package com.finanalyzer.domain.jdo;
 
-public class ProfitAndLoss {
-	float averageReturn;
-	float totalInvestment;
-	float totalReturn;
-	float totalReturnIfBank;
-	float totalReturnVsIfBank;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
+@PersistenceCapable
+public class ProfitAndLossDbObject {
+	
+	@Persistent
+	private float averageReturn;
+	
+	@Persistent
+	private float totalInvestment;
+	
+	@Persistent
+	private float totalReturn;
+	
+	@Persistent
+	private float totalReturnIfBank;
+	
+	@Persistent
+	private float totalReturnVsIfBank;
 	
 	public float getAverageReturn() {
 		return averageReturn;

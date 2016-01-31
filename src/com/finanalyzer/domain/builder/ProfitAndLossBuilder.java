@@ -1,10 +1,10 @@
 package com.finanalyzer.domain.builder;
 
-import com.finanalyzer.domain.ProfitAndLoss;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 
 public class ProfitAndLossBuilder {
 	
-	private final ProfitAndLoss profitAndLoss = new ProfitAndLoss();
+	private final ProfitAndLossDbObject profitAndLoss = new ProfitAndLossDbObject();
 	
 	public ProfitAndLossBuilder averageReturn(float averageReturn) 
 	{
@@ -36,7 +36,7 @@ public class ProfitAndLossBuilder {
 		return this;
 	}
 	  
-	public ProfitAndLoss build() 
+	public ProfitAndLossDbObject build() 
 	{
 		return this.profitAndLoss;
 	}

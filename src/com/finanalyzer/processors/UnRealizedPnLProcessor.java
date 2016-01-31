@@ -15,12 +15,12 @@ import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.NDaysPrice;
-import com.finanalyzer.domain.ProfitAndLoss;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
@@ -236,33 +236,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				return new NDaysPrice(stock, dateToCloseValue);
 			}
 
-			public ProfitAndLoss getProfitAndLoss(List<Stock> stocksSummary) {
-				float totalReturnVsIfBank = 0.0f;
-				float totalReturnIfBank = 0.0f;
-				float totalReturn = 0.0f;
-				float totalInvestment = 0.0f;
-				float averageReturn = 0.0f;
-				
-				for(Stock eachStockSummary : stocksSummary)
-				{
-					totalReturnVsIfBank = totalReturnVsIfBank+eachStockSummary.getTotalReturn()-eachStockSummary.getTotalReturnIfBank();
-					totalReturnIfBank = totalReturnIfBank+eachStockSummary.getTotalReturnIfBank();
-					totalReturn = totalReturn + eachStockSummary.getTotalReturn();
-					totalInvestment = totalInvestment + eachStockSummary.getTotalInvestment();
-					averageReturn = averageReturn + eachStockSummary.getReturnTillDate() * eachStockSummary.getTotalInvestment() * .01f;
-				}
-				
-				return new ProfitAndLossBuilder()
-				.averageReturn(averageReturn/totalInvestment)
-				.totalInvestment(totalInvestment)
-				.totalReturn(totalReturn)
-				.totalReturnIfBank(totalReturnIfBank)
-				.totalReturnVsIfBank(totalReturnVsIfBank)
-				.build();
-				
-			}
-			
-			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary) 
+			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss) 
 			{
 				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = Adapter.stockToUnrealizedDetailDbObject(stocksDetail);
 				JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
@@ -273,6 +247,9 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
 				dbSummaryOperations.deleteEntries();
 				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
+				
+				JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
+				profitAndLossOperations.insertEntries(FastList.newListWith(profitAndLoss));
 			}
 
 }
