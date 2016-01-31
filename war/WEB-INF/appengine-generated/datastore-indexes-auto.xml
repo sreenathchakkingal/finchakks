@@ -1,11 +1,17 @@
-<!-- Indices written at Sat, 30 Jan 2016 09:47:55 UTC -->
+<!-- Indices written at Sun, 31 Jan 2016 07:41:03 UTC -->
 
 <datastore-indexes>
 
-    <!-- Used 6 times in query history -->
+    <!-- Used 3 times in query history -->
     <datastore-index kind="UnrealizedDetailDbObject" ancestor="false" source="auto">
         <property name="stockName" direction="asc"/>
         <property name="buyDate" direction="desc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="AllScripsDbObject" ancestor="false" source="auto">
+        <property name="isBlackListed" direction="asc"/>
+        <property name="nseId" direction="asc"/>
     </datastore-index>
 
 </datastore-indexes>

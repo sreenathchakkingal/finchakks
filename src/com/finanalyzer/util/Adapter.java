@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockBuilder;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
+import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;

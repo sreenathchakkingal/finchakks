@@ -51,8 +51,19 @@
 <tr bgcolor="#2E64FE"><td>Matured and good returns</td></tr>
 <tr bgcolor="#7F7F7F"><td>Matured</td></tr>
 <tr bgcolor="#FF8000"><td>To be Matured</td></tr>
-</table>  
-  
+</table>
+
+<br/>
+		Net Returns: <fmt:formatNumber value="${profitAndLoss.averageReturn}"  type="percent" maxIntegerDigits="2" maxFractionDigits="2"/>
+<br/>
+		Net Investment: <fmt:formatNumber value="${profitAndLoss.totalInvestment}" pattern="#,###.##" />
+<br/>
+		Total Return: <fmt:formatNumber value="${profitAndLoss.totalReturn}" pattern="#,###.##" />
+<br/>
+		Total Return(If Bank): <fmt:formatNumber value="${profitAndLoss.totalReturnIfBank}" pattern="#,###.##" />
+<br/>
+		Net Diff(Stocks vs Bank): <fmt:formatNumber value="${profitAndLoss.totalReturnVsIfBank}" pattern="#,###.##" />
+<br/>
 
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
 	<tr>
@@ -85,24 +96,8 @@
 			<td><fmt:formatNumber value="${stockSummary.totalInvestment}" pattern="#,##,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturn}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
-			<c:set var="sum" value="${sum + stockSummary.totalReturn-stockSummary.totalReturnIfBank}" />
-			<c:set var="totalReturnIfBank" value="${totalReturnIfBank + stockSummary.totalReturnIfBank}" />
-			<c:set var="totalReturn" value="${totalReturn + stockSummary.totalReturn}" />
-			<c:set var="totalInvestment" value="${totalInvestment + stockSummary.totalInvestment}" />
-			<c:set var="averageReturn" value="${averageReturn + stockSummary.returnTillDate*stockSummary.totalInvestment}" />
 		</tr>
 	</c:forEach>
-	<br>
-	Net Returns: <fmt:formatNumber value="${averageReturn/totalInvestment}" pattern="#,###.##" />
-	<br/>
-	Net Investment: <fmt:formatNumber value="${totalInvestment}" pattern="#,###.##" />
-	<br/>
-	Total Return: <fmt:formatNumber value="${totalReturn}" pattern="#,###.##" />
-	<br/>
-	Total Return(If Bank): <fmt:formatNumber value="${totalReturnIfBank}" pattern="#,###.##" />
-	<br/>
-	Net Diff(Stocks vs Bank): <fmt:formatNumber value="${sum}" pattern="#,###.##" />
-	<br/>
 </table>
   
   

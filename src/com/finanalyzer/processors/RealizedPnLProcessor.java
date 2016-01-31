@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockBuilder;
+import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.gs.collections.api.tuple.Pair;

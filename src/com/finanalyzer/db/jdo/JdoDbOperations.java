@@ -40,38 +40,41 @@ public class JdoDbOperations<T> {
 	
 	public List<T> getEntries()
 	{
-		return this.getEntries(null);
+		return this.getEntries(null, null, null);
 	}
 
 	public List<T> getEntries(String sortBy)
 	{
+		return getEntries(null, null, sortBy);
+	}
+	
+	public List<T> getEntries(String field, List<String> values)
+	{
+		return this.getEntries(field, values, null);
+	}
+	
+	public List<T> getEntries(String field, List<String> values, String sortBy)
+	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query q = null;
 		try
 		{
-			Query q = pm.newQuery(this.dbObjectClass);
-			
+			if(field==null)
+			{
+				q = pm.newQuery(this.dbObjectClass);
+			}
+			else
+			{
+				q = pm.newQuery(this.dbObjectClass, ":p.contains("+field+")");
+			}
 			if(sortBy!=null)
 			{
 				q.setOrdering(sortBy);	
 			}
-			return (List<T>)q.execute();
-		}
-		finally
-		{
-			pm.close();
-		}
-	}
-	
-	public List<T> getEntries(String field, String value)
-	{
-		return this.getEntries(field, FastList.newListWith(value));
-	}
-	public List<T> getEntries(String field, List<String> values)
-	{
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try
-		{
-			Query q = pm.newQuery(this.dbObjectClass, ":p.contains("+field+")");
+			if(values==null)
+			{
+				return (List<T>)q.execute();	
+			}
 			return (List<T>)q.execute(values);
 		}
 		finally
@@ -79,7 +82,7 @@ public class JdoDbOperations<T> {
 			pm.close();
 		}
 	}
-
+	
 	public void deleteEntries(String field, List<String> values)
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();

@@ -1,6 +1,10 @@
-package com.finanalyzer.domain;
+package com.finanalyzer.domain.builder;
 
 import java.util.List;
+
+import com.finanalyzer.domain.DateValueObject;
+import com.finanalyzer.domain.InterestReturn;
+import com.finanalyzer.domain.Stock;
 
 public class StockBuilder
 {

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockBuilder;
+import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.helloworld.Employee;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
