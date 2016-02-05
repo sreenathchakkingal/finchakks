@@ -1,8 +1,12 @@
 package com.finanalyzer.processors;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
  
+
+
+
 
 
 
@@ -27,21 +31,27 @@ import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.db.StockRatingsDb;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
+import com.finanalyzer.domain.ActionEnum;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.finanalyzer.domain.StockWrapperWithAllCalcResults;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
+import com.gs.collections.impl.utility.Iterate;
 
 public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObject>
 {
 
 	private final String stockId;
-	private final boolean isAddOrUpdateAction;
+	private final ActionEnum action;
 	private static final StockRatingsDb DB = new StockRatingsDb();
 	private static final RatingDb RATINGS_DB = new RatingDb();
 	Map<String, Integer> stockRatings = UnifiedMap.newMap();
@@ -55,10 +65,10 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 		}
 	};
 	
-	public MaintainStockRatingsProcessor(String stockId, boolean isAddOrUpdateAction, Map map)
+	public MaintainStockRatingsProcessor(String stockId, ActionEnum action, Map map)
 	{
 		this.stockId=stockId;
-		this.isAddOrUpdateAction=isAddOrUpdateAction;
+		this.action=action;
 		this.inputMap= map;
 	}
 
@@ -75,12 +85,21 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 				Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
 				List<AllScripsDbObject> matchingScrips = (List<AllScripsDbObject>)q.execute(FastList.newListWith(this.stockId));
 				matchingScrip = matchingScrips.get(0);
-				if(this.isAddOrUpdateAction)
+				
+				if(this.action==ActionEnum.UPDATE_STOCK_RATING)
 				{
 					Map<String, StockRatingValuesEnum> ratingNameToValue= getRatingToValuesFromClient();
 					matchingScrip.setRatingNameToValue(ratingNameToValue);
 				}
-
+				else if (this.action==ActionEnum.ADD_TO_WATCHLIST)
+				{
+					new MaintainWatchListProcessor(FastList.newListWith(this.stockId), true, true).execute();
+				}
+				else if (this.action==ActionEnum.ADD_TO_BLACKLIST)
+				{
+					new MaintainBlackListProcessor(FastList.newListWith(this.stockId), true, true).execute();
+				}
+				
 				else //retrieve
 				{
 					if(matchingScrip.getRatingNameToValue().isEmpty())
@@ -101,47 +120,6 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 		return dummyObject;
 	}
 	
-//	@Override
-//	public Stock execute()
-//	{
-//		if(this.stockId!=null )
-//		{
-//			Stock stock = new Stock(this.stockId);
-//			
-//			if(this.isAddOrUpdateAction)
-//			{
-//				Map<String, StockRatingValuesEnum> map= getRatingToValueMap();
-//				StockRatingValue stockRatingValue = new StockRatingValue(map);
-//				stock.setStockRatingValue(stockRatingValue);
-//				DB.updateEntry(stock);
-//				return stock;
-//			}
-//			else //retrieve
-//			{
-//				StockRatingValue ratingToValue = DB.getStockRatingValue(this.stockId);
-//				stock.setStockRatingValue(ratingToValue);
-//				return ratingToValue.getRatingToValue().isEmpty() ? createDummyMap() : stock;
-//			}
-//		}
-//		return createDummyMap();
-//	}
-
-//	private Map<String, StockRatingValuesEnum> getRatingToValueMap() {
-//		List<String> allRatings = RATINGS_DB.retrieveAllEntries();
-//
-//		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
-//
-//		for (String eachRating : allRatings)
-//		{
-//			String ratingValue = ((String[])this.inputMap.get(eachRating))[0];
-//			if(ratingValue!=null)
-//			{
-//				ratingsToValue.put(eachRating, StockRatingValuesEnum.getEnumForRatingDescription(ratingValue));	
-//			}
-//		}
-//		return ratingsToValue;
-//	}
-
 	private Map<String, StockRatingValuesEnum> getRatingToValuesFromClient() 
 	{
 		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
@@ -181,21 +159,40 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 		return ratingsToValue;
 	}
 
-	
-//	private Stock createDummyMap()
-//	{
-//		
-//		List<String> allRatings = RATINGS_DB.retrieveAllEntries();
-//		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
-//
-//		for (String eachRating : allRatings)
-//		{
-//			ratingsToValue.put(eachRating, StockRatingValuesEnum.NOT_RATED);
-//		}
-//		
-//		Stock stock = new Stock(this.stockId);
-//		stock.setStockRatingValue(new StockRatingValue(ratingsToValue));
-//		return stock;
-//	}
+	public StockWrapperWithAllCalcResults getAllDetails(AllScripsDbObject allScripsDbObject) 
+	{
+		StockWrapperWithAllCalcResults stockWrapperWithAllCalcResults = new StockWrapperWithAllCalcResults();
+		
+		stockWrapperWithAllCalcResults.setAllScripsDbObject(allScripsDbObject);
+		//Rating : 4/9
+		
+		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries("stockName", FastList.newListWith(allScripsDbObject.getMoneycontrolName()));
+		if(unrealizedSummaryDbObjects!=null && unrealizedSummaryDbObjects.size()==1)
+		{
+			stockWrapperWithAllCalcResults.setUnrealizedSummaryDbObjects(unrealizedSummaryDbObjects);
+		}
+		
+		JdoDbOperations<NDaysHistoryDbObject>  nDaysHistoryDbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
+		final List<NDaysHistoryDbObject> ndaysHistoryDbObjects =nDaysHistoryDbOperations.getEntries("stockName", FastList.newListWith(allScripsDbObject.getNseId()));
+		if(ndaysHistoryDbObjects!=null && ndaysHistoryDbObjects.size()==1)
+		{
+			stockWrapperWithAllCalcResults.setnDaysHistoryDbObjects(ndaysHistoryDbObjects);
+		}		
+		
+		
+		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
+		final List<UnrealizedDetailDbObject> unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName", FastList.newListWith(allScripsDbObject.getMoneycontrolName()));
+		if(unrealizedDetailObjects!=null && unrealizedDetailObjects.size()==1)
+		{
+			stockWrapperWithAllCalcResults.setUnrealizedDetailDbObjects(unrealizedDetailObjects);
+		}	
+		
+		return stockWrapperWithAllCalcResults;
+		
+		//Buy Summary
+		//Buy Details
+	}
+
 
 }

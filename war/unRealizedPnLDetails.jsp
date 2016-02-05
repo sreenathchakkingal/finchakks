@@ -1,4 +1,4 @@
-<p>Details</p>
+Details
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
 	<tr>
 		<td>Stock Name</td>

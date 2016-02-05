@@ -151,7 +151,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			
 	//hack remove later - 'manual' is passed from the UI.
 	private boolean isSanityChecksPassed(List<String> rowsWithoutHeaderAndTrailer) {
-		return (!"manual".equals(rowsWithoutHeaderAndTrailer.get(0)));
+		return (rowsWithoutHeaderAndTrailer!=null && rowsWithoutHeaderAndTrailer.size()==1 && !"manual".equals(rowsWithoutHeaderAndTrailer.get(0)));
 	}
 
 

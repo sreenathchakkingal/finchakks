@@ -1,4 +1,4 @@
-<p>Summary</p>
+Summary
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
 	<tr>
 		<td>Stock Name</td>
@@ -19,7 +19,8 @@
 				<tr>
 			</c:otherwise>
 		</c:choose>
-			<td><c:out value="${stockSummary.stockName}"></c:out></td>
+	 	
+			<td><c:out value="${stockSummary.stockName}"></c:out></td> 
 			<td><fmt:formatNumber value="${stockSummary.returnTillDate}" pattern="#,###.##" /></td>
 			<td>
 			<fmt:formatNumber value="${stockSummary.sellableQuantity}"  pattern="#,###"/>
@@ -31,5 +32,7 @@
 			<td><fmt:formatNumber value="${stockSummary.totalReturn}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
 		</tr>
+	
 	</c:forEach>
+	
 </table>

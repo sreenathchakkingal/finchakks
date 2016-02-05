@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.finanalyzer.db.RatingDb;
+import com.finanalyzer.domain.ActionEnum;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.finanalyzer.domain.StockWrapperWithAllCalcResults;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.processors.MaintainStockRatingsProcessor;
 import com.finanalyzer.processors.Processor;
@@ -34,14 +36,20 @@ public class MaintainStockRatingsController
 	{
 		
 		String stockName = request.getParameter("stockName");
-		boolean isAddOrUpdate = request.getParameter("addOrUpdate") != null;
-		
-		Processor<AllScripsDbObject> processor = new MaintainStockRatingsProcessor(stockName, isAddOrUpdate, request.getParameterMap());
+		ActionEnum action = ActionEnum.getAction(request.getParameter("action"));
+				
+		MaintainStockRatingsProcessor processor = new MaintainStockRatingsProcessor(stockName, action, request.getParameterMap());
 
 		AllScripsDbObject allScripsDbObject = processor.execute();
+		StockWrapperWithAllCalcResults stockWrapperWithAllCalcResults = processor.getAllDetails(allScripsDbObject);
 
-//		request.setAttribute("stock", allScripsDbObject);
-		
-		return new ModelAndView("maintainStockRatings", "stock", allScripsDbObject);  
+		final ModelAndView modelAndView = new ModelAndView("maintainStockRatings", "allScripsDbObject", stockWrapperWithAllCalcResults.getAllScripsDbObject());
+		modelAndView.addObject("stocksSummary", stockWrapperWithAllCalcResults.getUnrealizedSummaryDbObjects());
+		modelAndView.addObject("stocksDetail", stockWrapperWithAllCalcResults.getUnrealizedDetailDbObjects());
+		modelAndView.addObject("stocks", stockWrapperWithAllCalcResults.getnDaysHistoryDbObjects());
+		return modelAndView;  
 	}
+	
+	
 }
+
