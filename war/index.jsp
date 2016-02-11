@@ -16,7 +16,7 @@
 		<tr>
 			<td><c:out value="${blackListedStock.stockName}"></c:out></td>
 			<td><fmt:formatNumber value="${blackListedStock.returnTillDate}" pattern="#,###" /></td>
-			<td><fmt:formatNumber value="${stockSummary.impactOnAverageReturn}"  type="percent" maxIntegerDigits="2" maxFractionDigits="2"/></td>
+			<td><fmt:formatNumber value="${blackListedStock.impactOnAverageReturn}"  type="percent" maxIntegerDigits="2" maxFractionDigits="2"/></td>
 			<td><fmt:formatNumber value="${blackListedStock.quantity}"  pattern="#,###"/></td>
 			<td><fmt:formatNumber value="${blackListedStock.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###" /></td>
 			<td><fmt:formatNumber value="${blackListedStock.totalInvestment}" pattern="#,##,###" /></td>
