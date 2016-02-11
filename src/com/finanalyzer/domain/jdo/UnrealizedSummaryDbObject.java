@@ -38,6 +38,9 @@ public class UnrealizedSummaryDbObject {
 	@Persistent
 	private boolean isBlackListed;
 	
+	@Persistent
+	private float impactOnAverageReturn;
+	
 	public static final Predicate<UnrealizedSummaryDbObject> IS_BLACKLISTED = new Predicate<UnrealizedSummaryDbObject>() {
 		
 		@Override
@@ -117,6 +120,15 @@ public class UnrealizedSummaryDbObject {
 	public void setStockName(String stockName) {
 		this.stockName = stockName;
 	}
+	
+	public float getImpactOnAverageReturn() {
+		return impactOnAverageReturn;
+	}
+
+	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
+		this.impactOnAverageReturn = impactOnAverageReturn;
+	}
+
 	
 }
 

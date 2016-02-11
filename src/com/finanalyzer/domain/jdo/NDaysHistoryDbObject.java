@@ -70,7 +70,10 @@ public class NDaysHistoryDbObject {
 
 	@Persistent
 	private float buyPrice;
-
+	
+	@Persistent
+	private float impactOnAverageReturn;
+	
 	public NDaysHistoryDbObject(String stockName, String moneyControlName,
 			DummyStockRatingValue stockRatingValue, float investmentRatio,
 			float industryInvestmentRatio, float sellPrice,
@@ -166,6 +169,14 @@ public class NDaysHistoryDbObject {
 	
 	public float getBuyPrice() {
 		return buyPrice;
+	}
+	
+	public float getImpactOnAverageReturn() {
+		return impactOnAverageReturn;
+	}
+
+	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
+		this.impactOnAverageReturn = impactOnAverageReturn;
 	}
 
 	@Override

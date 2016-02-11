@@ -1,4 +1,4 @@
-<!-- Indices written at Fri, 5 Feb 2016 18:22:49 UTC -->
+<!-- Indices written at Thu, 11 Feb 2016 03:35:52 UTC -->
 
 <datastore-indexes>
 
@@ -6,18 +6,6 @@
     <datastore-index kind="UnrealizedDetailDbObject" ancestor="false" source="auto">
         <property name="stockName" direction="asc"/>
         <property name="buyDate" direction="desc"/>
-    </datastore-index>
-
-    <!-- Used 1 time in query history -->
-    <datastore-index kind="AllScripsDbObject" ancestor="false" source="auto">
-        <property name="isWatchListed" direction="asc"/>
-        <property name="nseId" direction="asc"/>
-    </datastore-index>
-
-    <!-- Used 1 time in query history -->
-    <datastore-index kind="AllScripsDbObject" ancestor="false" source="auto">
-        <property name="isBlackListed" direction="asc"/>
-        <property name="nseId" direction="asc"/>
     </datastore-index>
 
 </datastore-indexes>

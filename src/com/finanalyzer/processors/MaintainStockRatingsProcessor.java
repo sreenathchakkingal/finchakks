@@ -1,39 +1,16 @@
 package com.finanalyzer.processors;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.finanalyzer.db.CoreDb;
 import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.db.StockRatingsDb;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.ActionEnum;
-import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.StockWrapperWithAllCalcResults;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
@@ -45,7 +22,6 @@ import com.finanalyzer.util.StringUtil;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.utility.Iterate;
 
 public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObject>
 {
@@ -183,7 +159,7 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 		
 		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
 		final List<UnrealizedDetailDbObject> unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName", FastList.newListWith(allScripsDbObject.getMoneycontrolName()));
-		if(unrealizedDetailObjects!=null && unrealizedDetailObjects.size()==1)
+		if(unrealizedDetailObjects!=null && unrealizedDetailObjects.size()!=0)
 		{
 			stockWrapperWithAllCalcResults.setUnrealizedDetailDbObjects(unrealizedDetailObjects);
 		}	

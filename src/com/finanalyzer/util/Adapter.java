@@ -63,6 +63,7 @@ public class Adapter {
 			.totalInvestment(stock.getTotalInvestment())
 			.totalReturn(stock.getTotalReturn())
 			.totalReturnIfBank(stock.getTotalReturnIfBank())
+			.impactOnAverageReturn(stock.getImpactOnAverageReturn())
 			.industry(stock.getIndustry())
 			.isBlackListed(stock.isBlackListed()).build();
 			

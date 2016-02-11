@@ -4,14 +4,15 @@ Ndays History
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
 	<tr>
 		<td>Stock Name</td>
+		<td>Decrease Simple Moving Avg</td>
+		<td>Net Gains</td>
 		<td>Score</td>
 		<td>Investment</td>
 		<td>Industry Investment</td>
 		<td>Avg Interest Return</td>
+		<td>Impact on Avg Interest</td>
 		<td>Buy Price</td>
 		<td>Duration</td>
-		<td>Decrease Simple Moving Avg</td>
-		<td>Net Gains</td>
 		<td>Industry</td>
 		<td>Latest Close Price</td>
 		<td>50 day Simple Moving Avg</td>
@@ -29,16 +30,16 @@ Ndays History
 			</c:otherwise>
 		</c:choose>
 			 <td><a href="http://finchakks.appspot.com/maintainStockRatings.do?stockName=<c:out value='${stock.stockName}'/>" target="_blank">
-			 <!-- <td><a href="http://localhost:8888/maintainStockRatings.do?stockName=<c:out value='${stock.stockName}'/>" target="_blank">  -->
 			<c:out value='${stock.stockName}' /></td></a>
+			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized/100}" type="percent" maxIntegerDigits="2" /></td>
+			<td><fmt:formatNumber value="${stock.netNDaysGain}" type="percent" maxIntegerDigits="2" /></td>
 			<td><c:out value='${stock.stockRatingValue.score}' /></td>
 			<td><fmt:formatNumber value="${stock.investmentRatio}"  type="percent"  maxIntegerDigits="2" /></td>
 			<td><fmt:formatNumber value="${stock.industryInvestmentRatio}"  type="percent"  maxIntegerDigits="3" /></td>
 			<td><fmt:formatNumber value="${stock.returnTillDate}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${stock.impactOnAverageReturn}"  type="percent" maxIntegerDigits="2" maxFractionDigits="2"/></td>
 			<td><fmt:formatNumber value="${stock.buyPrice}" pattern="#,###.##" /></td>
 			<td><c:out value='${stock.duration}' /></td>
-			<td><fmt:formatNumber value="${stock.simpleMovingAverageAndSellDeltaNormalized/100}" type="percent"  maxIntegerDigits="2" /></td>
-			<td><fmt:formatNumber value="${stock.netNDaysGain}" type="percent"  maxIntegerDigits="2" /></td> 
 			<td><c:out value='${stock.industry}' /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice}" pattern="##.##" /></td>
 			<td><fmt:formatNumber value="${stock.simpleMovingAverage}" pattern="##.##" /></td>

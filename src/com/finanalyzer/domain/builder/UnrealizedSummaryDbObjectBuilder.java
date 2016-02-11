@@ -51,6 +51,11 @@ public class UnrealizedSummaryDbObjectBuilder {
 		return this;
 	}
 	
+	public UnrealizedSummaryDbObjectBuilder impactOnAverageReturn(float impactOnAverageReturn) {
+		this.unrealizedSummaryDbObject.setImpactOnAverageReturn(impactOnAverageReturn);
+		return this;
+	}
+	
 	public UnrealizedSummaryDbObject build()
 	{
 	    return this.unrealizedSummaryDbObject;

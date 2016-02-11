@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -20,6 +21,7 @@ import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
+import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
@@ -30,6 +32,8 @@ import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 
 public class JdoDbOperations<T> {
+	
+	private static Logger LOG =  Logger.getLogger(JdoDbOperations.class.getName());
 	
 	private Class<T> dbObjectClass;
 	
@@ -168,6 +172,7 @@ public class JdoDbOperations<T> {
 					buyDate = DateUtil.convertToStandardFormat("dd-MM-yyyy",invoiceDate);
 				}
 				unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
+				LOG.info("collecting stock: "+name+" for insertion");
 			}
 			
 			return (List<UnrealizedDbObject>) pm.makePersistentAll(unrealizedDbObjects);	

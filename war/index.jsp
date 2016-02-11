@@ -4,6 +4,7 @@
 	<tr>
 		<td>Stock Name</td>
 		<td>Avg Interest Return</td>
+		<td>Impact on Avg Return</td>
 		<td>Sellable Quantity
 		<td>Diff Of Return - Bank</td>
 		<td>Total Investment</td>
@@ -12,13 +13,15 @@
 	</tr>
 	
 	<c:forEach items="${blackListedStocks}" var="blackListedStock">
+		<tr>
 			<td><c:out value="${blackListedStock.stockName}"></c:out></td>
-			<td><fmt:formatNumber value="${blackListedStock.returnTillDate}" pattern="#,###.##" /></td>
-			<td><fmt:formatNumber value="${blackListedStock.quantity}"  pattern="#,###.##"/></td>
-			<td><fmt:formatNumber value="${blackListedStock.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
-			<td><fmt:formatNumber value="${blackListedStock.totalInvestment}" pattern="#,##,###.##" /></td>
-			<td><fmt:formatNumber value="${blackListedStock.totalReturn}" pattern="#,###.##" /></td>
-			<td><fmt:formatNumber value="${blackListedStock.totalReturnIfBank}" pattern="#,###.##" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.returnTillDate}" pattern="#,###" /></td>
+			<td><fmt:formatNumber value="${stockSummary.impactOnAverageReturn}"  type="percent" maxIntegerDigits="2" maxFractionDigits="2"/></td>
+			<td><fmt:formatNumber value="${blackListedStock.quantity}"  pattern="#,###"/></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalReturn-stockSummary.totalReturnIfBank}" pattern="#,###" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalInvestment}" pattern="#,##,###" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalReturn}" pattern="#,###" /></td>
+			<td><fmt:formatNumber value="${blackListedStock.totalReturnIfBank}" pattern="#,###" /></td>
 		</tr>
 	</c:forEach>
 	

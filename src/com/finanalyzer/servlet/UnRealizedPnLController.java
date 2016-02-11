@@ -67,20 +67,20 @@ public class UnRealizedPnLController extends PnlController
 			List<Stock> stocks = nonExceptionAndExceptionStocks.getOne();
 			List<Stock> exceptionStocks  = nonExceptionAndExceptionStocks.getTwo();
 			
-			List<Stock> requestedStockDetail = processor.getRequestedStockStatusInfo(stocks);
 
 			final List<Stock> stocksWithMaturityMoreThanAQuarter = (List<Stock>)Iterate.select(stocks, UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER);
 			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocksWithMaturityMoreThanAQuarter);
-			List<Stock> requestedStockSummary = processor.getRequestedStockStatusInfo(stocksSummary);
 			
 			ProfitAndLossDbObject profitAndLoss = processor.getProfitAndLoss(stocksSummary);
+			
+			processor.calculateImpactOfEachStock(stocksSummary, profitAndLoss);
 			
 			JsonObject stockInvestmentChart = processor.getStockInvestmentChart(stocksSummary);
 			JsonObject requestedStockInvestmentChart = processor.getRequestedStockInvestmentChart(stockInvestmentChart);
 			
 			Map<String, Object> result = UnifiedMap.newMap();
-			result.put("stocksDetail", requestedStockDetail);
-			result.put("stocksSummary", requestedStockSummary);
+			result.put("stocksDetail", stocks);
+			result.put("stocksSummary", stocksSummary);
 			result.put("stocksException", UnifiedSet.newSet(exceptionStocks));
 			result.put("stockInvestmentChart", requestedStockInvestmentChart);
 			result.put("profitAndLoss", profitAndLoss);

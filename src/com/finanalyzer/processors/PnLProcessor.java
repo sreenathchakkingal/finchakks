@@ -32,6 +32,7 @@ import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.multimap.list.FastListMultimap;
 import com.gs.collections.impl.set.mutable.SetAdapter;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
 
 public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
@@ -128,19 +129,38 @@ public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 	
 	public List<Stock> fetchStockSummaryStatus(List<Stock> stockLines)
 	{
-		UnifiedMap<String, Stock> map = UnifiedMap.newMap();
 
-		aggregateStocks(map, stockLines);
-		
-		final List<Stock> stockSummary = FastList.newList(map.values());
-
+		final List<Stock> stockSummary = aggregateStocks(stockLines);
+			
 		Collections.sort(stockSummary, STOCK_NAME_COMPARATOR);
 		return stockSummary;
 		
 	}
 
-	private void aggregateStocks(UnifiedMap<String, Stock> map, final List<Stock> stockLines) {
+	public void calculateImpactOfEachStock(List<Stock> stockSummary, ProfitAndLossDbObject profitAndLoss) 
+	{
+		for (int i=0; i<stockSummary.size();i++)
+		{
+			float totalInvestment = 0.0f;
+			float weighedAverageReturn = 0.0f;
+			for (int j=0; j<stockSummary.size();j++)
+			{
+				if (i!=j)
+				{
+					totalInvestment = totalInvestment + stockSummary.get(j).getTotalInvestment();
+					weighedAverageReturn = weighedAverageReturn + stockSummary.get(j).getReturnTillDate() * 
+							stockSummary.get(j).getTotalInvestment() * .01f;
+				}
+			}
+			stockSummary.get(i).setImpactOnAverageReturn(profitAndLoss.getAverageReturn()-weighedAverageReturn/totalInvestment);
+		}
+	}
+
+	private List<Stock> aggregateStocks(final List<Stock> stockLines) {
 		Stock stockTemp;
+		
+		UnifiedMap<String, Stock> map = UnifiedMap.newMap();
+		
 		for (Stock stock : stockLines)
 		{
 			Stock existingStock = map.get(stock.getStockName());
@@ -148,26 +168,32 @@ public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 			{
 				float existingInterestReturn =existingStock.getReturnTillDate();
 				float interestReturn = stock.getReturnTillDate();
-				float avgInterestReturn = (existingInterestReturn * existingStock.getQuantity() + interestReturn * stock.getQuantity())
-						/ (existingStock.getQuantity() + stock.getQuantity());
+				float weightedAvgInterestReturn = (existingInterestReturn * existingStock.getTotalInvestment() + 
+						interestReturn * stock.getTotalInvestment())
+						/ (existingStock.getTotalInvestment() + stock.getTotalInvestment());
 
 				stockTemp = new StockBuilder().
 						name(stock.getStockName()).
 						totalInvestment(existingStock.getTotalInvestment() + stock.getTotalInvestment()).
 						totalReturn(existingStock.getTotalReturn() + stock.getTotalReturn()).
 						totalReturnIfBank(existingStock.getTotalReturnIfBank() + stock.getTotalReturnIfBank()).
-						returnTillDate(avgInterestReturn).
+						returnTillDate(weightedAvgInterestReturn).
 						quantity(existingStock.getQuantity() + stock.getQuantity()).
 						sellableQuantity(existingStock.getSellableQuantity() + stock.getSellableQuantity()).
 						sellDate(stock.getSellDate()).buyDate(stock.getBuyDate()).blackListed(stock.isBlackListed()).
 						build();
 
 				map.put(stock.getStockName(), stockTemp);
-			} else
+			} 
+			else
 			{
 				map.put(stock.getStockName(), stock);
 			}
+			
 		}
+		List<Stock> aggregatedStock = FastList.newList();
+		aggregatedStock.addAll(map.values());
+		return aggregatedStock;
 	}
 
 	//tactical replace with better utilities in gs collection
@@ -201,7 +227,7 @@ public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 		float totalReturnIfBank = 0.0f;
 		float totalReturn = 0.0f;
 		float totalInvestment = 0.0f;
-		float averageReturn = 0.0f;
+		float weighedAverageReturn = 0.0f;
 		
 		for(Stock eachStockSummary : stocksSummary)
 		{
@@ -209,11 +235,11 @@ public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 			totalReturnIfBank = totalReturnIfBank+eachStockSummary.getTotalReturnIfBank();
 			totalReturn = totalReturn + eachStockSummary.getTotalReturn();
 			totalInvestment = totalInvestment + eachStockSummary.getTotalInvestment();
-			averageReturn = averageReturn + eachStockSummary.getReturnTillDate() * eachStockSummary.getTotalInvestment() * .01f;
+			weighedAverageReturn = weighedAverageReturn + eachStockSummary.getReturnTillDate() * eachStockSummary.getTotalInvestment() * .01f;
 		}
 		
 		return new ProfitAndLossBuilder()
-		.averageReturn(averageReturn/totalInvestment)
+		.averageReturn(weighedAverageReturn/totalInvestment)
 		.totalInvestment(totalInvestment)
 		.totalReturn(totalReturn)
 		.totalReturnIfBank(totalReturnIfBank)

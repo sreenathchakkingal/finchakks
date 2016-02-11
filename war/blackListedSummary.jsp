@@ -1,4 +1,8 @@
-Summary
+<!-- this should be exactly the same as unrealized summary except for the heading - BlackListed
+and <c:forEach items="${blackListedStocks}" var="stockSummary"> instead of <c:forEach items="${stocksSummary}" var="stockSummary">
+keeping this like this until i know how to switch this based on a flag from the server side. 
+-->
+BlackListed
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1" class="sortable">
 	<tr>
 		<td>Stock Name</td>
@@ -10,18 +14,10 @@ Summary
 		<td>Total Return</td>
 		<td>Total Return If Bank</td>
 	</tr>
-	
-	<c:forEach items="${stocksSummary}" var="stockSummary">
-		<c:choose>
-			<c:when test="${stockSummary.sellableQuantity gt 0}">
-					<tr bgcolor="#2E64FE">
-			</c:when>
-			<c:otherwise>
-				<tr>
-			</c:otherwise>
-		</c:choose>
-	 	
-			<td><c:out value="${stockSummary.stockName}"></c:out></td> 
+	<tr>
+	<c:forEach items="${blackListedStocks}" var="stockSummary">
+		
+			<td><c:out value="${stockSummary.stockName}"/>
 			<td><fmt:formatNumber value="${stockSummary.returnTillDate}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.impactOnAverageReturn}"  type="percent" maxIntegerDigits="2" maxFractionDigits="2"/></td>
 			<td>
@@ -33,8 +29,7 @@ Summary
 			<td><fmt:formatNumber value="${stockSummary.totalInvestment}" pattern="#,##,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturn}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stockSummary.totalReturnIfBank}" pattern="#,###.##" /></td>
-		</tr>
-	
 	</c:forEach>
+	</tr>
 	
 </table>

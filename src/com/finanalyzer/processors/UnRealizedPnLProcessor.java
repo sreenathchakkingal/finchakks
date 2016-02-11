@@ -132,6 +132,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				} 
 				else 
 				{
+					LOG.info("No mapping found: "+moneycontrolName);
 					stock.setIsException("No mapping found");
 					exceptionStocks.add(stock);
 				}
@@ -151,7 +152,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			
 	//hack remove later - 'manual' is passed from the UI.
 	private boolean isSanityChecksPassed(List<String> rowsWithoutHeaderAndTrailer) {
-		return (rowsWithoutHeaderAndTrailer!=null && rowsWithoutHeaderAndTrailer.size()==1 && !"manual".equals(rowsWithoutHeaderAndTrailer.get(0)));
+		return (rowsWithoutHeaderAndTrailer!=null && rowsWithoutHeaderAndTrailer.size()>1 && !"manual".equals(rowsWithoutHeaderAndTrailer.get(0)));
 	}
 
 
@@ -184,28 +185,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 					}
 				}
 				return jsonData;
-			}
-
-			@SuppressWarnings("serial")
-			public List<Stock> getRequestedStockStatusInfo(List<Stock> stocksSummary)
-			{
-				if (this.stockName==null || "".equals(this.stockName))
-				{
-					return stocksSummary;
-				}
-				
-				final List<Stock> requestedStockSummary =(List<Stock>) Iterate.selectWith(stocksSummary, new Predicate2<Stock, String>()
-						{
-					@Override
-					public boolean accept(Stock stock, String interestedStock)
-					{
-						return interestedStock.equalsIgnoreCase(stock.getStockName());
-					}
-						}, this.stockName);
-				
-				return requestedStockSummary;
-				
-				
 			}
 
 			public JsonObject getRequestedStockInvestmentChart(JsonObject stockInvestmentChart)
@@ -249,6 +228,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
 				
 				JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
+				profitAndLossOperations.deleteEntries();
 				profitAndLossOperations.insertEntries(FastList.newListWith(profitAndLoss));
 			}
 

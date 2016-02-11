@@ -3,13 +3,13 @@ Details
 	<tr>
 		<td>Stock Name</td>
 		<td>Interest Return</td>
+		<td>Buy Price</td>
+		<td>Sell Price</td>
+		<td>Duration</td>
 		<td>Diff Of Return - Bank</td>
 		<td>Quantity</td>
 		<td>Buy Date</td>
-		<td>Buy Price</td>
-		<td>Total Buy Price</td>
-		<td>Duration</td>
-		<td>Sell Price</td>
+		<td>Total Investment</td>
 		<td>Sell Price If Bank</td>
 		<td>Total Sell Price</td>
 		<td>Total Sell Price If Bank</td>
@@ -35,13 +35,13 @@ Details
 		</c:choose>
 			<td><c:out value="${stock.stockName}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.returnTillDate}" pattern="#,###.##" /></td>
+			<td><c:out value="${stock.buyPrice}"></c:out></td>
+			<td><c:out value="${stock.sellPrice}"></c:out></td>
+			<td><c:out value="${stock.duration}"></c:out></td>
 			<td><fmt:formatNumber value="${(stock.sellPrice- stock.bankSellPrice) * stock.quantity}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.quantity}" pattern="#,###.##" /></td>
 			<td><c:out value="${stock.buyDate}"></c:out></td>
-			<td><c:out value="${stock.buyPrice}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.buyPrice * stock.quantity}" pattern="#,###.##" /></td>
-			<td><c:out value="${stock.duration}"></c:out></td>
-			<td><c:out value="${stock.sellPrice}"></c:out></td>
 			<td><fmt:formatNumber value="${stock.bankSellPrice}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.sellPrice * stock.quantity}" pattern="#,###.##" /></td>
 			<td><fmt:formatNumber value="${stock.bankSellPrice * stock.quantity}" pattern="#,###.##" /></td>

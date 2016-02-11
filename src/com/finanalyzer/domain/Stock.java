@@ -65,6 +65,8 @@ public class Stock
 	private boolean isBlackListed;
 
 	private String exceptionComment="";
+	
+	private float impactOnAverageReturn;
 
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
@@ -684,6 +686,14 @@ public class Stock
 	public boolean isException()
 	{
 		return this.isException;
+	}
+	
+	public float getImpactOnAverageReturn() {
+		return impactOnAverageReturn;
+	}
+	
+	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
+		this.impactOnAverageReturn = impactOnAverageReturn;
 	}
 	
 	@Override
