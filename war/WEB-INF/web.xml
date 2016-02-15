@@ -1,86 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
+<?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-<!-- 
-	<servlet>
-		<servlet-name>NDaysHistory</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.NdaysHistoryServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>NDaysHistory</servlet-name>
-		<url-pattern>/nDaysHistory</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>MaintainStockRatings</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.MaintainStockRatingsServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MaintainStockRatings</servlet-name>
-		<url-pattern>/maintainStockRatings</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>UnRealizedPnL</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.UnRealizedPnLServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UnRealizedPnL</servlet-name>
-		<url-pattern>/unRealizedPnL</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>RealizedPnL</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.RealizedPnLServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>RealizedPnL</servlet-name>
-		<url-pattern>/realizedPnL</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>MaintainWatchList</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.MaintainWatchListServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MaintainWatchList</servlet-name>
-		<url-pattern>/maintainWatchList</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>MaintainMapping</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.MaintainMappingServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MaintainMapping</servlet-name>
-		<url-pattern>/maintainMapping</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>MaintainRating</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.MaintainRatingServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MaintainRating</servlet-name>
-		<url-pattern>/maintainRating</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>StockInfo</servlet-name>
-		<servlet-class>com.finanalyzer.servlet.StockInfoServlet</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>StockInfo</servlet-name>
-		<url-pattern>/stockInfo</url-pattern>
-	</servlet-mapping>
- -->
-
-	<servlet>
+    <servlet>
 		<servlet-name>AutoComplete</servlet-name>
 		<servlet-class>com.finanalyzer.servlet.AutoCompleteServlet</servlet-class>
 	</servlet>
@@ -112,11 +32,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>ValidRatingsAutoComplete</servlet-name>
 		<url-pattern>/validRatingsAutoComplete</url-pattern>
 	</servlet-mapping>
-	
-<!-- 	<welcome-file-list>
-		<welcome-file>/intialize.do</welcome-file>
-	</welcome-file-list>
- -->
  
 	<servlet>
 		<servlet-name>spring</servlet-name>
@@ -128,6 +43,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+<!-- testing begins -->
+
 	<servlet>
 		<servlet-name>Test</servlet-name>
 		<servlet-class>com.finanalyzer.servlet.TestServlet</servlet-class>
@@ -136,5 +53,17 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>Test</servlet-name>
 		<url-pattern>/test</url-pattern>
 	</servlet-mapping>
-		
+
+ <servlet>
+  <servlet-name>SystemServiceServlet</servlet-name>
+  <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+  <init-param>
+   <param-name>services</param-name>
+   <param-value>com.finanalyzer.domain.jdo.UnrealizedSummaryDbObjectEndpoint,com.finanalyzer.endpoints.NdaysHistoryEndPoint</param-value>
+  </init-param>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>SystemServiceServlet</servlet-name>
+  <url-pattern>/_ah/spi/*</url-pattern>
+ </servlet-mapping>
 </web-app>

@@ -72,9 +72,7 @@ public class CombineNDaysHistoryAndUnrealizedController{
 			pm.close();
 		}
 
-		ModelAndView modelAndView = new ModelAndView("test");
-		
-		return modelAndView;
+		return new ModelAndView("test");
 	}
 
 }

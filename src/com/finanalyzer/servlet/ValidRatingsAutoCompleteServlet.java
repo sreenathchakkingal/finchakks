@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.domain.AutoCompleteData;
 import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.google.appengine.api.datastore.Entity;

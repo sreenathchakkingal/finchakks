@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.domain.Adjustment;
 import com.finanalyzer.domain.AdjustmentType;
 import com.finanalyzer.domain.DateValueObject;
@@ -21,7 +20,6 @@ implements Processor<Stock>
 	private Adjustment splitAdjustment;
 	private Adjustment bonusAdjustment;
 	private List<DateValueObject> historicalClosePrices;
-	private static final String SCREENER_HEADER = "http://www.screener.in/company/?q=";
 
 
 	public StockInfoProcessor(String stockName, String numberOfYears, String splitRatios, 
@@ -57,11 +55,6 @@ implements Processor<Stock>
 		return stock;
 	}
 
-
-	public String getScreenerUrl()
-	{
-		return SCREENER_HEADER+ AllScripsUtil.getInstance().getBseIdFromNseId(this.stockName);
-	}
 
 	private void fetchAndstampDividendInfo(Stock stock)
 	{

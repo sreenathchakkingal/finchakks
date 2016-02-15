@@ -11,11 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.AutoCompleteData;
-import com.finanalyzer.domain.DbObject;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;

@@ -32,26 +32,8 @@ public class StockInfoServlet
 
 		Map<String, Object> result = UnifiedMap.newMap();
 		result.put("stock", stock);
-		result.put("screenerUrl", processor.getScreenerUrl());
 		
 		return new ModelAndView("stockInfo", result);
 		
 	}
-
-//	@Override
-//	public void doPost(HttpServletRequest request, HttpServletResponse response)
-//			throws ServletException, IOException {
-//		String stockName = request.getParameter("stockName");
-//		final String numberOfYears = request.getParameter("numberOfYears");
-//		final String historicalClosePrices = request
-//				.getParameter("historicalClosePrices");
-//
-//		StockInfoProcessor processor = new StockInfoProcessor(stockName,
-//				numberOfYears, historicalClosePrices);
-//		Stock stock = processor.execute();
-//
-//		request.setAttribute("stock", stock);
-//		request.setAttribute("screenerUrl", processor.getScreenerUrl());
-//		this.despatchTo(request, response, "stockInfo.jsp");
-//	}
 }

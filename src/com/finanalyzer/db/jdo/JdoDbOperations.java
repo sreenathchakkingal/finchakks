@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.finanalyzer.db.AllScripsUtil;
 import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.StockRatingsDb;
@@ -183,36 +182,6 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public void populateAllScrips()
-	{
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try
-		{
-			
-			AllScripsUtil allScripsUtil = AllScripsUtil.getInstance();
-			
-			List<Entity> entities = allScripsUtil.freshRetrieveAllEntities();
-			
-			List<AllScripsDbObject> allscrips = FastList.newList(); 
-			for(Entity entity : entities)
-			{
-				String bse = (String) entity.getProperty(AllScripsDbObject.BSE_ID);
-				String fv = String.valueOf(entity.getProperty(AllScripsDbObject.FAIR_VALUE));
-				String ind = (String) entity.getProperty(AllScripsDbObject.INDUSTRY);
-				String isin = (String) entity.getProperty(AllScripsDbObject.ISIN);
-				String nse = (String) entity.getProperty(AllScripsDbObject.NSE_ID);
-				String stockName = (String) entity.getProperty(AllScripsDbObject.STOCK_NAME);
-				allscrips.add(new AllScripsDbObject(nse, stockName, isin, bse, fv, ind));
-				
-			}
-			pm.makePersistentAll(allscrips);			
-		}
-		finally
-		{
-			pm.close();
-		}
-
-	}
 	
 	public boolean updateStockIdConversion() {
 		
@@ -271,37 +240,7 @@ public class JdoDbOperations<T> {
 		}
 	}
 	
-	public boolean populateScripsWithRatings()
-	{
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try
-		{
-			StockRatingsDb stockRatingsDb = new StockRatingsDb();
-			FastList<Entity> entities = FastList.newList(stockRatingsDb.freshRetrieveAllEntities());
-			Query q = null; 
-			Set<String> distinctStockNames = UnifiedSet.newSet();
-			
-			for (Entity entity : entities)
-			{
-				distinctStockNames.add((String)entity.getProperty("STOCK_ID"));
-			}
-			
-			for (String stockName : distinctStockNames)
-			{
-				final Map<String, StockRatingValuesEnum> ratingToValue = stockRatingsDb.getStockRatingValue(stockName).getRatingToValue();
-				q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
-				AllScripsDbObject matchingScrip = ((List<AllScripsDbObject>)q.execute(stockName)).get(0);
-				matchingScrip.setRatingNameToValue(ratingToValue);
-			}
-			return true;
-		}
-		
-		finally
-		{
-			pm.close();
-		}
-	}
-
+	
 	public void deleteAllScrips() {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query q = null;

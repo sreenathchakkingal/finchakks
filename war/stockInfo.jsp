@@ -22,11 +22,6 @@ Returns :
 	</c:forEach>
 </table>
 
-<a href=<c:out value="${screenerUrl}"/> target="_blank">Screener</a>
-<br/> 
-<a href="http://www.4-traders.com" target="_blank">4-Trader</a>
-<br/>
-
 Dividends : 
 <table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 	<c:forEach items="${stock.dividends}" var="dividend">

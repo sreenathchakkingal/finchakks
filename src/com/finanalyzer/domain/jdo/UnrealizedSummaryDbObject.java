@@ -2,8 +2,10 @@ package com.finanalyzer.domain.jdo;
 
 import java.util.Comparator;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
 import com.finanalyzer.domain.Stock;
 import com.gs.collections.api.block.predicate.Predicate;
@@ -11,6 +13,10 @@ import com.gs.collections.api.block.predicate.Predicate;
 @PersistenceCapable
 public class UnrealizedSummaryDbObject {
 
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
+	
 	@Persistent
 	private String stockName; //moneycontrol name
 	
@@ -129,6 +135,13 @@ public class UnrealizedSummaryDbObject {
 		this.impactOnAverageReturn = impactOnAverageReturn;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 }
 
