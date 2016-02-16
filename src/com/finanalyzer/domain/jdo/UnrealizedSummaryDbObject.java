@@ -131,6 +131,10 @@ public class UnrealizedSummaryDbObject {
 		return impactOnAverageReturn;
 	}
 
+	public float getFormattedImpactOnAverageReturn() {
+		return impactOnAverageReturn*100;
+	}
+	
 	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
 		this.impactOnAverageReturn = impactOnAverageReturn;
 	}

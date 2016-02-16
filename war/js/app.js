@@ -1,11 +1,10 @@
-var app = angular.module('app',['ui.grid']);
+var app = angular.module('MyGridApp', ['ui.grid']);
 
-app.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
-  $scope.gridOptions1 = {};
-
-  
- $http.get('https://cdn.rawgit.com/angular-ui/ui-grid.info/gh-pages/data/100.json')
-    .success(function(data) {
-      $scope.gridOptions1.data = data;
-    });
+app.controller('bodyController', ['$scope', function($scope) {
+    $scope.myData = [{name: "Moroni", age: 50},
+                     {name: "Tiancum", age: 43},
+                     {name: "Jacob", age: 27},
+                     {name: "Nephi", age: 29},
+                     {name: "Enos", age: 34}];
+    $scope.gridOptions = { data : 'myData' };
 }]);
