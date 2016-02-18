@@ -1,11 +1,14 @@
 package com.finanalyzer.domain.jdo;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+
+import com.gs.collections.impl.list.mutable.FastList;
 
 @PersistenceCapable
 public class NDaysHistoryDbObject {
@@ -73,6 +76,8 @@ public class NDaysHistoryDbObject {
 	
 	@Persistent
 	private float impactOnAverageReturn;
+
+	private Float[] values;
 	
 	public NDaysHistoryDbObject(String stockName, String moneyControlName,
 			DummyStockRatingValue stockRatingValue, float investmentRatio,
@@ -178,7 +183,37 @@ public class NDaysHistoryDbObject {
 	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
 		this.impactOnAverageReturn = impactOnAverageReturn;
 	}
-
+	
+	public float getFormattedNetNDaysGain()
+	{
+		return this.netNDaysGain*100;
+	}
+	
+	public float getFormattedImpactOnAverageReturn()
+	{
+		return this.impactOnAverageReturn*100;
+	}	
+	
+	public float getFormattedInvestmentRatio()
+	{
+		return this.investmentRatio*100;
+	}	
+	
+	public float getFormattedIndustryInvestmentRatio()
+	{
+		return this.industryInvestmentRatio*100;
+	}
+	
+	public Float[] getFormattedValues()
+	{
+		//so that everytime the client queries this method is not executed multiple //times for the same object
+		if(this.values == null || this.values.length==0)  
+		{
+			this.values=this.nDaysGains.values().toArray(new Float[this.nDaysGains.values().size()]);	
+		}
+		return this.values;
+	}
+	
 	@Override
 	public String toString()
 	{

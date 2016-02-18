@@ -59,7 +59,7 @@
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
   <init-param>
    <param-name>services</param-name>
-   <param-value>com.finanalyzer.domain.jdo.UnrealizedSummaryDbObjectEndpoint,com.finanalyzer.endpoints.NdaysHistoryEndPoint</param-value>
+   <param-value>com.finanalyzer.domain.jdo.UnrealizedSummaryDbObjectEndpoint,com.finanalyzer.endpoints.InitializeControllerEndPoint</param-value>
   </init-param>
  </servlet>
  <servlet-mapping>

@@ -37,7 +37,6 @@ public class Stock
 	private float buyPrice;
 	private String sellDate;
 	
-	private float sellPriceBank;
 	private float quantity;
 	private float sellableQuantity=-1;
 	private float totalInvestment;
@@ -321,16 +320,6 @@ public class Stock
 	public void setTotalReturn(float totalReturn)
 	{
 		this.totalReturn = totalReturn;
-	}
-
-	public float getSellPriceBank()
-	{
-		return this.sellPriceBank;
-	}
-
-	public void setSellPriceBank(float sellPriceBank)
-	{
-		this.sellPriceBank = sellPriceBank;
 	}
 
 	public float getTotalReturnIfBank()

@@ -1,5 +1,4 @@
 <!doctype html>
-<html  ng-app="myApp">
 <head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 
@@ -12,11 +11,22 @@
     <link rel="stylesheet" href="http://ui-grid.info/release/ui-grid.css" type="text/css">
     <link rel="stylesheet" href="js/main.css" type="text/css">
     
-<script src="js/form.js"></script>
+<script src="js/myAngular.js"></script>
+<script src="https://apis.google.com/js/client.js?onload=init"></script>
 </head>
+<body>
+	
+<div ng-app="finchakksApp" ng-controller="initializeController">
+	<h3>Black Listed Stocks </h3>
+	<div id="grid1" ui-grid-exporter ui-grid="blackListedGrid" class="blackListedGrid"/>
 
-<body ng-controller="MyCtrl"> 
-	<div class="grid" ui-grid="gridOptions"></div>
-</body>
+	<h3>N Days History</h3>
+	<div id="grid2" style="word-wrap: normal" ui-grid-exporter ui-grid="nDaysHistoryGrid" class="grid"/>
+
+	<h3>Unrealized Details</h3>
+	<div id="grid3" style="word-wrap: normal" ui-grid-exporter ui-grid="unrealizedDetailsGrid" class="grid"/>
+
+
+</div>
 
 </html>
