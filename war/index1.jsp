@@ -20,11 +20,25 @@
 	<h3>Black Listed Stocks </h3>
 	<div id="grid1" ui-grid-exporter ui-grid="blackListedGrid" class="blackListedGrid"/>
 
+<br/>
+		Net Returns: {{profitAndLoss.averageReturn}}
+<br/><br/>
+		Net Investment: {{profitAndLoss.totalInvestment}}
+<br/><br/>
+		Total Return: {{profitAndLoss.totalReturn}}
+<br/><br/>
+		Total Return(If Bank): {{profitAndLoss.totalReturnIfBank}}
+<br/><br/>
+		Net Diff(Stocks vs Bank): {{profitAndLoss.totalReturnVsIfBank}}
+<br/><br/>
+
+
 	<h3>N Days History</h3>
-	<div id="grid2" style="word-wrap: normal" ui-grid-exporter ui-grid="nDaysHistoryGrid" class="grid"/>
+	<div id="grid2" style="word-wrap: normal" ui-grid-exporter ui-grid="nDaysHistoryGrid" class="nDaysHistoryGrid"/>
 
 	<h3>Unrealized Details</h3>
-	<div id="grid3" style="word-wrap: normal" ui-grid-exporter ui-grid="unrealizedDetailsGrid" class="grid"/>
+	<div id="grid3" style="word-wrap: normal" ui-grid-exporter ui-grid="unrealizedDetailsGrid" ui-grid-grouping  class="grid"/>
+
 
 
 </div>

@@ -184,26 +184,6 @@ public class NDaysHistoryDbObject {
 		this.impactOnAverageReturn = impactOnAverageReturn;
 	}
 	
-	public float getFormattedNetNDaysGain()
-	{
-		return this.netNDaysGain*100;
-	}
-	
-	public float getFormattedImpactOnAverageReturn()
-	{
-		return this.impactOnAverageReturn*100;
-	}	
-	
-	public float getFormattedInvestmentRatio()
-	{
-		return this.investmentRatio*100;
-	}	
-	
-	public float getFormattedIndustryInvestmentRatio()
-	{
-		return this.industryInvestmentRatio*100;
-	}
-	
 	public Float[] getFormattedValues()
 	{
 		//so that everytime the client queries this method is not executed multiple //times for the same object

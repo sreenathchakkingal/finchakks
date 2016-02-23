@@ -1,55 +1,36 @@
+var app = angular.module('app',['ui.grid','ui.grid.exporter',  'ui.grid.resizeColumns', 'ui.grid.grouping']);
 
-function init() {
-	window.init();
-}
-
-var app = angular.module('myApp', ['ui.grid','ui.grid.exporter']);
-app.controller('myCtrl', 
-	function($scope, $window, uiGridConstants) {
-	  $scope.gridOptions1 = {
+app.controller('MainCtrl', function ($scope, $http, uiGridGroupingConstants ) {
+  $scope.gridOptions = {
 			  enableGridMenu: true,  
 			  enableSorting: true,
-			  exporterCsvFilename: 'myFile.csv',
-	    	    showColumnFooter: true,
+			  exporterCsvFilename: 'unrealizedDetails.csv',
 	    	    enableFiltering: true,
-	    	    columnDefs: [
-	    	      { field: 'stockName'},
-	    	      { name : 'Return(%)', field: 'returnTillDate' ,  cellFilter: 'number: 2', aggregationType: uiGridConstants.aggregationTypes.avg, aggregationHideLabel: true, footerCellFilter:'number: 2' },
-	    	      { name : 'Impact(%)',field: 'formattedImpactOnAverageReturn', cellFilter: 'number: 2', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 2'},
-	    	      { field: 'quantity'},
-	    	      { field: 'totalInvestment', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  },
-	    	      { field: 'totalReturn', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  },
-	    	      {  name : 'Bank Return', field: 'totalReturnIfBank', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  }
-	    	    ],
-	    	    onRegisterApi: function( gridApi ) {
-	    	      $scope.grid1Api = gridApi;
-	    	    }
-	    	  };
-	  
-		$window.init = function() {
-			$scope.$apply($scope.load_guestbook_lib);
-	    };
-	    
-	    $scope.load_guestbook_lib = function() {
-	    	gapi.client.load('initalizeControllerEndPoint', 'v1', function() {
-				$scope.is_backend_ready = true;
-				$scope.list();
-			}, '/_ah/api');
-		};
-		
-				
-		$scope.list = function() {
-			gapi.client.initalizeControllerEndPoint.listBlackListedStocks().execute(
-					function(resp) {
-						$scope.messages = resp.items;
-						$scope.gridOptions1.data = resp.items;
-						$scope.$apply();
-					}
-			);
-		};
+	    	    enableColumnResizing: true,
+    columnDefs: [
+      { name: 'name', width: '30%' },
+      { name: 'age', treeAggregationType: uiGridGroupingConstants.aggregation.MAX, width: '20%'},
+      { name: 'company', width: '25%' },
+      { name: 'registered', width: '40%', cellFilter: 'date', type: 'date' },
+      { name: 'state', grouping: { groupPriority: 0 },  width: '35%'},
+      { name: 'balance', width: '25%', treeAggregationType: uiGridGroupingConstants.aggregation.AVG}
+    ],
+//    onRegisterApi: function( gridApi ) {
+//      $scope.gridApi = gridApi;
+//    }
+  };
 
-		$scope.firstName= "John";
-		$scope.lastName= "Doe111";
-	}
-);
+  $http.get('https://cdn.rawgit.com/angular-ui/ui-grid.info/gh-pages/data/500_complex.json')
+    .success(function(data) {
+      for ( var i = 0; i < data.length; i++ ){
+        var registeredDate = new Date( data[i].registered );
+        data[i].state = data[i].address.state;
+        data[i].gender = data[i].gender === 'male' ? 1: 2;
+        data[i].balance = Number( data[i].balance.slice(1).replace(/,/,'') );
+        data[i].registered = new Date( registeredDate.getFullYear(), registeredDate.getMonth(), 1 )
+      }
+      $scope.gridOptions.data = data;
+    });
 
+
+});

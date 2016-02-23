@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.google.api.server.spi.config.Api;
@@ -40,6 +41,14 @@ public class InitializeControllerEndPoint {
 		final List<UnrealizedDetailDbObject> unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName asc, buyDate desc");
 
 		return unrealizedDetailObjects;
+	}
+	
+	@ApiMethod(name = "getProfitAndLoss")
+	public ProfitAndLossDbObject getProfitAndLoss()
+	{
+		JdoDbOperations<ProfitAndLossDbObject> profitAndLossDbOperations = new JdoDbOperations<>(ProfitAndLossDbObject.class);
+		final ProfitAndLossDbObject profitAndLossDbObject = profitAndLossDbOperations.getEntries().get(0);
+		return profitAndLossDbObject;
 	}
 	
 	
