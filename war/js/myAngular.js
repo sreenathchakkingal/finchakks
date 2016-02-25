@@ -59,7 +59,6 @@ app.controller('initializeController',
 			  enableGridMenu: true,  
 			  enableSorting: true,
 			  exporterCsvFilename: 'nDaysHistory.csv',
-	    	    showColumnFooter: true,
 	    	    enableFiltering: true,
 	    	    enableColumnResizing: true,
 	    	    columnDefs: [
@@ -151,12 +150,6 @@ app.controller('initializeController',
 	    	          },
 	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'
 	    	      },
-	    	      { field: 'bankSellPrice', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
-	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
-	    	    	  {
-	    	              aggregation.rendered = aggregation.value.toFixed(0);
-	    	          },
-	    	      },
 	    	      { name: 'Total Sell Price',field: 'getTotalSellPrice().toFixed(0)', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
@@ -197,14 +190,16 @@ app.controller('initializeController',
 	    };
 	    
 	    $scope.load_initialize_end_points = function() {
-	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
-//	    	var ROOT = 'http://localhost:8888/_ah/api';
+//	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
+	    	var ROOT = 'http://localhost:8888/_ah/api';
 	    	gapi.client.load('initalizeControllerEndPoint', 'v1', function() {
 				$scope.listBlackListedStocks();
 				$scope.listNDaysHistoryStocks();
 				$scope.listUnrealizedDetails();
 				$scope.getProfitAndLoss();
 			}, ROOT);
+	    	
+	    	gapi.client.load('nDaysHistoryControllerEndPoint', 'v1', function() {}, ROOT);
 		};
 		
 		$scope.getProfitAndLoss = function() {
@@ -214,7 +209,6 @@ app.controller('initializeController',
 						$scope.$apply();
 					}
 			);
-			
 		};
 		
 		$scope.listNDaysHistoryStocks = function() {
@@ -250,7 +244,6 @@ app.controller('initializeController',
 		};
 				
 		$scope.listBlackListedStocks = function() {
-			
 			gapi.client.initalizeControllerEndPoint.listBlackListedStocks().execute( 
 					function(resp) {
 						$scope.blackListedGrid.data = resp.items;
@@ -267,7 +260,6 @@ app.controller('initializeController',
 						$scope.$apply();
 					}
 			);
-			
 		};
 		
 		$scope.listUnrealizedDetails = function() {
@@ -308,12 +300,46 @@ app.controller('initializeController',
 							  		};
 								});
 						
-						
 						$scope.$apply();
 					}
 			);
 		};
-
-	}
-);
+		
+		//default values
+		$scope.ndaysHistoryInput= {numOfDays:"6" ,simpleMovingAverage :"50" };
+		
+		$scope.refreshNdaysHistory=function(ndaysHistoryInput)
+		{
+			gapi.client.nDaysHistoryControllerEndPoint.refreshNDaysHistoryStocks(ndaysHistoryInput.numOfDays, ndaysHistoryInput.simpleMovingAverage).
+			execute(
+					function(resp) {
+						$scope.nDaysHistoryGrid.data = resp.items;
+						//additional fields 
+						angular.forEach($scope.nDaysHistoryGrid.data, function(row)
+						{
+							row.getInvestmentRatioAsPercent= function()
+					  		{
+								return this.investmentRatio*100;
+					  		};
+					  		row.getIndustryInvestmentRatioAsPercent= function()
+					  		{
+								return this.industryInvestmentRatio*100;
+					  		};
+					  		row.getImpactOnAverageReturnAsPercent= function()
+					  		{
+								return this.impactOnAverageReturn*100;
+					  		};
+					  		row.getNetNDaysGainAsPercent= function()
+					  		{
+								return this.netNDaysGain*100;
+					  		};
+					  		
+						});				
+						
+						$scope.$apply();
+					}
+			);
+			};
+			
+	});
 

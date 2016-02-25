@@ -21,19 +21,28 @@
 	<div id="grid1" ui-grid-exporter ui-grid="blackListedGrid" class="blackListedGrid"/>
 
 <br/>
-		Net Returns: {{profitAndLoss.averageReturn}}
+		Net Returns(in %): {{profitAndLoss.averageReturn*100 | number:2}}
 <br/><br/>
-		Net Investment: {{profitAndLoss.totalInvestment}}
+		Net Investment: {{profitAndLoss.totalInvestment | number:0}}
 <br/><br/>
-		Total Return: {{profitAndLoss.totalReturn}}
+		Total Return: {{profitAndLoss.totalReturn | number:0}}
 <br/><br/>
-		Total Return(If Bank): {{profitAndLoss.totalReturnIfBank}}
+		Total Return(If Bank): {{profitAndLoss.totalReturnIfBank | number:0}}
 <br/><br/>
-		Net Diff(Stocks vs Bank): {{profitAndLoss.totalReturnVsIfBank}}
+		Net Diff(Stocks vs Bank): {{profitAndLoss.totalReturnVsIfBank | number:0}}
 <br/><br/>
 
 
 	<h3>N Days History</h3>
+	
+		<form>
+			<tr>
+				<td>Days <input type="text" ng-model="ndaysHistoryInput.numOfDays" value="{{ndaysHistoryInput.numOfDays}}"></td>
+				<td>SMA <input type="text" ng-model="ndaysHistoryInput.simpleMovingAverage" value="{{ndaysHistoryInput.simpleMovingAverage"></td>
+				<td><button ng-click="refreshNdaysHistory(ndaysHistoryInput)">Refresh</button></td>
+			</tr>
+		</form> 
+		<br/>
 	<div id="grid2" style="word-wrap: normal" ui-grid-exporter ui-grid="nDaysHistoryGrid" class="nDaysHistoryGrid"/>
 
 	<h3>Unrealized Details</h3>
