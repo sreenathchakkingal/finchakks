@@ -1,5 +1,6 @@
 package com.finanalyzer.endpoints;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,24 +16,24 @@ import com.finanalyzer.util.Adapter;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "nDaysHistoryControllerEndPoint", version = "v1")
 public class NDaysHistoryControllerEndPoint {
 	
 	@ApiMethod(name = "refreshNDaysHistoryStocks")
-	public List<Stock> refreshNDaysHistoryStocks(@Named("numOfDays") String numOfDays, @Named("simpleMovingAverage") String simpleMovingAverage)
+	public Collection<NDaysHistoryDbObject> refreshNDaysHistoryStocks(@Named("numOfDays") String numOfDays, @Named("simpleMovingAverage") String simpleMovingAverage)
 	{
 		List<Stock> stocks = new QuandlNDaysPricesProcessor(numOfDays, simpleMovingAverage).execute();
-		persistResult(stocks);
-		return stocks;
+		return persistResult(stocks);
 	}
 	
-	private void persistResult(List<Stock> stocks) 
+	private Collection<NDaysHistoryDbObject> persistResult(List<Stock> stocks) 
 	{
 		List<NDaysHistoryDbObject> ndaysHistoryDbObjects = Adapter.stockToNdaysHistoryDbObject(stocks);
 		JdoDbOperations<NDaysHistoryDbObject>  dbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
 		dbOperations.deleteEntries();
-		dbOperations.insertEntries(ndaysHistoryDbObjects);
+		return dbOperations.insertEntries(ndaysHistoryDbObjects);
 	}  
 }

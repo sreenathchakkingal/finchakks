@@ -190,8 +190,8 @@ app.controller('initializeController',
 	    };
 	    
 	    $scope.load_initialize_end_points = function() {
-//	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
-	    	var ROOT = 'http://localhost:8888/_ah/api';
+	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
+//	    	var ROOT = 'http://localhost:8888/_ah/api';
 	    	gapi.client.load('initalizeControllerEndPoint', 'v1', function() {
 				$scope.listBlackListedStocks();
 				$scope.listNDaysHistoryStocks();
@@ -310,7 +310,8 @@ app.controller('initializeController',
 		
 		$scope.refreshNdaysHistory=function(ndaysHistoryInput)
 		{
-			gapi.client.nDaysHistoryControllerEndPoint.refreshNDaysHistoryStocks(ndaysHistoryInput.numOfDays, ndaysHistoryInput.simpleMovingAverage).
+			gapi.client.nDaysHistoryControllerEndPoint.
+			refreshNDaysHistoryStocks({numOfDays:ndaysHistoryInput.numOfDays, simpleMovingAverage:ndaysHistoryInput.simpleMovingAverage}).
 			execute(
 					function(resp) {
 						$scope.nDaysHistoryGrid.data = resp.items;

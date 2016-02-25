@@ -38,7 +38,7 @@
 		<form>
 			<tr>
 				<td>Days <input type="text" ng-model="ndaysHistoryInput.numOfDays" value="{{ndaysHistoryInput.numOfDays}}"></td>
-				<td>SMA <input type="text" ng-model="ndaysHistoryInput.simpleMovingAverage" value="{{ndaysHistoryInput.simpleMovingAverage"></td>
+				<td>SMA <input type="text" ng-model="ndaysHistoryInput.simpleMovingAverage" value="{{ndaysHistoryInput.simpleMovingAverage}}"></td>
 				<td><button ng-click="refreshNdaysHistory(ndaysHistoryInput)">Refresh</button></td>
 			</tr>
 		</form> 
