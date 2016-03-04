@@ -1,4 +1,4 @@
-var app = angular.module('myApp', ['ui.grid']);
+var app = angular.module('myApp', ['ui.grid', 'ui.bootstrap']);
 app.controller('MyCtrl', function($scope) {
     $scope.myData = [
              {name: "Moroni", age: 50},

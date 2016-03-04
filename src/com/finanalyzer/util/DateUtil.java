@@ -42,14 +42,10 @@ public class DateUtil
 		final int differenceBetweenTwoDates = DateUtil.differenceBetweenDates(YYYY_MM_DD_FORMAT.format(new Date()), fromDate);
 		String result = "";
 		int numberOfYears = differenceBetweenTwoDates/365;
-		
-		if(numberOfYears>0)
-		{
-			result=numberOfYears+"Y ";
-		}
+		result=numberOfYears+"Y:";
 		
 		int numberOfMonths = (differenceBetweenTwoDates%365)/30;
-		result=result+numberOfMonths+"M ";
+		result=result+numberOfMonths+"M";
 
 		return result;
 	}

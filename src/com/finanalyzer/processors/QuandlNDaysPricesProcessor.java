@@ -112,7 +112,6 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 		final FastList<AllScripsDbObject> allScrips = FastList.newList(dbOperations.getEntries());
 		final List<AllScripsDbObject> watchListedScrips = allScrips.select(AllScripsDbObject.IS_WATCHLISTED);
 		final List<AllScripsDbObject> allScripsWithValidMoneyControlName = allScrips.select(AllScripsDbObject.MONEYCONTROL_NAME_EXISTS);
-		
 		FastList<Stock> stocks = FastList.newList();
 		
 		final FastList<UnrealizedDbObject> unrealizedDbObjects = FastList.newList(unrealizedDbOperations.getEntries());

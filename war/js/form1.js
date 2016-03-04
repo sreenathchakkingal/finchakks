@@ -1,36 +1,50 @@
-var app = angular.module('app',['ui.grid','ui.grid.exporter',  'ui.grid.resizeColumns', 'ui.grid.grouping']);
+var app = angular.module('app', ['ui.grid']);
 
-app.controller('MainCtrl', function ($scope, $http, uiGridGroupingConstants ) {
-  $scope.gridOptions = {
-			  enableGridMenu: true,  
-			  enableSorting: true,
-			  exporterCsvFilename: 'unrealizedDetails.csv',
-	    	    enableFiltering: true,
-	    	    enableColumnResizing: true,
+app.controller('MainCtrl', ['$scope', '$http', 'uiGridConstants', function ($scope, $http, uiGridConstants) {
+  $scope.gridOptions1 = {
+    enableSorting: true,
+    enableFiltering:true,
     columnDefs: [
-      { name: 'name', width: '30%' },
-      { name: 'age', treeAggregationType: uiGridGroupingConstants.aggregation.MAX, width: '20%'},
-      { name: 'company', width: '25%' },
-      { name: 'registered', width: '40%', cellFilter: 'date', type: 'date' },
-      { name: 'state', grouping: { groupPriority: 0 },  width: '35%'},
-      { name: 'balance', width: '25%', treeAggregationType: uiGridGroupingConstants.aggregation.AVG}
-    ],
-//    onRegisterApi: function( gridApi ) {
-//      $scope.gridApi = gridApi;
-//    }
+      { field: 'credit_amount',                
+  displayName: 'Credit Amount',           
+  type: 'number', 
+  enableFocusedCellEdit: true, 
+  //This 'filters' is the sort box to do the search.
+  filters: [
+            {
+                condition: uiGridConstants.filter.GREATER_THAN,
+                placeholder: 'greater than'
+              },
+              {
+                condition: uiGridConstants.filter.LESS_THAN,
+                placeholder: 'less than'
+              }
+        ]
+        
+      }]
   };
 
-  $http.get('https://cdn.rawgit.com/angular-ui/ui-grid.info/gh-pages/data/500_complex.json')
-    .success(function(data) {
-      for ( var i = 0; i < data.length; i++ ){
-        var registeredDate = new Date( data[i].registered );
-        data[i].state = data[i].address.state;
-        data[i].gender = data[i].gender === 'male' ? 1: 2;
-        data[i].balance = Number( data[i].balance.slice(1).replace(/,/,'') );
-        data[i].registered = new Date( registeredDate.getFullYear(), registeredDate.getMonth(), 1 )
-      }
-      $scope.gridOptions.data = data;
-    });
-
-
-});
+ $scope.gridOptions1.data = [{
+   credit_amount:1000.02
+ },{
+   credit_amount:1001.0
+ },{
+   credit_amount:100.0
+ },{
+   credit_amount:500.0
+ },{
+   credit_amount:-500.0
+ },{
+   credit_amount:11
+ },{
+   credit_amount:-10
+ }
+ ,{
+	   credit_amount:7
+	 },{
+		   credit_amount:-5
+	 },{
+		   credit_amount:1058
+	 }
+ ]
+}]);

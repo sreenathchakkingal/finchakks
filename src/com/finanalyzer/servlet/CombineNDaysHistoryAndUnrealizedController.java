@@ -20,6 +20,7 @@ import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.DateUtil;
 import com.gs.collections.api.tuple.Pair;
+import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
@@ -38,22 +39,22 @@ public class CombineNDaysHistoryAndUnrealizedController{
 		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries("stockName");
 		final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = unrealizedDetailDbOperations.getEntries("buyDate asc");
 		
-//		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
 		List<NDaysHistoryDbObject> ndaysHistoryDbObjects =null;
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
 			Query q = pm.newQuery(NDaysHistoryDbObject.class);
 			ndaysHistoryDbObjects = (List<NDaysHistoryDbObject>)q.execute();
-			
 			for (NDaysHistoryDbObject ndaysHistoryDbObject :  ndaysHistoryDbObjects)
 			{
 				for (UnrealizedSummaryDbObject unrealizedSummaryDbObject :  unrealizedSummaryDbObjects)
 				{
 					if(unrealizedSummaryDbObject.getStockName().equals(ndaysHistoryDbObject.getMoneyControlName()))
 					{
+						
 						ndaysHistoryDbObject.setReturnTillDate(unrealizedSummaryDbObject.getReturnTillDate());
 						ndaysHistoryDbObject.setImpactOnAverageReturn(unrealizedSummaryDbObject.getImpactOnAverageReturn());
+						
 					}
 				}
 				

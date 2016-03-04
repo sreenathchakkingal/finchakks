@@ -21,6 +21,7 @@ import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
+import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
@@ -45,8 +46,12 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 	private static final Logger LOG = Logger.getLogger(UnRealizedPnLProcessor.class.getName());
 	
 	private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("##.##");
-	private final String stockName;
+	private String stockName;
 	private FileItemIterator fileItemIterator;
+
+	private String unrealizedDetailsContent;
+
+	private boolean isUseUnrealizedDetailsContent;
 	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER = new Predicate<Stock>()
 			{
 		private static final long serialVersionUID = 1L;
@@ -83,18 +88,31 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				this.fileItemIterator=fileItemIterator;
 				this.stockName = stockName==null ? null : stockName.toUpperCase();
 			}
+			
+			public UnRealizedPnLProcessor(String unrealizedDetailsContent)
+			{
+				super(null);//hack remove refactor later;
+				this.unrealizedDetailsContent=unrealizedDetailsContent;
+				this.isUseUnrealizedDetailsContent=true; //if the copy paste works fine remove the other constructor fileItemIterator and this flag
+			}
 
 
 	@Override
-	public Pair<List<Stock>, List<Stock>> execute() {
+	public Pair<List<Stock>,List<StockExceptionDbObject>> execute() {
 		List<Stock> stocks = FastList.newList();
 		Stock stock;
 
 		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 
-		List<String> rowsWithoutHeaderAndTrailer = ReaderUtil.convertToList(this.fileItemIterator, true, true);
+		List<String> rowsWithoutHeaderAndTrailer = ReaderUtil.convertToList(this.fileItemIterator, true, 2);
+		List<String> rowsWithoutHeaderAndTrailerFromContent = ReaderUtil.convertToList(this.unrealizedDetailsContent, true, 1);
 		List<UnrealizedDbObject> entries = null;
-		if (isSanityChecksPassed(rowsWithoutHeaderAndTrailer)) 
+		if(isUseUnrealizedDetailsContent && rowsWithoutHeaderAndTrailerFromContent.size()>1)
+		{
+			unrealizeddbOperations.deleteEntries();
+			entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailerFromContent, true);
+		}
+		else if (isSanityChecksPassed(rowsWithoutHeaderAndTrailer)) 
 		{
 			unrealizeddbOperations.deleteEntries();
 			entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailer);
@@ -105,7 +123,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		}
 		
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
-		List<Stock> exceptionStocks = FastList.newList();
+		List<StockExceptionDbObject> exceptionStocks = FastList.newList();
 		for (UnrealizedDbObject dbObject : entries) {
 			String moneycontrolName = dbObject.getMoneycontrolName();
 			if(StringUtil.isValidValue(moneycontrolName))
@@ -133,8 +151,8 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				else 
 				{
 					LOG.info("No mapping found: "+moneycontrolName);
-					stock.setIsException("No mapping found");
-					exceptionStocks.add(stock);
+					stock.setIsException("No mapping found");//remove later on
+					exceptionStocks.add(new StockExceptionDbObject(moneycontrolName, "No mapping found"));
 				}
 			}
 		}
@@ -145,14 +163,14 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		
 		StockQuandlApiAdapter.stampLatestClosePriceAndDate(bonusScnearioHandledStocks);
 		
-		final Pair<List<Stock>, List<Stock>> stocksAndExceptions = Tuples.pair(bonusScnearioHandledStocks, exceptionStocks);
+		final Pair<List<Stock>,List<StockExceptionDbObject>> stocksAndExceptions = Tuples.pair(bonusScnearioHandledStocks, exceptionStocks);
 		
 		return stocksAndExceptions;
 	}
 			
 	//hack remove later - 'manual' is passed from the UI.
 	private boolean isSanityChecksPassed(List<String> rowsWithoutHeaderAndTrailer) {
-		return (rowsWithoutHeaderAndTrailer!=null && rowsWithoutHeaderAndTrailer.size()>1 && !"manual".equals(rowsWithoutHeaderAndTrailer.get(0)));
+		return rowsWithoutHeaderAndTrailer!=null && rowsWithoutHeaderAndTrailer.size()>1 && !"manual".equals(rowsWithoutHeaderAndTrailer.get(0));
 	}
 
 
@@ -215,21 +233,25 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				return new NDaysPrice(stock, dateToCloseValue);
 			}
 
-			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss) 
+			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss, List<StockExceptionDbObject> exceptionStocks) 
 			{
 				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = Adapter.stockToUnrealizedDetailDbObject(stocksDetail);
-				JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
+				final JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
 				dbDetailOperations.deleteEntries();
 				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
 
 				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
-				JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
+				final JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
 				dbSummaryOperations.deleteEntries();
 				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
 				
-				JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
+				final JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
 				profitAndLossOperations.deleteEntries();
 				profitAndLossOperations.insertEntries(FastList.newListWith(profitAndLoss));
+				
+				final JdoDbOperations<StockExceptionDbObject> exceptionStocksOperations = new JdoDbOperations<StockExceptionDbObject>(StockExceptionDbObject.class);
+				exceptionStocksOperations.deleteEntries();
+				exceptionStocksOperations.insertEntries(exceptionStocks);
 			}
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.processors.RealizedPnLProcessor;
 import com.finanalyzer.processors.StockInfoProcessor;
 import com.gs.collections.api.tuple.Pair;
@@ -37,7 +38,7 @@ public class RealizedPnLController extends PnlController
 			InputStream statusInputStream = context.getResourceAsStream("/WEB-INF/data/RealizedPnL.csv");
 			RealizedPnLProcessor processor = new RealizedPnLProcessor(statusInputStream);
 
-			Pair<List<Stock>,List<Stock>> nonExceptionAndExceptionStocks = processor.execute();
+			Pair<List<Stock>,List<StockExceptionDbObject>> nonExceptionAndExceptionStocks = processor.execute();
 			List<Stock> stocks = nonExceptionAndExceptionStocks.getOne();
 
 			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocks);

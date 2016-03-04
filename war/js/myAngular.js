@@ -3,26 +3,48 @@ function init() {
 	window.init();
 }
 
-var app = angular.module('finchakksApp', ['ui.grid','ui.grid.exporter',  'ui.grid.resizeColumns', 'ui.grid.grouping']);
+var app = angular.module('finchakksApp', ['ui.grid','ui.grid.exporter', 'ui.grid.resizeColumns', 'ui.grid.grouping', 'ui.bootstrap']);
 app.controller('initializeController', 
 	function($scope, $window, uiGridConstants, uiGridGroupingConstants) {
-
+	
+    $scope.loader = {
+    				initialLoading: true,
+    				nDaysHistoryLoading : false,
+    				unrealizedDetailsLoading : false
+    	    		};
+    
 	  var calculateWeightedAverageReturn = function( columns, rows ) {
 		    columns.forEach( function( column ) {
 		      if ( column.grouping && column.grouping.groupPriority > -1 ){
 		        
 		        column.treeAggregationFn = function( aggregation, fieldValue, numValue, row ) {
-		          if ( typeof(aggregation.weightedReturnBuyPrice) === 'undefined') {
+			      	var date1 = new Date(row.entity.buyDate);
+			    	var date2 = new Date();
+			    	var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+			    	var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+			    	
+		        if ( typeof(aggregation.weightedReturnBuyPrice) === 'undefined') {
 		            aggregation.weightedReturnBuyPrice = 0;
-		            aggregation.sumOfBuyPrice = 0;
+		            aggregation.totalInvestment = 0;
 		          }
-		          aggregation.weightedReturnBuyPrice = aggregation.weightedReturnBuyPrice + row.entity.buyPrice*row.entity.returnTillDate;
-		          aggregation.sumOfBuyPrice = aggregation.sumOfBuyPrice + row.entity.buyPrice;
+
+		        if(diffDays>90)
+		        	{
+		        	aggregation.weightedReturnBuyPrice = aggregation.weightedReturnBuyPrice + row.entity.getTotalInvestment()*row.entity.returnTillDate;
+			          aggregation.totalInvestment = aggregation.totalInvestment + row.entity.buyPrice*row.entity.quantity;
+		        	}
 		        };
 		        
 		        column.customTreeAggregationFinalizerFn = function( aggregation ) {
-		        	aggregation.weightedAvgReturn = aggregation.weightedReturnBuyPrice/aggregation.sumOfBuyPrice;
-		        	aggregation.weightedAvgReturn = aggregation.weightedAvgReturn.toFixed();
+		        	if(aggregation.totalInvestment>0)
+		        		{
+			        	aggregation.weightedAvgReturn = aggregation.weightedReturnBuyPrice/aggregation.totalInvestment;
+//			        	aggregation.weightedAvgReturn = aggregation.weightedAvgReturn.toFixed();
+		        		}
+		        	else
+		        		{
+		        		aggregation.weightedAvgReturn=0;
+		        		}
 		        	if ( typeof(aggregation.groupVal) !== 'undefined') {
 		        	  aggregation.rendered = aggregation.groupVal + ' (' + (aggregation.weightedAvgReturn) + ')';
 		          } else {
@@ -34,10 +56,7 @@ app.controller('initializeController',
 		    return columns;
 		  };
 
-		  $scope.firstName = "John";
-		    $scope.lastName = "Doe";
 	//grid definitions
-	
 	$scope.blackListedGrid = {
 			  enableGridMenu: true,  
 			  enableSorting: true,
@@ -46,12 +65,12 @@ app.controller('initializeController',
 	    	    enableColumnResizing: true,
 	    	    columnDefs: [
 	    	      { field: 'stockName'},
-	    	      { name : 'Return(%)', field: 'returnTillDate' ,  cellFilter: 'number: 2', aggregationType: uiGridConstants.aggregationTypes.avg, aggregationHideLabel: true, footerCellFilter:'number: 2' },
-	    	      { name : 'Impact(%)',field: 'getImpactOnAverageReturnAsPercent()', cellFilter: 'number: 2', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 2'},
-	    	      { field: 'quantity'},
-	    	      { field: 'totalInvestment', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  },
-	    	      { field: 'totalReturn', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  },
-	    	      {  name : 'Bank Return', field: 'totalReturnIfBank', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  }
+	    	      { name : 'Return(%)', field: 'returnTillDate' ,type: 'number',  cellFilter: 'number: 2', aggregationType: uiGridConstants.aggregationTypes.avg, aggregationHideLabel: true, footerCellFilter:'number: 2', sort: { priority: 0, direction: 'desc' }},
+	    	      { name : 'Impact(%)',field: 'getImpactOnAverageReturnAsPercent()', type: 'number', cellFilter: 'number: 2', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 2'},
+	    	      { field: 'quantity', type: 'number'},
+	    	      { field: 'totalInvestment', type: 'number', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  },
+	    	      { field: 'totalReturn', type: 'number', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  },
+	    	      {  name : 'Bank Return', type: 'number', field: 'totalReturnIfBank', cellFilter: 'number: 0', aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'  }
 	    	    ]
 	    	  };
 	  
@@ -63,24 +82,46 @@ app.controller('initializeController',
 	    	    enableColumnResizing: true,
 	    	    columnDefs: [
 	    	      { name : 'Name', field: 'stockName', width:"125"},
-	    	      { name : 'SMV (%)',field: 'simpleMovingAverageAndSellDeltaNormalized.toFixed()'},
-	    	      { name : 'NDays Gain(%)', field: 'getNetNDaysGainAsPercent().toFixed()'},
+	    	      { name : 'SMV (%)',field: 'simpleMovingAverageAndSellDeltaNormalized', type: 'number',cellFilter: 'number: 0', 
+		    	      filters: [
+	    	                       {
+	    	                           condition: uiGridConstants.filter.GREATER_THAN,
+	    	                           placeholder: 'greater than'
+	    	                         },
+	    	                         {
+	    	                           condition: uiGridConstants.filter.LESS_THAN,
+	    	                           placeholder: 'less than'
+	    	                         }
+		    	               ],
+	    	      },
+	    	      { name : 'NDays (%)', field: 'getNetNDaysGainAsPercent()',type: 'number', cellFilter: 'number: 0',
+		    	      filters: [
+	    	                       {
+	    	                           condition: uiGridConstants.filter.GREATER_THAN,
+	    	                           placeholder: 'greater than'
+	    	                         },
+	    	                         {
+	    	                           condition: uiGridConstants.filter.LESS_THAN,
+	    	                           placeholder: 'less than'
+	    	                         }
+		    	               ]
+	    	      },
 	    	      { name : 'Score', field: 'stockRatingValue.score'},
-	    	      { name : 'Inv (%)', field: 'getInvestmentRatioAsPercent().toFixed()'},
-	    	      { name : 'Ind Inv (%)',field: 'getIndustryInvestmentRatioAsPercent().toFixed()'},
-	    	      { name : 'Return (%)', field: 'returnTillDate.toFixed()'},
-	    	      { name : 'Impact (%)',field: 'getImpactOnAverageReturnAsPercent()'},
-	    	      { field: 'buyPrice'},
+	    	      { name : 'Inv (%)', field: 'getInvestmentRatioAsPercent()',type: 'number', cellFilter: 'number: 0'},
+	    	      { name : 'Ind Inv (%)',field: 'getIndustryInvestmentRatioAsPercent()',type: 'number', cellFilter: 'number: 0'},
+	    	      { name : 'Return (%)', field: 'returnTillDate',type: 'number', cellFilter: 'number: 0'},
+	    	      { name : 'Impact (%)',field: 'getImpactOnAverageReturnAsPercent()',type: 'number', cellFilter: 'number: 2'},
+	    	      { name : 'Buy Price', field: 'buyPrice',type: 'number',cellFilter: "number:0"},
 	    	      { name : 'Period', field: 'duration'},
 	    	      { name : 'Ind', field : 'industry', cellTooltip: true},
-	    	      { name : 'Closed Price', field: 'sellPrice', width:"75"},
-	    	      { name :'SMV', field : 'simpleMovingAverage.toFixed()'},
-	    	      { name :'Day 1' , field : 'formattedValues[0].toFixed(2)'},
-	    	      { name :'Day 2' , field : 'formattedValues[1].toFixed(2)'},
-	    	      { name :'Day 3' , field : 'formattedValues[2].toFixed(2)'},
-	    	      { name :'Day 4' , field : 'formattedValues[3].toFixed(2)'},
-	    	      { name :'Day 5' , field : 'formattedValues[4].toFixed(2)'},
-	    	      { name :'Day 6' , field : 'formattedValues[5].toFixed(2)'}
+	    	      { name : 'Closed Price', field: 'sellPrice', width:"75",type: 'number', cellFilter: 'number: 0'},
+	    	      { name :'SMV', field : 'simpleMovingAverage',type: 'number', cellFilter: 'number: 0'},
+	    	      { name :'Day 1' , field : 'formattedValues[0]',type: 'number', cellFilter: 'number: 2'},
+	    	      { name :'Day 2' , field : 'formattedValues[1]',type: 'number', cellFilter: 'number: 2'},
+	    	      { name :'Day 3' , field : 'formattedValues[2]',type: 'number', cellFilter: 'number: 2'},
+	    	      { name :'Day 4' , field : 'formattedValues[3]',type: 'number', cellFilter: 'number: 2'},
+	    	      { name :'Day 5' , field : 'formattedValues[4]',type: 'number', cellFilter: 'number: 2'},
+	    	      { name :'Day 6' , field : 'formattedValues[5]',type: 'number', cellFilter: 'number: 2'}
 	    	      ]
 	    	  };
 	  
@@ -93,36 +134,56 @@ app.controller('initializeController',
 	    	    showColumnFooter: true,
 	    	    columnDefs: [
 	    	      { field: 'stockName', grouping: { groupPriority: 0 }, width:"130"},
-	    	      { name : 'Return (%)',field: 'returnTillDate.toFixed(0)', treeAggregationType: uiGridGroupingConstants.aggregation.AVG,
+	    	      { name : 'Return (%)',field: 'returnTillDate', type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.AVG,
 	    	    	  //this ensures that "avg" is not printed in the summary volumn
-	    	    	customTreeAggregationFinalizerFn: function( aggregation ) 
+	    	    	customTreeAggregationFinalizerFn: function( aggregation) 
 	    	    	{
-    	              aggregation.rendered = aggregation.value.toFixed(0);
+    	            	  aggregation.rendered = aggregation.value.toFixed(0);  
 	    	        },
+		    	      filters: [
+	    	                       {
+	    	                           condition: uiGridConstants.filter.GREATER_THAN,
+	    	                           placeholder: 'greater than'
+	    	                         },
+	    	                         {
+	    	                           condition: uiGridConstants.filter.LESS_THAN,
+	    	                           placeholder: 'less than'
+	    	                         }
+		    	               ],
 	    	        //for footer
 	    	        aggregationType: uiGridConstants.aggregationTypes.avg, aggregationHideLabel: true, footerCellFilter:'number: 2'
 	    	      },
 	    	      
-	    	      { name: 'Buy Price', field: 'buyPrice.toFixed()', treeAggregationType: uiGridGroupingConstants.aggregation.AVG,
+	    	      { name: 'Buy Price', field: 'buyPrice', type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.AVG,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
 	    	          },
 	    	      },
-	    	      { name: 'Sell Price',field: 'sellPrice', treeAggregationType: uiGridGroupingConstants.aggregation.MAX,
+	    	      { name: 'Sell Price',field: 'sellPrice', type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.MAX,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
-	    	              aggregation.rendered = aggregation.value;
+	    	              aggregation.rendered = aggregation.value.toFixed(0);
 	    	          }
     	          },
     	          { name : 'Period', field: 'duration', treeAggregationType: uiGridGroupingConstants.aggregation.MIN,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value;
-	    	          }
+	    	          },
+		    	      filters: [
+	    	                       {
+	    	                           condition: uiGridConstants.filter.GREATER_THAN,
+	    	                           placeholder: 'greater than'
+	    	                         },
+	    	                         {
+	    	                           condition: uiGridConstants.filter.LESS_THAN,
+	    	                           placeholder: 'less than'
+	    	                         }
+		    	               ]
     	          },
     	          
-	    	      { name : 'Diff', field: 'getTotalSellPriceDiffTotalBankSell()', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	      { name : 'Diff', field: 'getTotalSellPriceDiffTotalBankSell()',type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
@@ -130,48 +191,57 @@ app.controller('initializeController',
 	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'
 	    	      },
 	    	      
-	    	      { name : 'Qty', field: 'quantity', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	      { name : 'Qty', field: 'quantity', type: 'number', cellFilter: 'number: 0',treeAggregationType: uiGridGroupingConstants.aggregation.SUM, type:'number',
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
-	    	          },
+	    	          }
 	    	      },
 	    	      { field: 'buyDate',  treeAggregationType: uiGridGroupingConstants.aggregation.MAX,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value;
-	    	          },
-
+	    	          }
 	    	      },
-	    	      { name: 'Total Inv', field: 'getTotalInvestment()', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	      { name: 'T. Inv', field: 'getTotalInvestment()',type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
+	    	    	  {
+	    	              aggregation.rendered = aggregation.value.toFixed(0);
+	    	          },
+	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0',
+		    	      filters: [
+	    	                       {
+	    	                           condition: uiGridConstants.filter.GREATER_THAN,
+	    	                           placeholder: 'greater than'
+	    	                         },
+	    	                         {
+	    	                           condition: uiGridConstants.filter.LESS_THAN,
+	    	                           placeholder: 'less than'
+	    	                         }
+		    	               ]
+	    	      },
+	    	      { name: 'T. Sell Price',field: 'getTotalSellPrice()', type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
 	    	          },
 	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'
 	    	      },
-	    	      { name: 'Total Sell Price',field: 'getTotalSellPrice().toFixed(0)', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	      { name: 'T. Bank Sell Price', field: 'getTotalBankSellPrice()', type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
 	    	          },
 	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'
 	    	      },
-	    	      { name: 'Total Bank Sell Price', field: 'getTotalBankSellPrice().toFixed(0)', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	      { name: 'PnL', field:'getProfitAndLoss()', type: 'number', cellFilter: 'number: 0',treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
 	    	          },
 	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'
 	    	      },
-	    	      { name: 'Return', field:'getProfitAndLoss().toFixed(0)', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
-	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
-	    	    	  {
-	    	              aggregation.rendered = aggregation.value.toFixed(0);
-	    	          },
-	    	          aggregationType: uiGridConstants.aggregationTypes.sum, aggregationHideLabel: true, footerCellFilter:'number: 0'
-	    	      },
-	    	      { name: 'Return (Bank)', field:'getBankProfit()', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
+	    	      { name: 'PnL (Bank)', field:'getBankProfit()', type: 'number', cellFilter: 'number: 0', treeAggregationType: uiGridGroupingConstants.aggregation.SUM,
 	    	    	  customTreeAggregationFinalizerFn: function( aggregation ) 
 	    	    	  {
 	    	              aggregation.rendered = aggregation.value.toFixed(0);
@@ -192,20 +262,44 @@ app.controller('initializeController',
 	    $scope.load_initialize_end_points = function() {
 	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
 //	    	var ROOT = 'http://localhost:8888/_ah/api';
+	    	
 	    	gapi.client.load('initalizeControllerEndPoint', 'v1', function() {
-				$scope.listBlackListedStocks();
+	    		$scope.listExceptionStocks(); 
+	    		$scope.listBlackListedStocks();
 				$scope.listNDaysHistoryStocks();
 				$scope.listUnrealizedDetails();
 				$scope.getProfitAndLoss();
+				
 			}, ROOT);
 	    	
 	    	gapi.client.load('nDaysHistoryControllerEndPoint', 'v1', function() {}, ROOT);
+	    	gapi.client.load('unrealizedDetailsControllerEndPoint', 'v1', function() {}, ROOT);
+    		
+		};
+
+		$scope.listExceptionStocks = function() {
+			gapi.client.initalizeControllerEndPoint.listExceptionStocks().execute( 
+					function(resp) {
+						$scope.exceptionStocks = resp.items;
+						$scope.$apply();
+					}
+			);
 		};
 		
-		$scope.getProfitAndLoss = function() {
-			gapi.client.initalizeControllerEndPoint.getProfitAndLoss().execute( 
+		$scope.listBlackListedStocks = function() {
+			gapi.client.initalizeControllerEndPoint.listBlackListedStocks().execute( 
 					function(resp) {
-						$scope.profitAndLoss = resp;
+						$scope.blackListedGrid.data = resp.items;
+
+						//additional fields 
+						angular.forEach($scope.blackListedGrid.data, function(row)
+						{
+							row.getImpactOnAverageReturnAsPercent= function()
+					  		{
+								return this.impactOnAverageReturn*100;
+					  		};
+						});
+						
 						$scope.$apply();
 					}
 			);
@@ -242,25 +336,7 @@ app.controller('initializeController',
 					}
 			);
 		};
-				
-		$scope.listBlackListedStocks = function() {
-			gapi.client.initalizeControllerEndPoint.listBlackListedStocks().execute( 
-					function(resp) {
-						$scope.blackListedGrid.data = resp.items;
 
-						//additional fields 
-						angular.forEach($scope.blackListedGrid.data, function(row)
-						{
-							row.getImpactOnAverageReturnAsPercent= function()
-					  		{
-								return this.impactOnAverageReturn*100;
-					  		};
-						});
-						
-						$scope.$apply();
-					}
-			);
-		};
 		
 		$scope.listUnrealizedDetails = function() {
 			gapi.client.initalizeControllerEndPoint.listUnrealizedDetails().execute(
@@ -273,13 +349,12 @@ app.controller('initializeController',
 								{
 							  		row.getTotalSellPriceDiffTotalBankSell= function()
 							  		{
-							  			var result =(this.sellPrice - this.bankSellPrice)*this.quantity
-							  			return result.toFixed();
+							  			return (this.sellPrice - this.bankSellPrice)*this.quantity;
 							  		};
 							  		
 							  		row.getTotalInvestment= function()
 							  		{
-							  			return this.buyPrice *this.quantity;
+							  			return this.buyPrice * this.quantity;
 							  		};
 							  		row.getTotalSellPrice= function()
 							  		{
@@ -301,6 +376,19 @@ app.controller('initializeController',
 								});
 						
 						$scope.$apply();
+						$scope.listExceptionStocks();
+						$scope.profitAndLoss();
+					}
+			);
+		};
+
+		$scope.getProfitAndLoss = function() {
+			gapi.client.initalizeControllerEndPoint.getProfitAndLoss().execute( 
+					function(resp) {
+						$scope.profitAndLoss = resp;
+						$scope.$apply();
+						$scope.loader.initialLoading= false;
+						
 					}
 			);
 		};
@@ -310,37 +398,45 @@ app.controller('initializeController',
 		
 		$scope.refreshNdaysHistory=function(ndaysHistoryInput)
 		{
-			gapi.client.nDaysHistoryControllerEndPoint.
-			refreshNDaysHistoryStocks({numOfDays:ndaysHistoryInput.numOfDays, simpleMovingAverage:ndaysHistoryInput.simpleMovingAverage}).
-			execute(
+			$scope.loader.nDaysHistoryLoading = true;
+			var endPoint = gapi.client.nDaysHistoryControllerEndPoint;
+			var	request = endPoint.refreshNDaysHistoryStocks({numOfDays:ndaysHistoryInput.numOfDays, simpleMovingAverage:ndaysHistoryInput.simpleMovingAverage});
+			request.execute(
 					function(resp) {
-						$scope.nDaysHistoryGrid.data = resp.items;
-						//additional fields 
-						angular.forEach($scope.nDaysHistoryGrid.data, function(row)
-						{
-							row.getInvestmentRatioAsPercent= function()
-					  		{
-								return this.investmentRatio*100;
-					  		};
-					  		row.getIndustryInvestmentRatioAsPercent= function()
-					  		{
-								return this.industryInvestmentRatio*100;
-					  		};
-					  		row.getImpactOnAverageReturnAsPercent= function()
-					  		{
-								return this.impactOnAverageReturn*100;
-					  		};
-					  		row.getNetNDaysGainAsPercent= function()
-					  		{
-								return this.netNDaysGain*100;
-					  		};
-					  		
-						});				
-						
-						$scope.$apply();
+						$scope.listNDaysHistoryStocks();
+						$scope.loader.nDaysHistoryLoading = false;
 					}
 			);
-			};
+			};//refreshNdaysHistory
+			
+			$scope.refreshUnrealizedDetails=function(unrealizedDetails)
+			{
+				$scope.loader.unrealizedDetailsLoading = true;
+				var endPoint = gapi.client.unrealizedDetailsControllerEndPoint;
+				var request;
+				if ( typeof(unrealizedDetails) === 'undefined') 
+				{
+					request = endPoint.refreshUnrealizedDetails({unrealizedDetailsContent:" "});
+				}
+				else
+				{
+					request = endPoint.refreshUnrealizedDetails({unrealizedDetailsContent:unrealizedDetails.content});	
+				}
+				
+				request.execute(
+						function(resp) {
+							$scope.$apply();
+							$scope.listUnrealizedDetails();
+							$scope.loader.unrealizedDetailsLoading = false;
+						}
+				);
+			};//refreshUnrealizedDetails
+			
+			$scope.refreshAll=function()
+			{
+				$scope.refreshUnrealizedDetails();
+				$scope.refreshNdaysHistory($scope.ndaysHistoryInput);
+			};//refreshAll	
 			
 	});
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.builder.StockBuilder;
+import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.gs.collections.api.tuple.Pair;
@@ -20,11 +21,11 @@ public class RealizedPnLProcessor extends PnLProcessor
 	}
 
 	@Override
-	public Pair<List<Stock>, List<Stock>> execute()
+	public Pair<List<Stock>, List<StockExceptionDbObject>> execute()
 	{
-		List<String> rowsWithoutHeader= ReaderUtil.convertToList(this.statusInputStream, true, false);
+		List<String> rowsWithoutHeader= ReaderUtil.convertToList(this.statusInputStream, true, 0);
 		List<Stock> stocks = FastList.newList();
-		List<Stock> dummyList = FastList.newList();
+		List<StockExceptionDbObject> dummyList = FastList.newList();
 		for (String eachRow : rowsWithoutHeader)
 		{
 			stocks.add(this.convertRowToStockObject(eachRow));

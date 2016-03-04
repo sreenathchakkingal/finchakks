@@ -14,6 +14,7 @@ import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
+import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.helloworld.Employee;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
@@ -35,7 +36,7 @@ import com.gs.collections.impl.set.mutable.UnifiedSet;
 import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
 
-public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
+public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExceptionDbObject> >>
 {
 	public final InputStream statusInputStream;
 
@@ -63,7 +64,7 @@ public class PnLProcessor implements Processor<Pair<List<Stock>, List<Stock>>>
 	}
 	
 	@Override
-	public Pair<List<Stock>, List<Stock>> execute()
+	public Pair<List<Stock>, List<StockExceptionDbObject>> execute()
 	{
 		throw new RuntimeException("execute method not implemented");
 	}

@@ -6,6 +6,7 @@ import java.util.List;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
+import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.google.api.server.spi.config.Api;
@@ -14,6 +15,13 @@ import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "initalizeControllerEndPoint", version = "v1")
 public class InitializeControllerEndPoint {
+
+	@ApiMethod(name = "listExceptionStocks")
+	public List<StockExceptionDbObject> listExceptionStocks()
+	{
+		JdoDbOperations<StockExceptionDbObject> stockExceptionDbOperations = new JdoDbOperations<>(StockExceptionDbObject.class);
+		return stockExceptionDbOperations.getEntries("stockName");
+	}
 	
 	@ApiMethod(name = "listBlackListedStocks")
 	public List<UnrealizedSummaryDbObject> listBlackListedStocks()

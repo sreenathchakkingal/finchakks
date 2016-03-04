@@ -6,6 +6,11 @@
   width: 1200px;
   height: 500px;
 }
+.textArea
+{
+	width: 600px; 
+	height: 600px;
+}
 .ui-grid-header-cell .ui-grid-cell-contents {
      height: 48px;
      white-space: normal;

@@ -141,6 +141,12 @@ public class JdoDbOperations<T> {
 	
 	public List<UnrealizedDbObject> insertUnrealizedDataFromMoneycontrol(List<String> rawDataDFromMoneyControl)
 	{
+		return this.insertUnrealizedDataFromMoneycontrol(rawDataDFromMoneyControl, false);
+	}
+			
+	public List<UnrealizedDbObject> insertUnrealizedDataFromMoneycontrol(List<String> rawDataDFromMoneyControl, boolean isTabSeperated)
+	{
+		String splitBy = isTabSeperated ? "\t" : ",";
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
@@ -148,7 +154,7 @@ public class JdoDbOperations<T> {
 
 			for (String row : rawDataDFromMoneyControl)
 			{
-				String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(",");
+				String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(splitBy);
 
 				String name = ReaderUtil.parseStockName(stockAttributes[0]);
 				

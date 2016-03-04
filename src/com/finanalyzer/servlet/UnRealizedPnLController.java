@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
+import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.Adapter;
@@ -62,10 +63,10 @@ public class UnRealizedPnLController extends PnlController
 
 			UnRealizedPnLProcessor processor = new UnRealizedPnLProcessor(fileItemIterator, stockName);
 
-			Pair<List<Stock>,List<Stock>> nonExceptionAndExceptionStocks = processor.execute();
+			Pair<List<Stock>,List<StockExceptionDbObject>> nonExceptionAndExceptionStocks = processor.execute();
 
 			List<Stock> stocks = nonExceptionAndExceptionStocks.getOne();
-			List<Stock> exceptionStocks  = nonExceptionAndExceptionStocks.getTwo();
+			List<StockExceptionDbObject> exceptionStocks  = nonExceptionAndExceptionStocks.getTwo();
 			
 
 			final List<Stock> stocksWithMaturityMoreThanAQuarter = (List<Stock>)Iterate.select(stocks, UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER);
@@ -85,7 +86,7 @@ public class UnRealizedPnLController extends PnlController
 			result.put("stockInvestmentChart", requestedStockInvestmentChart);
 			result.put("profitAndLoss", profitAndLoss);
 			
-			processor.persistResults(stocks, stocksSummary, profitAndLoss);
+			processor.persistResults(stocks, stocksSummary, profitAndLoss, exceptionStocks);
 			
 			return new ModelAndView("unRealizedPnL", result);
 		}

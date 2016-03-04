@@ -28,11 +28,11 @@ public class ReaderUtil
 	private static final int INDEX_OF_REPORTED_NET_PROFIT_IN_EXCELSHEET = 7;
 	private static final int INDEX_OF_DEBT_TO_EQUITY_IN_EXCELSHEET = 8;
 
-	public static List<String> convertToList(Object object, boolean isRemoveHeader, boolean isRemoveTrailer)
+	public static List<String> convertToList(Object object, boolean isRemoveHeader, int numberOfTrailersToBeRemoved)
 	{
 		List<String> rows = convertToList(object);
 		int startIndex = isRemoveHeader ? 1 : 0;
-		int endIndex = isRemoveTrailer ? rows.size()-2 : rows.size();//for realized this needs to be rows.size-1 -hack remove this later on 
+		int endIndex = rows.size()-numberOfTrailersToBeRemoved;//for realized this needs to be rows.size-1 -hack remove this later on 
 		if (endIndex> startIndex)
 		{
 			return rows.subList(startIndex, endIndex);	
@@ -55,6 +55,10 @@ public class ReaderUtil
 		if(object instanceof InputStream)
 		{
 			return converInputReaderToList((InputStream)object);	
+		}
+		if (object instanceof String)
+		{
+			return convertStringContentToList((String)object);
 		}
 
 		return FastList.newList();
@@ -102,6 +106,12 @@ public class ReaderUtil
 	{
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 		return converBufferedReaderToList(bufferedReader);
+	}
+	
+	private static List<String> convertStringContentToList(String content)
+	{
+		List<String> rows = Arrays.asList(content.split("\n"));
+		return rows;
 	}
 
 	public static String parseForDate(String row)
