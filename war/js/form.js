@@ -1,23 +1,18 @@
-var app = angular.module('myApp', ['ui.grid', 'ui.bootstrap']);
-app.controller('MyCtrl', function($scope) {
-    $scope.myData = [
-             {name: "Moroni", age: 50},
-  					 {name: "Tiancum", age: 43},
-						 {name: "Jacob", age: 27},
-						 {name: "Nephi", age: 29},
-						 {name: "Enos", age: 34 }];
-						 
-		angular.forEach($scope.myData,function(row){
-		  row.getNameAndAge = function(){
-		    return this.name + '-' + this.age;
-		  }
-		});
+var app = angular.module('app', ['ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.saveState', 'ui.grid.selection', 'ui.grid.cellNav', 'ui.grid.resizeColumns', 'ui.grid.moveColumns', 'ui.grid.pinning', 'ui.bootstrap', 'ui.grid.autoResize' ]);
 
-		 $scope.gridOptions = { 
-			        data: 'myData',
-			        columnDefs: [{field: 'name', displayName: 'Name'},
-			                     {field:'age', displayName:'Age'},
-			                     {field: 'getNameAndAge()', displayName: 'Name and age'},
-			                     ]
-			        };
-});
+app.controller('MainCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
+  $scope.gridOptions = {
+    saveFocus: false,
+    saveScroll: true,
+    enableGridMenu: true,
+    onRegisterApi: function(gridApi){ 
+      $scope.gridApi = gridApi;
+    }
+  };
+  $scope.gridOptions.enableFiltering = true;
+
+  $http.get('https://cdn.rawgit.com/angular-ui/ui-grid.info/gh-pages/data/100.json')
+    .success(function(data) {
+      $scope.gridOptions.data = data;
+    });
+}]);

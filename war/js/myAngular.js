@@ -407,7 +407,7 @@ app.controller('initializeController',
 						$scope.loader.nDaysHistoryLoading = false;
 					}
 			);
-			};//refreshNdaysHistory
+		};//refreshNdaysHistory
 			
 			$scope.refreshUnrealizedDetails=function(unrealizedDetails)
 			{

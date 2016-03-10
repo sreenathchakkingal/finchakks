@@ -9,13 +9,12 @@
 		<script src="http://ui-grid.info/release/ui-grid.js"></script>
 		<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.2.1.js"></script>
 		<script src="http://ui-grid.info/release/ui-grid-unstable.js"></script>
-		
-		<script src="js/myAngular.js"></script>
-		<script src="https://apis.google.com/js/client.js?onload=init"></script>
-
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="http://ui-grid.info/release/ui-grid.css" type="text/css">
+				
+		<script src="js/myAngular.js"></script>
+		<script src="https://apis.google.com/js/client.js?onload=init"></script>
 		<link rel="stylesheet" href="js/main.css" type="text/css">
 	</head>
 	<body>

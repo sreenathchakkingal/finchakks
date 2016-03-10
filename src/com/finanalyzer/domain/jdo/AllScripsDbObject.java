@@ -208,7 +208,7 @@ public class AllScripsDbObject {
 	public boolean isWatchListed() {
 		return Boolean.valueOf(this.isWatchListed);
 	}
-
+	
 	public void setWatchListed(boolean isWatchListed) {
 		this.isWatchListed = String.valueOf(isWatchListed);
 	}
@@ -263,6 +263,15 @@ public class AllScripsDbObject {
 	{
 		return new StockRatingValue(this.getRatingNameToValue()).getInferences();
 	}
+	
+	public boolean getIsWatchListed() { //for angular js ui
+		return Boolean.valueOf(this.isWatchListed);
+	}
+	
+	public boolean getIsBlackListed() { //for angular js ui
+		return Boolean.valueOf(this.isBlackListed);
+	}
+	
 	
 	@Override
 	public boolean equals(Object object)
