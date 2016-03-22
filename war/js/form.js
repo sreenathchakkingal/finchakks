@@ -1,18 +1,27 @@
-var app = angular.module('app', ['ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.saveState', 'ui.grid.selection', 'ui.grid.cellNav', 'ui.grid.resizeColumns', 'ui.grid.moveColumns', 'ui.grid.pinning', 'ui.bootstrap', 'ui.grid.autoResize' ]);
-
-app.controller('MainCtrl', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
-  $scope.gridOptions = {
-    saveFocus: false,
-    saveScroll: true,
-    enableGridMenu: true,
-    onRegisterApi: function(gridApi){ 
-      $scope.gridApi = gridApi;
-    }
-  };
-  $scope.gridOptions.enableFiltering = true;
-
-  $http.get('https://cdn.rawgit.com/angular-ui/ui-grid.info/gh-pages/data/100.json')
-    .success(function(data) {
-      $scope.gridOptions.data = data;
-    });
-}]);
+angular.module('exampleApp', ['ui.grid'])
+  .controller('exampleCtrl', ['$scope', 'uiGridConstants', function($scope, uiGridConstants) {
+    var animals = [
+      { id: 1, type: 'Mammal', name: 'Elephant' },
+      { id: 2, type: 'Reptile', name: 'Turtle' },
+      { id: 3, type: 'Mammal', name: 'Human' }
+    ];
+                                                          
+    var animalTypes = [
+      { value: 'Mammal', label: 'Mammal' },
+      { value: 'Reptile', label: 'Reptile'}
+    ];
+  
+    $scope.animalGrid = {
+      enableFiltering: true,
+      columnDefs: [
+        {
+          name: 'type', 
+          field: 'type', 
+          filter: { selectOptions: animalTypes, type: uiGridConstants.filter.SELECT }
+        },
+        { name: 'name', name: 'name'}
+      ],
+      data: animals
+    };
+      
+  }]);

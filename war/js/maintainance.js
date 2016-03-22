@@ -127,6 +127,12 @@ app.controller('maintainanceController',
     	    }
 	  };
 	
+    var availableStockRatings = [
+                       { value: 'Good', label: '1' },
+                       { value: 'Average', label: '0'},
+                       { value: 'Bad', label: '-1'}
+                     ];
+    
 	$scope.scripRatingsGrid = {
 			rowEditWaitInterval: -1, 
 			enableRowSelection: true,
@@ -134,7 +140,8 @@ app.controller('maintainanceController',
 	    	enableColumnResizing: true,
     	    columnDefs: [
     	      { field: 'ratingName'},
-    	      { field : 'ratingValue'}
+    	      { field : 'ratingValue', filter: { selectOptions: availableStockRatings, type: uiGridConstants.filter.SELECT }}
+    	      
     	    ],
     	    onRegisterApi: function(gridApi){
     	      $scope.gridApi = gridApi;
