@@ -1,32 +1,35 @@
 
 function init() {
-	window.init();
+	window.initGapi();
 }
 
-var app = angular.module('maintainanceApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.exporter', 'ui.grid.rowEdit', 'ui.grid.edit', 'ui.grid.resizeColumns', , 'ui.bootstrap']);
+var app = angular.module('maintainanceApp', ['ui.grid', 'ui.grid.grouping', 'ui.grid.exporter', 'ui.grid.rowEdit', 
+                                             'ui.grid.edit', 'ui.grid.resizeColumns', 'ui.grid.saveState',
+                                             'ui.grid.selection', 'ui.grid.cellNav', 'ui.bootstrap']);
 app.controller('maintainanceController', 
-	function($scope, $window, uiGridConstants,$q, uiGridGroupingConstants) {
+	function($scope, $window, uiGridConstants,uiGridGroupingConstants,$q) {
 	
-	$window.init = function() {
+	$window.initGapi = function() {
 		$scope.$apply($scope.load_initialize_end_points);
     };
     
     $scope.load_initialize_end_points = function() {
-    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
-    	//var ROOT = 'http://localhost:8888/_ah/api';
-    	
-    	gapi.client.load('allScripsControllerEndPoint', 'v1', function() {}, ROOT);
-		
+//    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
+    	var ROOT = 'http://localhost:8888/_ah/api';
+
+    	gapi.client.load('allScripsControllerEndPoint', 'v1', function() {
+    		$scope.retriveInterestingScrips(); 
+		}, ROOT);
 	};
 	
     $scope.loader = {
 			scripDetailsLoading : false,
-			scripDetailsModifying : false
+			scripDetailsModifying : false,
+			retrivingInterestingScrips : false,
+			scripRatings: false
     		};
 	
 	$scope.scripInput= {};
-//	$scope.allScripsObject = {};
-	
 	
 	$scope.retrieveScripDetails=function(scripInput)
 	{
@@ -46,12 +49,12 @@ app.controller('maintainanceController',
 	
 	$scope.save=function()
 	{
-		$scope.loader.scripDetailsModifying = true;
-		var dirtyRows = $scope.gridApi.rowEdit.getDirtyRows($scope.gridApi.grid);
-		var nseId = dirtyRows[0].entity.nseId;
-		var moneycontrolName = dirtyRows[0].entity.moneycontrolName;
-		var isWatchListed = dirtyRows[0].entity.isWatchListed;
-		var isBlackListed = dirtyRows[0].entity.isBlackListed;
+		$scope.loader.scripDetailsModifying = true;	
+		var rowEntity = $scope.selectedScripDetail[0];
+		var nseId = rowEntity.nseId;
+		var moneycontrolName = rowEntity.moneycontrolName;
+		var isWatchListed = rowEntity.isWatchListed;
+		var isBlackListed = rowEntity.isBlackListed;
 		
 		$scope.allScripsObject={"nseId":nseId, "moneycontrolName":moneycontrolName, "isWatchListed":isWatchListed, "isBlackListed":isBlackListed};
 		var endPoint = gapi.client.allScripsControllerEndPoint;
@@ -64,48 +67,78 @@ app.controller('maintainanceController',
 					$scope.$apply();
 				}
 		);
-	};//retrieveAll	
+	};//save	
+
+	$scope.scripRatingInput={"nseId":"ITC"};
+	
+	$scope.getScripRating = function() {
+		$scope.loader.scripRatings = true;	
+		var rowEntity = $scope.selectedScripDetail[0];
+		var nseId = rowEntity.nseId;
+		var endPoint = gapi.client.allScripsControllerEndPoint;
+		var	request = endPoint.getScripRatings({nseId:nseId});
+		
+		request.execute(
+				function(resp) {
+					$scope.scripRatingsGrid.data = resp.items;
+					$scope.loader.scripRatings = false;
+					$scope.$apply();
+				}
+		);
+	}; //getScripRatings
+	
+	$scope.retriveInterestingScrips=function()
+	{
+		$scope.loader.retrivingInterestingScrips = true;
+		var endPoint = gapi.client.allScripsControllerEndPoint;
+		var	request = endPoint.retriveInterestingScrips();
+		
+		request.execute(
+				function(resp) {
+					$scope.scripDetailsGrid.data = resp.items;
+					$scope.loader.retrivingInterestingScrips = false;
+					$scope.$apply();
+				}
+		);
+	};//retriveInterestingScrips
+
+	$scope.selectedScripDetail = [];
 	
 	//grid definitions
 	$scope.scripDetailsGrid = {
-			rowEditWaitInterval: -1,  
+			rowEditWaitInterval: -1, 
+			enableRowSelection: true,
 			enableGridMenu: true,  
-	    	  enableColumnResizing: true,
-	    	    columnDefs: [
-	    	      { field: 'nseId'},
-	    	      { name : 'bseId'},
-	    	      { field: 'moneycontrolName'},
-	    	      { field: 'isWatchListed', type: 'boolean'},//,cellTemplate: '<input type="checkbox" ng-model="row.entity.isWatchListed">'
-	    	      { field: 'isBlackListed', type: 'boolean'}
-	    	    ]
-	    	  };
+	    	enableColumnResizing: true,
+	    	multiSelect: false,
+    	    columnDefs: [
+    	      { field: 'nseId'},
+    	      { field : 'bseId'},
+    	      { field: 'moneycontrolName'},
+    	      { field: 'isWatchListed', type: 'boolean'},
+    	      { field: 'isBlackListed', type: 'boolean'}
+    	    ],
+    	    onRegisterApi: function(gridApi){
+    	      $scope.gridApi = gridApi;
+    	      
+    	      gridApi.selection.on.rowSelectionChanged($scope,function(rows){
+    	          $scope.selectedScripDetail = gridApi.selection.getSelectedRows();
+    	        });
+    	    }
+	  };
 	
-	//gets invoked when the grid is edited and Enter pressed
-	 $scope.scripDetailsGrid.onRegisterApi = function(gridApi){
-         //set gridApi on scope
-         $scope.gridApi = gridApi;
-         gridApi.rowEdit.on.saveRow($scope, $scope.saveRow);
-         
-//         gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
-//           $scope.modification.lastCellEdited = 'edited row id:' + rowEntity.nseId + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
-//           alert($scope.modification.lastCellEdited);
-//           $scope.$apply();
-//         });
-       };
-       
-       $scope.saveRow = function( rowEntity ) {
-    	    // create a fake promise - normally you'd use the promise returned by $http or $resource
-    	   alert("nseId "+rowEntity.nseId);
-    	   alert("bseId "+rowEntity.bseId);
-    	   alert("moneycontrolName "+rowEntity.moneycontrolName);
-    	   alert("isWatchListed "+rowEntity.isWatchListed);
-    	   alert("isBlackListed "+rowEntity.isBlackListed);
-    	   
-    	   var promise = $q.defer();
-    	   
-    	    $scope.gridApi.rowEdit.setSavePromise( rowEntity, promise.promise );
-    	 
-    	  };
-			
+	$scope.scripRatingsGrid = {
+			rowEditWaitInterval: -1, 
+			enableRowSelection: true,
+			enableGridMenu: true,  
+	    	enableColumnResizing: true,
+    	    columnDefs: [
+    	      { field: 'ratingName'},
+    	      { field : 'ratingValue'}
+    	    ],
+    	    onRegisterApi: function(gridApi){
+    	      $scope.gridApi = gridApi;
+    	    }
+	  };	
 });
 

@@ -25,8 +25,13 @@
 			Nse Id: <input type="text" ng-model="scripInput.nseId" id="stockName">
 
 			<button ng-click="retrieveScripDetails()">Retrieve</button>
-
 			<br>
+						
+			<button ng-click="retriveInterestingScrips()">Retrieve Interesting Scrips</button>
+			<i ng-show="loader.retrivingInterestingScrips" class="btn btn-success">
+				Retrieving Interesting ScripDetails ...
+				<i class="fa fa-spinner fa-spin"></i>
+			</i> 
 
 			<i ng-show="loader.scripDetailsLoading" class="btn btn-success">
 				ScripDetails Loading...
@@ -34,7 +39,8 @@
 			</i> 
 
 			<h3>Scrip Details</h3>
-			<div id="grid1"  ui-grid-edit  ui-grid-row-edit ui-grid="scripDetailsGrid"/>
+			<div id="grid1"  ui-grid-edit  ui-grid-row-edit  ui-grid-save-state ui-grid-selection ui-grid-cellNav ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning 
+			ui-grid="scripDetailsGrid" class="scripDetailsGrid"/>
 
 			<button ng-click="save()">Save</button>
 
@@ -42,7 +48,12 @@
 				ScripDetails Modifying...
 				<i class="fa fa-spinner fa-spin"></i>
 			</i> 
-			
+
+			<button ng-click="getScripRating()">Rating</button>
+
+			<h3>Scrip Ratings</h3>
+			<div id="grid2"  ui-grid-edit  ui-grid-row-edit  ui-grid-save-state ui-grid-selection ui-grid-cellNav ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning 
+			ui-grid="scripRatingsGrid"/>			
 			
 		</div>
 	</body>

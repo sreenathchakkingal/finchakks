@@ -3,7 +3,8 @@ function init() {
 	window.init();
 }
 
-var app = angular.module('finchakksApp', ['ui.grid','ui.grid.exporter', 'ui.grid.resizeColumns', 'ui.grid.grouping', 'ui.bootstrap']);
+var app = angular.module('finchakksApp', ['ui.grid','ui.grid.exporter', 'ui.grid.resizeColumns', 
+                                          'ui.grid.grouping', 'ui.bootstrap']);
 app.controller('initializeController', 
 	function($scope, $window, uiGridConstants, uiGridGroupingConstants) {
 	
@@ -260,8 +261,8 @@ app.controller('initializeController',
 	    };
 	    
 	    $scope.load_initialize_end_points = function() {
-	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
-//	    	var ROOT = 'http://localhost:8888/_ah/api';
+//	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
+	    	var ROOT = 'http://localhost:8888/_ah/api';
 	    	
 	    	gapi.client.load('initalizeControllerEndPoint', 'v1', function() {
 	    		$scope.listExceptionStocks(); 

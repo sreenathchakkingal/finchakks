@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-	<!-- <cron> <url><![CDATA[/count?numberOfYears=6]]></url> <description>Add 
-		count + 1 every 1 minutes</description> <schedule>every 1 minutes</schedule> 
-		</cron> -->
-	<cron>
+<!-- 	<cron>
 		<url>/unRealizedPnL</url>
 		<description>unRealizedPnL</description>
 		<schedule>every day 21:30</schedule>
@@ -21,4 +18,12 @@
 		<schedule>every day 22:00</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>	
+	 -->
+	 <cron>
+		<url>/refreshAll</url>
+		<description>refreshAll</description>
+		<schedule>every day 21:00</schedule>
+		<timezone>Asia/Calcutta</timezone>
+	</cron>	
+	
 </cronentries>

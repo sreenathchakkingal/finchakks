@@ -1,4 +1,11 @@
-<!-- Indices written at Thu, 10 Mar 2016 18:21:22 UTC -->
+<!-- Indices written at Mon, 21 Mar 2016 03:15:23 UTC -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="UnrealizedDetailDbObject" ancestor="false" source="auto">
+        <property name="stockName" direction="asc"/>
+        <property name="buyDate" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>

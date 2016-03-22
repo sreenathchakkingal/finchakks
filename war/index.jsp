@@ -152,11 +152,34 @@
 
 <br/>
 <hr> Testing Zone</hr>
+<form action="unRealizedPnL" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="step 1 unRealizedPnL"></td>
+		</tr>
+	</table>
+</form>
+
+<form action="nDaysHistory" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="step 2 nDaysHistory"></td>
+		</tr>
+	</table>
+</form>
 
 <form action="combineNDaysHistoryAndUnrealized" method="get" target="_blank">
 	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
 		<tr>
-			<td><input type="submit" value="combineNDaysHistoryAndUnrealized"></td>
+			<td><input type="submit" value="step 3 combineNDaysHistoryAndUnrealized"></td>
+		</tr>
+	</table>
+</form>
+
+<form action="refreshAll" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="refreshAll"></td>
 		</tr>
 	</table>
 </form>

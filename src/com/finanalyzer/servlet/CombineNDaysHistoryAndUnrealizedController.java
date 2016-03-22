@@ -18,6 +18,8 @@ import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.endpoints.NDaysHistoryControllerEndPoint;
+import com.finanalyzer.endpoints.UnrealizedDetailsControllerEndPoint;
 import com.finanalyzer.util.DateUtil;
 import com.gs.collections.api.tuple.Pair;
 import com.gs.collections.impl.list.mutable.FastList;
@@ -75,5 +77,14 @@ public class CombineNDaysHistoryAndUnrealizedController{
 
 		return new ModelAndView("test");
 	}
-
+	
+	@RequestMapping("/refreshAll")  
+	public ModelAndView refreshAll(HttpServletRequest arg0, HttpServletResponse arg1) throws Exception 
+	{
+		new UnrealizedDetailsControllerEndPoint().refreshUnrealizedDetails("");
+		new NDaysHistoryControllerEndPoint().refreshNDaysHistoryStocks(null, null);
+		
+		return null;
+	}
+	
 }

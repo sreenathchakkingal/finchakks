@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import com.finanalyzer.domain.RatingObjectForUi;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.util.StringUtil;
@@ -62,7 +63,6 @@ public class AllScripsDbObject {
 		}
 	};
 
-
 	public static final Function<AllScripsDbObject, String> MONEY_CONTROL_STOCK_NAME_COLLECTOR = new Function<AllScripsDbObject, String>() {
 	
 		@Override
@@ -78,7 +78,6 @@ public class AllScripsDbObject {
 			return allScripsDbObject.isWatchListed();
 		}
 	};
-
 
 	public static final Predicate<AllScripsDbObject> MONEYCONTROL_NAME_EXISTS = new Predicate<AllScripsDbObject>() {
 	
@@ -111,7 +110,6 @@ public class AllScripsDbObject {
 			return (String) entity.getProperty("stockId");
 		}
 	};
-
 	
 	public AllScripsDbObject(String nseId, String stockName, String isin,
 			String bseId, String moneycontrolName,String yahooName, String fairValue, String industry) 
@@ -227,7 +225,7 @@ public class AllScripsDbObject {
 	}
 
 	public void setRatingNameToValue(Map<String, StockRatingValuesEnum> ratingNameToValue) {
-		this.ratingNameToValue = transforMapToList(ratingNameToValue);
+		this.ratingNameToValue = transformMapToList(ratingNameToValue);
 	}
 
 	private Map<String, StockRatingValuesEnum> transforListToMap(List<String> ratings) {
@@ -241,7 +239,24 @@ public class AllScripsDbObject {
 		return ratingNameToValue;
 	}
 	
-	private List<String> transforMapToList(Map<String, StockRatingValuesEnum> ratingNameToValue) {
+	public List<RatingObjectForUi> getTransformedObjectForUi()//revisit
+	{
+		List<RatingObjectForUi> ratingObjectsForUi = FastList.newList();
+		if (this.ratingNameToValue.isEmpty())
+		{
+			return RatingObjectForUi.getDummyObjects();
+		}
+		
+		for (int counter=0; counter<this.ratingNameToValue.size()-1; counter=counter+2)
+		{
+			final String ratingName = this.ratingNameToValue.get(counter);
+			final String ratingValue = this.ratingNameToValue.get(counter+1);
+			ratingObjectsForUi.add(new RatingObjectForUi(ratingName, ratingValue));
+		}
+		return ratingObjectsForUi;
+	}
+	
+	private List<String> transformMapToList(Map<String, StockRatingValuesEnum> ratingNameToValue) {
 		final List<String> flattenedList = FastList.newList();
 		final UnifiedMap<String, StockRatingValuesEnum> ratingNameValue = UnifiedMap.newMap(ratingNameToValue);
 		
@@ -272,7 +287,6 @@ public class AllScripsDbObject {
 		return Boolean.valueOf(this.isBlackListed);
 	}
 	
-	
 	@Override
 	public boolean equals(Object object)
 	{
@@ -281,7 +295,6 @@ public class AllScripsDbObject {
 			AllScripsDbObject that = (AllScripsDbObject)object;
 			return this.nseId.equals(that.nseId);
 		}
-		
 		return false;
 	}
 	

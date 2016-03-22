@@ -33,7 +33,7 @@
 			</i>
 
 			<h3>Black Listed Stocks</h3>
-			<div id="grid1" ui-grid-exporter ui-grid="blackListedGrid" class="blackListedGrid" />
+			<div id="grid1" ui-grid-exporter ui-grid-resize-columns ui-grid="blackListedGrid" class="blackListedGrid" />
 
 			<br />
 			Net Returns(in %): {{profitAndLoss.averageReturn*100 | number:2}} 
@@ -80,10 +80,10 @@
 			</form>
 			<br />
 			
-			<div id="grid2" style="word-wrap: normal" ui-grid-exporter ui-grid="nDaysHistoryGrid" class="nDaysHistoryGrid" />
+			<div id="grid2" style="word-wrap: normal" ui-grid-exporter ui-grid-resize-columns ui-grid="nDaysHistoryGrid" class="nDaysHistoryGrid" />
 
 			<h3>Unrealized Details</h3>
-			<div id="grid3" style="word-wrap: normal" ui-grid-exporter ui-grid="unrealizedDetailsGrid" ui-grid-grouping class="grid" />
+			<div id="grid3" style="word-wrap: normal" ui-grid-exporter ui-grid-resize-columns ui-grid="unrealizedDetailsGrid" ui-grid-grouping class="grid" />
 			 
 		</div>
 	</body>
