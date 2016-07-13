@@ -53,7 +53,9 @@
 
 			<h3>Scrip Ratings</h3>
 			<div id="grid2"  ui-grid-edit  ui-grid-row-edit  ui-grid-save-state ui-grid-selection ui-grid-cellNav ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning 
-			ui-grid="scripRatingsGrid"/>			
+			ui-grid="scripRatingsGrid"/>
+			
+			<button ng-click="saveRating()">Save Rating</button>			
 			
 		</div>
 	</body>

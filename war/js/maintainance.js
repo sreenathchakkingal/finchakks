@@ -14,8 +14,8 @@ app.controller('maintainanceController',
     };
     
     $scope.load_initialize_end_points = function() {
-//    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
-    	var ROOT = 'http://localhost:8888/_ah/api';
+    	var ROOT = 'https://3-dot-finchakks.appspot.com/_ah/api';
+//    	var ROOT = 'http://localhost:8888/_ah/api';
 
     	gapi.client.load('allScripsControllerEndPoint', 'v1', function() {
     		$scope.retriveInterestingScrips(); 
@@ -26,7 +26,8 @@ app.controller('maintainanceController',
 			scripDetailsLoading : false,
 			scripDetailsModifying : false,
 			retrivingInterestingScrips : false,
-			scripRatings: false
+			scripRatings: false,
+			scripRatingModifying: false
     		};
 	
 	$scope.scripInput= {};
@@ -67,7 +68,29 @@ app.controller('maintainanceController',
 					$scope.$apply();
 				}
 		);
-	};//save	
+	};//save
+	
+	$scope.saveRating=function()
+	{
+		$scope.loader.scripRatingModifying = true;	
+		var rowEntity = $scope.selectedScripDetail[0];
+		var nseId = rowEntity.nseId;
+		var moneycontrolName = rowEntity.moneycontrolName;
+		var isWatchListed = rowEntity.isWatchListed;
+		var isBlackListed = rowEntity.isBlackListed;
+		
+		$scope.allScripsObject={"nseId":nseId, "moneycontrolName":moneycontrolName, "isWatchListed":isWatchListed, "isBlackListed":isBlackListed};
+		var endPoint = gapi.client.allScripsControllerEndPoint;
+		var	request = endPoint.modifyScripDetails($scope.allScripsObject);
+		
+		request.execute(
+				function(resp) {
+					$scope.scripDetailsGrid.data = resp.items;
+					$scope.loader.scripRatingModifying = false;
+					$scope.$apply();
+				}
+		);
+	};//save
 
 	$scope.scripRatingInput={"nseId":"ITC"};
 	
@@ -111,6 +134,7 @@ app.controller('maintainanceController',
 			enableGridMenu: true,  
 	    	enableColumnResizing: true,
 	    	multiSelect: false,
+	    	enableFiltering: true,
     	    columnDefs: [
     	      { field: 'nseId'},
     	      { field : 'bseId'},
@@ -127,12 +151,6 @@ app.controller('maintainanceController',
     	    }
 	  };
 	
-    var availableStockRatings = [
-                       { value: 'Good', label: '1' },
-                       { value: 'Average', label: '0'},
-                       { value: 'Bad', label: '-1'}
-                     ];
-    
 	$scope.scripRatingsGrid = {
 			rowEditWaitInterval: -1, 
 			enableRowSelection: true,
@@ -140,8 +158,15 @@ app.controller('maintainanceController',
 	    	enableColumnResizing: true,
     	    columnDefs: [
     	      { field: 'ratingName'},
-    	      { field : 'ratingValue', filter: { selectOptions: availableStockRatings, type: uiGridConstants.filter.SELECT }}
-    	      
+    	      { field : 'ratingValue',
+    	    	editDropdownValueLabel: 'name',
+	            editableCellTemplate: 'ui-grid/dropdownEditor',
+	            editDropdownOptionsArray: [
+	    					{id:1, name:'Good'},
+	    					{id:2, name:'Average'},
+	    					{id:3, name:'Bad'},
+	    					{id:4, name:'Not Rated'}  ]
+    	      }
     	    ],
     	    onRegisterApi: function(gridApi){
     	      $scope.gridApi = gridApi;

@@ -261,8 +261,8 @@ app.controller('initializeController',
 	    };
 	    
 	    $scope.load_initialize_end_points = function() {
-//	    	var ROOT = 'https://2-dot-finchakks.appspot.com/_ah/api';
-	    	var ROOT = 'http://localhost:8888/_ah/api';
+	    	var ROOT = 'https://3-dot-finchakks.appspot.com/_ah/api';
+//	    	var ROOT = 'http://localhost:8888/_ah/api';
 	    	
 	    	gapi.client.load('initalizeControllerEndPoint', 'v1', function() {
 	    		$scope.listExceptionStocks(); 

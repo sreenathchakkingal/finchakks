@@ -144,6 +144,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 					if (StringUtil.isValidValue(aScrip.getBseId())) 
 					{
 						stock.addNames(StockExchange.BSE, aScrip.getBseId());
+						stock.addNames(StockExchange.NSE, aScrip.getNseId());
 						stock.setBlackListed(aScrip.isBlackListed());
 						stocks.add(stock);
 					}
