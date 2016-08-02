@@ -21102,6 +21102,7 @@
 	var Main = __webpack_require__(262);
 	var Home = __webpack_require__(263);
 	var ListBlackListedStocksContainer = __webpack_require__(264);
+	var WrapperContainer = __webpack_require__(494);
 
 	var routes = React.createElement(
 	  Router,
@@ -21109,8 +21110,7 @@
 	  React.createElement(
 	    Route,
 	    { path: '/', component: Main },
-	    React.createElement(IndexRoute, { component: Home }),
-	    React.createElement(Route, { path: 'listBlackListedStocks', header: 'List BlackListed Stocks', component: ListBlackListedStocksContainer })
+	    React.createElement(IndexRoute, { component: WrapperContainer })
 	  )
 	);
 
@@ -29967,7 +29967,6 @@
 	var React = __webpack_require__(2);
 	var ListBlackListedStocks = __webpack_require__(265);
 	var finchakksapi = __webpack_require__(266);
-	var Griddle = __webpack_require__(287);
 
 	var ListBlackListedStocksContainer = React.createClass({
 	  displayName: 'ListBlackListedStocksContainer',
@@ -30009,11 +30008,9 @@
 	var React = __webpack_require__(2);
 	var finchakksapi = __webpack_require__(266);
 	var Loading = __webpack_require__(286);
-	var AppendPercent = __webpack_require__(492);
-	var MoneyFormat = __webpack_require__(493);
-	var ConvertToPercent = __webpack_require__(494);
+	var columnMetadata = __webpack_require__(287);
 	var PropTypes = React.PropTypes;
-	var Griddle = __webpack_require__(287);
+	var Griddle = __webpack_require__(294);
 
 	function puke(obj) {
 	  return React.createElement(
@@ -30025,40 +30022,13 @@
 
 	function ListBlackListedStocks(props) {
 	  if (props.isLoading === true) {
-	    return React.createElement(Loading, null);
+	    return React.createElement(Loading, { text: 'Loading ListBlackListedStocks' });
 	  } else {
-	    var blacklistedMetaData = [{
-	      "columnName": "stockName",
-	      "displayName": "Stock Name"
-	    }, {
-	      "columnName": "returnTillDate",
-	      "displayName": "Return %",
-	      "customComponent": AppendPercent
-	    }, {
-	      "columnName": "totalInvestment",
-	      "displayName": "Investment",
-	      "customComponent": MoneyFormat
-	    }, {
-	      "columnName": "quantity",
-	      "displayName": "Qty",
-	      "customComponent": MoneyFormat
-	    }, {
-	      "columnName": "totalReturn",
-	      "displayName": "Return",
-	      "customComponent": MoneyFormat
-	    }, {
-	      "columnName": "totalReturnIfBank",
-	      "displayName": "Return(Bank)",
-	      "customComponent": MoneyFormat
-	    }, {
-	      "columnName": "impactOnAverageReturn",
-	      "displayName": "Impact",
-	      "customComponent": ConvertToPercent
-	    }];
+	    var metaData = columnMetadata.listColumnMetadata();
 
 	    return React.createElement(Griddle, { results: props.stocksInfo, tableClassName: 'table', showFilter: true, resultsPerPage: '20',
 	      columns: ["stockName", "impactOnAverageReturn", "returnTillDate", "totalInvestment", "totalReturn", "totalReturnIfBank", "quantity"],
-	      columnMetadata: blacklistedMetaData });
+	      columnMetadata: metaData });
 	  }
 	}
 
@@ -30074,21 +30044,57 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var axios = __webpack_require__(267);
-	var param = "";
+
+	function getApiResult(methodName) {
+	  return axios.get('https://finchakks.appspot.com/_ah/api/initalizeControllerEndPoint/v1/' + methodName);
+	}
 
 	var helpers = {
+	  listprofitAndloss: function () {
+	    return getApiResult('profitandlossdbobject').then(function (response) {
+	      var stocksInfo = response.data;
+	      console.log('response for listprofitAndloss', stocksInfo);
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listprofitAndloss ', err);
+	    });
+	  },
 
 	  listBlackListedStocks: function () {
-
-	    return axios.get('https://finchakks.appspot.com/_ah/api/initalizeControllerEndPoint/v1/unrealizedsummarydbobject').then(function (response) {
-
+	    return getApiResult('unrealizedsummarydbobject').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listBlackListedStocks ', err);
 	    });
-	  }
+	  },
 
+	  listStockExceptions: function () {
+	    return getApiResult('stockexceptiondbobject').then(function (response) {
+	      var stocksInfo = response.data.items;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listStockExceptions ', err);
+	    });
+	  },
+
+	  listNDaysHistoryStocks: function () {
+	    return getApiResult('ndayshistoryflatteneddbobject').then(function (response) {
+	      var stocksInfo = response.data.items;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listNDaysHistoryStocks ', err);
+	    });
+	  },
+
+	  listUnrealizedDetails: function () {
+	    return getApiResult('unrealizeddetaildbobject').then(function (response) {
+	      var stocksInfo = response.data.items;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listUnrealizedDetails ', err);
+	    });
+	  }
 	};
 
 	module.exports = helpers;
@@ -31384,6 +31390,933 @@
 /* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var AppendPercent = __webpack_require__(288);
+	var MoneyFormat = __webpack_require__(290);
+	var ConvertToPercent = __webpack_require__(291);
+	var AppendPercentRoundedOff = __webpack_require__(292);
+	var ConvertToPercentRoundedOff = __webpack_require__(293);
+	var Trim = __webpack_require__(542);
+
+	var helpers = {
+
+	  listColumnMetadata: function () {
+	    var metadata = [{
+	      "columnName": "stockName",
+	      "displayName": "Stock Name",
+	      "customComponent": Trim
+	    }, {
+	      "columnName": "returnTillDate",
+	      "displayName": "Return %",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "totalInvestment",
+	      "displayName": "Investment",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "quantity",
+	      "displayName": "Qty",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "sellableQuantity",
+	      "displayName": "Sellable Qty",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalReturn",
+	      "displayName": "Return",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalReturnIfBank",
+	      "displayName": "Return(Bank)",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "impactOnAverageReturn",
+	      "displayName": "Impact",
+	      "customComponent": ConvertToPercent
+	    }, {
+	      "columnName": "stockRatingValue",
+	      "displayName": "Score"
+	    }, {
+	      "columnName": "investmentRatio",
+	      "displayName": "Inv Ratio",
+	      "customComponent": ConvertToPercent
+	    }, {
+	      "columnName": "industryInvestmentRatio",
+	      "displayName": "Ind Inv Ratio",
+	      "customComponent": ConvertToPercent
+	    }, {
+	      "columnName": "sellPrice",
+	      "displayName": "Close Price",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "simpleMovingAverage",
+	      "displayName": "SMV",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "simpleMovingAverageAndSellDeltaNormalized",
+	      "displayName": "SMV(%)",
+	      "customComponent": AppendPercentRoundedOff
+	    }, {
+	      "columnName": "netNDaysGain",
+	      "displayName": "NDays(%)",
+	      "customComponent": ConvertToPercentRoundedOff
+	    }, {
+	      "columnName": "industry",
+	      "displayName": "Ind"
+	    }, {
+	      "columnName": "nDay1Gain",
+	      "displayName": "Day1",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "nDay2Gain",
+	      "displayName": "Day2",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "nDay3Gain",
+	      "displayName": "Day3",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "nDay4Gain",
+	      "displayName": "Day4",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "nDay5Gain",
+	      "displayName": "Day5",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "nDay6Gain",
+	      "displayName": "Day6",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "buyDate",
+	      "displayName": "Buy Date"
+	    }, {
+	      "columnName": "buyPrice",
+	      "displayName": "Buy Price",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "buyDate",
+	      "displayName": "Buy Date"
+	    }, {
+	      "columnName": "duration",
+	      "displayName": "Duration"
+	    }, {
+	      "columnName": "sellPrice",
+	      "displayName": "Return",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "bankSellPrice",
+	      "displayName": "Return(Bank)",
+	      "customComponent": MoneyFormat
+	    }];
+	    return metadata;
+	  }
+	};
+
+	module.exports = helpers;
+
+/***/ },
+/* 288 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var numeral = __webpack_require__(289);
+	var formatter = __webpack_require__(544);
+
+	var AppendPercent = React.createClass({
+	  displayName: 'AppendPercent',
+
+	  render: function () {
+	    var num = this.props.data;
+	    return React.createElement(
+	      'div',
+	      null,
+	      formatter.appendPercent(num)
+	    );
+	  }
+	});
+
+	module.exports = AppendPercent;
+
+/***/ },
+/* 289 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * numeral.js
+	 * version : 1.5.3
+	 * author : Adam Draper
+	 * license : MIT
+	 * http://adamwdraper.github.com/Numeral-js/
+	 */
+
+	(function () {
+
+	    /************************************
+	        Constants
+	    ************************************/
+
+	    var numeral,
+	        VERSION = '1.5.3',
+	        // internal storage for language config files
+	        languages = {},
+	        currentLanguage = 'en',
+	        zeroFormat = null,
+	        defaultFormat = '0,0',
+	        // check for nodeJS
+	        hasModule = (typeof module !== 'undefined' && module.exports);
+
+
+	    /************************************
+	        Constructors
+	    ************************************/
+
+
+	    // Numeral prototype object
+	    function Numeral (number) {
+	        this._value = number;
+	    }
+
+	    /**
+	     * Implementation of toFixed() that treats floats more like decimals
+	     *
+	     * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
+	     * problems for accounting- and finance-related software.
+	     */
+	    function toFixed (value, precision, roundingFunction, optionals) {
+	        var power = Math.pow(10, precision),
+	            optionalsRegExp,
+	            output;
+	            
+	        //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
+	        // Multiply up by precision, round accurately, then divide and use native toFixed():
+	        output = (roundingFunction(value * power) / power).toFixed(precision);
+
+	        if (optionals) {
+	            optionalsRegExp = new RegExp('0{1,' + optionals + '}$');
+	            output = output.replace(optionalsRegExp, '');
+	        }
+
+	        return output;
+	    }
+
+	    /************************************
+	        Formatting
+	    ************************************/
+
+	    // determine what type of formatting we need to do
+	    function formatNumeral (n, format, roundingFunction) {
+	        var output;
+
+	        // figure out what kind of format we are dealing with
+	        if (format.indexOf('$') > -1) { // currency!!!!!
+	            output = formatCurrency(n, format, roundingFunction);
+	        } else if (format.indexOf('%') > -1) { // percentage
+	            output = formatPercentage(n, format, roundingFunction);
+	        } else if (format.indexOf(':') > -1) { // time
+	            output = formatTime(n, format);
+	        } else { // plain ol' numbers or bytes
+	            output = formatNumber(n._value, format, roundingFunction);
+	        }
+
+	        // return string
+	        return output;
+	    }
+
+	    // revert to number
+	    function unformatNumeral (n, string) {
+	        var stringOriginal = string,
+	            thousandRegExp,
+	            millionRegExp,
+	            billionRegExp,
+	            trillionRegExp,
+	            suffixes = ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+	            bytesMultiplier = false,
+	            power;
+
+	        if (string.indexOf(':') > -1) {
+	            n._value = unformatTime(string);
+	        } else {
+	            if (string === zeroFormat) {
+	                n._value = 0;
+	            } else {
+	                if (languages[currentLanguage].delimiters.decimal !== '.') {
+	                    string = string.replace(/\./g,'').replace(languages[currentLanguage].delimiters.decimal, '.');
+	                }
+
+	                // see if abbreviations are there so that we can multiply to the correct number
+	                thousandRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.thousand + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+	                millionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.million + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+	                billionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.billion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+	                trillionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.trillion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
+
+	                // see if bytes are there so that we can multiply to the correct number
+	                for (power = 0; power <= suffixes.length; power++) {
+	                    bytesMultiplier = (string.indexOf(suffixes[power]) > -1) ? Math.pow(1024, power + 1) : false;
+
+	                    if (bytesMultiplier) {
+	                        break;
+	                    }
+	                }
+
+	                // do some math to create our number
+	                n._value = ((bytesMultiplier) ? bytesMultiplier : 1) * ((stringOriginal.match(thousandRegExp)) ? Math.pow(10, 3) : 1) * ((stringOriginal.match(millionRegExp)) ? Math.pow(10, 6) : 1) * ((stringOriginal.match(billionRegExp)) ? Math.pow(10, 9) : 1) * ((stringOriginal.match(trillionRegExp)) ? Math.pow(10, 12) : 1) * ((string.indexOf('%') > -1) ? 0.01 : 1) * (((string.split('-').length + Math.min(string.split('(').length-1, string.split(')').length-1)) % 2)? 1: -1) * Number(string.replace(/[^0-9\.]+/g, ''));
+
+	                // round if we are talking about bytes
+	                n._value = (bytesMultiplier) ? Math.ceil(n._value) : n._value;
+	            }
+	        }
+	        return n._value;
+	    }
+
+	    function formatCurrency (n, format, roundingFunction) {
+	        var symbolIndex = format.indexOf('$'),
+	            openParenIndex = format.indexOf('('),
+	            minusSignIndex = format.indexOf('-'),
+	            space = '',
+	            spliceIndex,
+	            output;
+
+	        // check for space before or after currency
+	        if (format.indexOf(' $') > -1) {
+	            space = ' ';
+	            format = format.replace(' $', '');
+	        } else if (format.indexOf('$ ') > -1) {
+	            space = ' ';
+	            format = format.replace('$ ', '');
+	        } else {
+	            format = format.replace('$', '');
+	        }
+
+	        // format the number
+	        output = formatNumber(n._value, format, roundingFunction);
+
+	        // position the symbol
+	        if (symbolIndex <= 1) {
+	            if (output.indexOf('(') > -1 || output.indexOf('-') > -1) {
+	                output = output.split('');
+	                spliceIndex = 1;
+	                if (symbolIndex < openParenIndex || symbolIndex < minusSignIndex){
+	                    // the symbol appears before the "(" or "-"
+	                    spliceIndex = 0;
+	                }
+	                output.splice(spliceIndex, 0, languages[currentLanguage].currency.symbol + space);
+	                output = output.join('');
+	            } else {
+	                output = languages[currentLanguage].currency.symbol + space + output;
+	            }
+	        } else {
+	            if (output.indexOf(')') > -1) {
+	                output = output.split('');
+	                output.splice(-1, 0, space + languages[currentLanguage].currency.symbol);
+	                output = output.join('');
+	            } else {
+	                output = output + space + languages[currentLanguage].currency.symbol;
+	            }
+	        }
+
+	        return output;
+	    }
+
+	    function formatPercentage (n, format, roundingFunction) {
+	        var space = '',
+	            output,
+	            value = n._value * 100;
+
+	        // check for space before %
+	        if (format.indexOf(' %') > -1) {
+	            space = ' ';
+	            format = format.replace(' %', '');
+	        } else {
+	            format = format.replace('%', '');
+	        }
+
+	        output = formatNumber(value, format, roundingFunction);
+	        
+	        if (output.indexOf(')') > -1 ) {
+	            output = output.split('');
+	            output.splice(-1, 0, space + '%');
+	            output = output.join('');
+	        } else {
+	            output = output + space + '%';
+	        }
+
+	        return output;
+	    }
+
+	    function formatTime (n) {
+	        var hours = Math.floor(n._value/60/60),
+	            minutes = Math.floor((n._value - (hours * 60 * 60))/60),
+	            seconds = Math.round(n._value - (hours * 60 * 60) - (minutes * 60));
+	        return hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
+	    }
+
+	    function unformatTime (string) {
+	        var timeArray = string.split(':'),
+	            seconds = 0;
+	        // turn hours and minutes into seconds and add them all up
+	        if (timeArray.length === 3) {
+	            // hours
+	            seconds = seconds + (Number(timeArray[0]) * 60 * 60);
+	            // minutes
+	            seconds = seconds + (Number(timeArray[1]) * 60);
+	            // seconds
+	            seconds = seconds + Number(timeArray[2]);
+	        } else if (timeArray.length === 2) {
+	            // minutes
+	            seconds = seconds + (Number(timeArray[0]) * 60);
+	            // seconds
+	            seconds = seconds + Number(timeArray[1]);
+	        }
+	        return Number(seconds);
+	    }
+
+	    function formatNumber (value, format, roundingFunction) {
+	        var negP = false,
+	            signed = false,
+	            optDec = false,
+	            abbr = '',
+	            abbrK = false, // force abbreviation to thousands
+	            abbrM = false, // force abbreviation to millions
+	            abbrB = false, // force abbreviation to billions
+	            abbrT = false, // force abbreviation to trillions
+	            abbrForce = false, // force abbreviation
+	            bytes = '',
+	            ord = '',
+	            abs = Math.abs(value),
+	            suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+	            min,
+	            max,
+	            power,
+	            w,
+	            precision,
+	            thousands,
+	            d = '',
+	            neg = false;
+
+	        // check if number is zero and a custom zero format has been set
+	        if (value === 0 && zeroFormat !== null) {
+	            return zeroFormat;
+	        } else {
+	            // see if we should use parentheses for negative number or if we should prefix with a sign
+	            // if both are present we default to parentheses
+	            if (format.indexOf('(') > -1) {
+	                negP = true;
+	                format = format.slice(1, -1);
+	            } else if (format.indexOf('+') > -1) {
+	                signed = true;
+	                format = format.replace(/\+/g, '');
+	            }
+
+	            // see if abbreviation is wanted
+	            if (format.indexOf('a') > -1) {
+	                // check if abbreviation is specified
+	                abbrK = format.indexOf('aK') >= 0;
+	                abbrM = format.indexOf('aM') >= 0;
+	                abbrB = format.indexOf('aB') >= 0;
+	                abbrT = format.indexOf('aT') >= 0;
+	                abbrForce = abbrK || abbrM || abbrB || abbrT;
+
+	                // check for space before abbreviation
+	                if (format.indexOf(' a') > -1) {
+	                    abbr = ' ';
+	                    format = format.replace(' a', '');
+	                } else {
+	                    format = format.replace('a', '');
+	                }
+
+	                if (abs >= Math.pow(10, 12) && !abbrForce || abbrT) {
+	                    // trillion
+	                    abbr = abbr + languages[currentLanguage].abbreviations.trillion;
+	                    value = value / Math.pow(10, 12);
+	                } else if (abs < Math.pow(10, 12) && abs >= Math.pow(10, 9) && !abbrForce || abbrB) {
+	                    // billion
+	                    abbr = abbr + languages[currentLanguage].abbreviations.billion;
+	                    value = value / Math.pow(10, 9);
+	                } else if (abs < Math.pow(10, 9) && abs >= Math.pow(10, 6) && !abbrForce || abbrM) {
+	                    // million
+	                    abbr = abbr + languages[currentLanguage].abbreviations.million;
+	                    value = value / Math.pow(10, 6);
+	                } else if (abs < Math.pow(10, 6) && abs >= Math.pow(10, 3) && !abbrForce || abbrK) {
+	                    // thousand
+	                    abbr = abbr + languages[currentLanguage].abbreviations.thousand;
+	                    value = value / Math.pow(10, 3);
+	                }
+	            }
+
+	            // see if we are formatting bytes
+	            if (format.indexOf('b') > -1) {
+	                // check for space before
+	                if (format.indexOf(' b') > -1) {
+	                    bytes = ' ';
+	                    format = format.replace(' b', '');
+	                } else {
+	                    format = format.replace('b', '');
+	                }
+
+	                for (power = 0; power <= suffixes.length; power++) {
+	                    min = Math.pow(1024, power);
+	                    max = Math.pow(1024, power+1);
+
+	                    if (value >= min && value < max) {
+	                        bytes = bytes + suffixes[power];
+	                        if (min > 0) {
+	                            value = value / min;
+	                        }
+	                        break;
+	                    }
+	                }
+	            }
+
+	            // see if ordinal is wanted
+	            if (format.indexOf('o') > -1) {
+	                // check for space before
+	                if (format.indexOf(' o') > -1) {
+	                    ord = ' ';
+	                    format = format.replace(' o', '');
+	                } else {
+	                    format = format.replace('o', '');
+	                }
+
+	                ord = ord + languages[currentLanguage].ordinal(value);
+	            }
+
+	            if (format.indexOf('[.]') > -1) {
+	                optDec = true;
+	                format = format.replace('[.]', '.');
+	            }
+
+	            w = value.toString().split('.')[0];
+	            precision = format.split('.')[1];
+	            thousands = format.indexOf(',');
+
+	            if (precision) {
+	                if (precision.indexOf('[') > -1) {
+	                    precision = precision.replace(']', '');
+	                    precision = precision.split('[');
+	                    d = toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
+	                } else {
+	                    d = toFixed(value, precision.length, roundingFunction);
+	                }
+
+	                w = d.split('.')[0];
+
+	                if (d.split('.')[1].length) {
+	                    d = languages[currentLanguage].delimiters.decimal + d.split('.')[1];
+	                } else {
+	                    d = '';
+	                }
+
+	                if (optDec && Number(d.slice(1)) === 0) {
+	                    d = '';
+	                }
+	            } else {
+	                w = toFixed(value, null, roundingFunction);
+	            }
+
+	            // format number
+	            if (w.indexOf('-') > -1) {
+	                w = w.slice(1);
+	                neg = true;
+	            }
+
+	            if (thousands > -1) {
+	                w = w.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + languages[currentLanguage].delimiters.thousands);
+	            }
+
+	            if (format.indexOf('.') === 0) {
+	                w = '';
+	            }
+
+	            return ((negP && neg) ? '(' : '') + ((!negP && neg) ? '-' : '') + ((!neg && signed) ? '+' : '') + w + d + ((ord) ? ord : '') + ((abbr) ? abbr : '') + ((bytes) ? bytes : '') + ((negP && neg) ? ')' : '');
+	        }
+	    }
+
+	    /************************************
+	        Top Level Functions
+	    ************************************/
+
+	    numeral = function (input) {
+	        if (numeral.isNumeral(input)) {
+	            input = input.value();
+	        } else if (input === 0 || typeof input === 'undefined') {
+	            input = 0;
+	        } else if (!Number(input)) {
+	            input = numeral.fn.unformat(input);
+	        }
+
+	        return new Numeral(Number(input));
+	    };
+
+	    // version number
+	    numeral.version = VERSION;
+
+	    // compare numeral object
+	    numeral.isNumeral = function (obj) {
+	        return obj instanceof Numeral;
+	    };
+
+	    // This function will load languages and then set the global language.  If
+	    // no arguments are passed in, it will simply return the current global
+	    // language key.
+	    numeral.language = function (key, values) {
+	        if (!key) {
+	            return currentLanguage;
+	        }
+
+	        if (key && !values) {
+	            if(!languages[key]) {
+	                throw new Error('Unknown language : ' + key);
+	            }
+	            currentLanguage = key;
+	        }
+
+	        if (values || !languages[key]) {
+	            loadLanguage(key, values);
+	        }
+
+	        return numeral;
+	    };
+	    
+	    // This function provides access to the loaded language data.  If
+	    // no arguments are passed in, it will simply return the current
+	    // global language object.
+	    numeral.languageData = function (key) {
+	        if (!key) {
+	            return languages[currentLanguage];
+	        }
+	        
+	        if (!languages[key]) {
+	            throw new Error('Unknown language : ' + key);
+	        }
+	        
+	        return languages[key];
+	    };
+
+	    numeral.language('en', {
+	        delimiters: {
+	            thousands: ',',
+	            decimal: '.'
+	        },
+	        abbreviations: {
+	            thousand: 'k',
+	            million: 'm',
+	            billion: 'b',
+	            trillion: 't'
+	        },
+	        ordinal: function (number) {
+	            var b = number % 10;
+	            return (~~ (number % 100 / 10) === 1) ? 'th' :
+	                (b === 1) ? 'st' :
+	                (b === 2) ? 'nd' :
+	                (b === 3) ? 'rd' : 'th';
+	        },
+	        currency: {
+	            symbol: '$'
+	        }
+	    });
+
+	    numeral.zeroFormat = function (format) {
+	        zeroFormat = typeof(format) === 'string' ? format : null;
+	    };
+
+	    numeral.defaultFormat = function (format) {
+	        defaultFormat = typeof(format) === 'string' ? format : '0.0';
+	    };
+
+	    /************************************
+	        Helpers
+	    ************************************/
+
+	    function loadLanguage(key, values) {
+	        languages[key] = values;
+	    }
+
+	    /************************************
+	        Floating-point helpers
+	    ************************************/
+
+	    // The floating-point helper functions and implementation
+	    // borrows heavily from sinful.js: http://guipn.github.io/sinful.js/
+
+	    /**
+	     * Array.prototype.reduce for browsers that don't support it
+	     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
+	     */
+	    if ('function' !== typeof Array.prototype.reduce) {
+	        Array.prototype.reduce = function (callback, opt_initialValue) {
+	            'use strict';
+	            
+	            if (null === this || 'undefined' === typeof this) {
+	                // At the moment all modern browsers, that support strict mode, have
+	                // native implementation of Array.prototype.reduce. For instance, IE8
+	                // does not support strict mode, so this check is actually useless.
+	                throw new TypeError('Array.prototype.reduce called on null or undefined');
+	            }
+	            
+	            if ('function' !== typeof callback) {
+	                throw new TypeError(callback + ' is not a function');
+	            }
+
+	            var index,
+	                value,
+	                length = this.length >>> 0,
+	                isValueSet = false;
+
+	            if (1 < arguments.length) {
+	                value = opt_initialValue;
+	                isValueSet = true;
+	            }
+
+	            for (index = 0; length > index; ++index) {
+	                if (this.hasOwnProperty(index)) {
+	                    if (isValueSet) {
+	                        value = callback(value, this[index], index, this);
+	                    } else {
+	                        value = this[index];
+	                        isValueSet = true;
+	                    }
+	                }
+	            }
+
+	            if (!isValueSet) {
+	                throw new TypeError('Reduce of empty array with no initial value');
+	            }
+
+	            return value;
+	        };
+	    }
+
+	    
+	    /**
+	     * Computes the multiplier necessary to make x >= 1,
+	     * effectively eliminating miscalculations caused by
+	     * finite precision.
+	     */
+	    function multiplier(x) {
+	        var parts = x.toString().split('.');
+	        if (parts.length < 2) {
+	            return 1;
+	        }
+	        return Math.pow(10, parts[1].length);
+	    }
+
+	    /**
+	     * Given a variable number of arguments, returns the maximum
+	     * multiplier that must be used to normalize an operation involving
+	     * all of them.
+	     */
+	    function correctionFactor() {
+	        var args = Array.prototype.slice.call(arguments);
+	        return args.reduce(function (prev, next) {
+	            var mp = multiplier(prev),
+	                mn = multiplier(next);
+	        return mp > mn ? mp : mn;
+	        }, -Infinity);
+	    }        
+
+
+	    /************************************
+	        Numeral Prototype
+	    ************************************/
+
+
+	    numeral.fn = Numeral.prototype = {
+
+	        clone : function () {
+	            return numeral(this);
+	        },
+
+	        format : function (inputString, roundingFunction) {
+	            return formatNumeral(this, 
+	                  inputString ? inputString : defaultFormat, 
+	                  (roundingFunction !== undefined) ? roundingFunction : Math.round
+	              );
+	        },
+
+	        unformat : function (inputString) {
+	            if (Object.prototype.toString.call(inputString) === '[object Number]') { 
+	                return inputString; 
+	            }
+	            return unformatNumeral(this, inputString ? inputString : defaultFormat);
+	        },
+
+	        value : function () {
+	            return this._value;
+	        },
+
+	        valueOf : function () {
+	            return this._value;
+	        },
+
+	        set : function (value) {
+	            this._value = Number(value);
+	            return this;
+	        },
+
+	        add : function (value) {
+	            var corrFactor = correctionFactor.call(null, this._value, value);
+	            function cback(accum, curr, currI, O) {
+	                return accum + corrFactor * curr;
+	            }
+	            this._value = [this._value, value].reduce(cback, 0) / corrFactor;
+	            return this;
+	        },
+
+	        subtract : function (value) {
+	            var corrFactor = correctionFactor.call(null, this._value, value);
+	            function cback(accum, curr, currI, O) {
+	                return accum - corrFactor * curr;
+	            }
+	            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;            
+	            return this;
+	        },
+
+	        multiply : function (value) {
+	            function cback(accum, curr, currI, O) {
+	                var corrFactor = correctionFactor(accum, curr);
+	                return (accum * corrFactor) * (curr * corrFactor) /
+	                    (corrFactor * corrFactor);
+	            }
+	            this._value = [this._value, value].reduce(cback, 1);
+	            return this;
+	        },
+
+	        divide : function (value) {
+	            function cback(accum, curr, currI, O) {
+	                var corrFactor = correctionFactor(accum, curr);
+	                return (accum * corrFactor) / (curr * corrFactor);
+	            }
+	            this._value = [this._value, value].reduce(cback);            
+	            return this;
+	        },
+
+	        difference : function (value) {
+	            return Math.abs(numeral(this._value).subtract(value).value());
+	        }
+
+	    };
+
+	    /************************************
+	        Exposing Numeral
+	    ************************************/
+
+	    // CommonJS module is defined
+	    if (hasModule) {
+	        module.exports = numeral;
+	    }
+
+	    /*global ender:false */
+	    if (typeof ender === 'undefined') {
+	        // here, `this` means `window` in the browser, or `global` on the server
+	        // add `numeral` as a global object via a string identifier,
+	        // for Closure Compiler 'advanced' mode
+	        this['numeral'] = numeral;
+	    }
+
+	    /*global define:false */
+	    if (true) {
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	            return numeral;
+	        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    }
+	}).call(this);
+
+
+/***/ },
+/* 290 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var numeral = __webpack_require__(289);
+	var formatter = __webpack_require__(544);
+
+	var MoneyFormat = React.createClass({
+	  displayName: 'MoneyFormat',
+
+	  render: function () {
+	    var num = this.props.data;
+	    return React.createElement(
+	      'div',
+	      null,
+	      formatter.moneyFormat(num)
+	    );
+	  }
+	});
+
+	module.exports = MoneyFormat;
+
+/***/ },
+/* 291 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var numeral = __webpack_require__(289);
+	var formatter = __webpack_require__(544);
+
+	var ConvertToPercent = React.createClass({
+	  displayName: 'ConvertToPercent',
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      formatter.convertToPercent(this.props.data)
+	    );
+	  }
+	});
+
+	module.exports = ConvertToPercent;
+
+/***/ },
+/* 292 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var numeral = __webpack_require__(289);
+	var formatter = __webpack_require__(544);
+
+	var AppendPercentRoundedOff = React.createClass({
+	  displayName: 'AppendPercentRoundedOff',
+
+	  render: function () {
+	    var num = this.props.data;
+	    return React.createElement(
+	      'div',
+	      null,
+	      formatter.appendPercentRoundedOff(num)
+	    );
+	  }
+	});
+
+	module.exports = AppendPercentRoundedOff;
+
+/***/ },
+/* 293 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var numeral = __webpack_require__(289);
+	var formatter = __webpack_require__(544);
+
+	var ConvertToPercentRoundedOff = React.createClass({
+	  displayName: 'ConvertToPercentRoundedOff',
+
+	  render: function () {
+	    var num = this.props.data;
+	    return React.createElement(
+	      'div',
+	      null,
+	      formatter.convertToPercentRoundedOff(num)
+	    );
+	  }
+	});
+
+	module.exports = ConvertToPercentRoundedOff;
+
+/***/ },
+/* 294 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/*
 	   Griddle - Simple Grid Component for React
 	   https://github.com/DynamicTyped/Griddle
@@ -31404,38 +32337,38 @@
 	};
 
 	var React = __webpack_require__(2);
-	var GridTable = __webpack_require__(288);
-	var GridFilter = __webpack_require__(443);
-	var GridPagination = __webpack_require__(444);
-	var GridSettings = __webpack_require__(445);
-	var GridNoData = __webpack_require__(450);
-	var GridRow = __webpack_require__(451);
-	var GridRowContainer = __webpack_require__(437);
-	var CustomRowComponentContainer = __webpack_require__(467);
-	var CustomPaginationContainer = __webpack_require__(468);
-	var CustomFilterContainer = __webpack_require__(469);
-	var ColumnProperties = __webpack_require__(290);
-	var RowProperties = __webpack_require__(441);
-	var deep = __webpack_require__(452);
+	var GridTable = __webpack_require__(295);
+	var GridFilter = __webpack_require__(450);
+	var GridPagination = __webpack_require__(451);
+	var GridSettings = __webpack_require__(452);
+	var GridNoData = __webpack_require__(457);
+	var GridRow = __webpack_require__(458);
+	var GridRowContainer = __webpack_require__(444);
+	var CustomRowComponentContainer = __webpack_require__(474);
+	var CustomPaginationContainer = __webpack_require__(475);
+	var CustomFilterContainer = __webpack_require__(476);
+	var ColumnProperties = __webpack_require__(297);
+	var RowProperties = __webpack_require__(448);
+	var deep = __webpack_require__(459);
 
-	var drop = __webpack_require__(470);
-	var dropRight = __webpack_require__(472);
-	var find = __webpack_require__(408);
-	var first = __webpack_require__(473);
-	var forEach = __webpack_require__(453);
-	var initial = __webpack_require__(474);
-	var isArray = __webpack_require__(364);
-	var isEmpty = __webpack_require__(475);
-	var isNull = __webpack_require__(478);
-	var isUndefined = __webpack_require__(479);
-	var omit = __webpack_require__(480);
-	var map = __webpack_require__(291);
-	var extend = __webpack_require__(433);
-	var _filter = __webpack_require__(405);
+	var drop = __webpack_require__(477);
+	var dropRight = __webpack_require__(479);
+	var find = __webpack_require__(415);
+	var first = __webpack_require__(480);
+	var forEach = __webpack_require__(460);
+	var initial = __webpack_require__(481);
+	var isArray = __webpack_require__(371);
+	var isEmpty = __webpack_require__(482);
+	var isNull = __webpack_require__(485);
+	var isUndefined = __webpack_require__(486);
+	var omit = __webpack_require__(487);
+	var map = __webpack_require__(298);
+	var extend = __webpack_require__(440);
+	var _filter = __webpack_require__(412);
 
-	var _orderBy = __webpack_require__(486);
-	var _property = __webpack_require__(397);
-	var _get = __webpack_require__(383);
+	var _orderBy = __webpack_require__(493);
+	var _property = __webpack_require__(404);
+	var _get = __webpack_require__(390);
 
 	var Griddle = React.createClass({
 	    displayName: 'Griddle',
@@ -32296,7 +33229,7 @@
 
 
 /***/ },
-/* 288 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -32305,10 +33238,10 @@
 	'use strict';
 
 	var React = __webpack_require__(2);
-	var GridTitle = __webpack_require__(289);
-	var GridRowContainer = __webpack_require__(437);
-	var ColumnProperties = __webpack_require__(290);
-	var RowProperties = __webpack_require__(441);
+	var GridTitle = __webpack_require__(296);
+	var GridRowContainer = __webpack_require__(444);
+	var ColumnProperties = __webpack_require__(297);
+	var RowProperties = __webpack_require__(448);
 
 	var GridTable = React.createClass({
 	  displayName: 'GridTable',
@@ -32582,7 +33515,7 @@
 
 
 /***/ },
-/* 289 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -32601,8 +33534,8 @@
 	};
 
 	var React = __webpack_require__(2);
-	var ColumnProperties = __webpack_require__(290);
-	var assign = __webpack_require__(433);
+	var ColumnProperties = __webpack_require__(297);
+	var assign = __webpack_require__(440);
 
 	var DefaultHeaderComponent = React.createClass({
 	    displayName: 'DefaultHeaderComponent',
@@ -32714,7 +33647,7 @@
 
 
 /***/ },
-/* 290 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32723,11 +33656,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var map = __webpack_require__(291);
-	var filter = __webpack_require__(405);
-	var find = __webpack_require__(408);
-	var sortBy = __webpack_require__(415);
-	var difference = __webpack_require__(426);
+	var map = __webpack_require__(298);
+	var filter = __webpack_require__(412);
+	var find = __webpack_require__(415);
+	var sortBy = __webpack_require__(422);
+	var difference = __webpack_require__(433);
 
 	var ColumnProperties = (function () {
 	  function ColumnProperties() {
@@ -32822,13 +33755,13 @@
 
 
 /***/ },
-/* 291 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(292),
-	    baseIteratee = __webpack_require__(293),
-	    baseMap = __webpack_require__(399),
-	    isArray = __webpack_require__(364);
+	var arrayMap = __webpack_require__(299),
+	    baseIteratee = __webpack_require__(300),
+	    baseMap = __webpack_require__(406),
+	    isArray = __webpack_require__(371);
 
 	/**
 	 * Creates an array of values by running each element in `collection` thru
@@ -32881,7 +33814,7 @@
 
 
 /***/ },
-/* 292 */
+/* 299 */
 /***/ function(module, exports) {
 
 	/**
@@ -32908,14 +33841,14 @@
 
 
 /***/ },
-/* 293 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseMatches = __webpack_require__(294),
-	    baseMatchesProperty = __webpack_require__(382),
-	    identity = __webpack_require__(396),
-	    isArray = __webpack_require__(364),
-	    property = __webpack_require__(397);
+	var baseMatches = __webpack_require__(301),
+	    baseMatchesProperty = __webpack_require__(389),
+	    identity = __webpack_require__(403),
+	    isArray = __webpack_require__(371),
+	    property = __webpack_require__(404);
 
 	/**
 	 * The base implementation of `_.iteratee`.
@@ -32945,12 +33878,12 @@
 
 
 /***/ },
-/* 294 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsMatch = __webpack_require__(295),
-	    getMatchData = __webpack_require__(379),
-	    matchesStrictComparable = __webpack_require__(381);
+	var baseIsMatch = __webpack_require__(302),
+	    getMatchData = __webpack_require__(386),
+	    matchesStrictComparable = __webpack_require__(388);
 
 	/**
 	 * The base implementation of `_.matches` which doesn't clone `source`.
@@ -32973,11 +33906,11 @@
 
 
 /***/ },
-/* 295 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(296),
-	    baseIsEqual = __webpack_require__(337);
+	var Stack = __webpack_require__(303),
+	    baseIsEqual = __webpack_require__(344);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -33041,15 +33974,15 @@
 
 
 /***/ },
-/* 296 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(297),
-	    stackClear = __webpack_require__(305),
-	    stackDelete = __webpack_require__(306),
-	    stackGet = __webpack_require__(307),
-	    stackHas = __webpack_require__(308),
-	    stackSet = __webpack_require__(309);
+	var ListCache = __webpack_require__(304),
+	    stackClear = __webpack_require__(312),
+	    stackDelete = __webpack_require__(313),
+	    stackGet = __webpack_require__(314),
+	    stackHas = __webpack_require__(315),
+	    stackSet = __webpack_require__(316);
 
 	/**
 	 * Creates a stack cache object to store key-value pairs.
@@ -33073,14 +34006,14 @@
 
 
 /***/ },
-/* 297 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var listCacheClear = __webpack_require__(298),
-	    listCacheDelete = __webpack_require__(299),
-	    listCacheGet = __webpack_require__(302),
-	    listCacheHas = __webpack_require__(303),
-	    listCacheSet = __webpack_require__(304);
+	var listCacheClear = __webpack_require__(305),
+	    listCacheDelete = __webpack_require__(306),
+	    listCacheGet = __webpack_require__(309),
+	    listCacheHas = __webpack_require__(310),
+	    listCacheSet = __webpack_require__(311);
 
 	/**
 	 * Creates an list cache object.
@@ -33111,7 +34044,7 @@
 
 
 /***/ },
-/* 298 */
+/* 305 */
 /***/ function(module, exports) {
 
 	/**
@@ -33129,10 +34062,10 @@
 
 
 /***/ },
-/* 299 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(300);
+	var assocIndexOf = __webpack_require__(307);
 
 	/** Used for built-in method references. */
 	var arrayProto = Array.prototype;
@@ -33169,10 +34102,10 @@
 
 
 /***/ },
-/* 300 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(301);
+	var eq = __webpack_require__(308);
 
 	/**
 	 * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -33196,7 +34129,7 @@
 
 
 /***/ },
-/* 301 */
+/* 308 */
 /***/ function(module, exports) {
 
 	/**
@@ -33239,10 +34172,10 @@
 
 
 /***/ },
-/* 302 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(300);
+	var assocIndexOf = __webpack_require__(307);
 
 	/**
 	 * Gets the list cache value for `key`.
@@ -33264,10 +34197,10 @@
 
 
 /***/ },
-/* 303 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(300);
+	var assocIndexOf = __webpack_require__(307);
 
 	/**
 	 * Checks if a list cache value for `key` exists.
@@ -33286,10 +34219,10 @@
 
 
 /***/ },
-/* 304 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(300);
+	var assocIndexOf = __webpack_require__(307);
 
 	/**
 	 * Sets the list cache `key` to `value`.
@@ -33317,10 +34250,10 @@
 
 
 /***/ },
-/* 305 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(297);
+	var ListCache = __webpack_require__(304);
 
 	/**
 	 * Removes all key-value entries from the stack.
@@ -33337,7 +34270,7 @@
 
 
 /***/ },
-/* 306 */
+/* 313 */
 /***/ function(module, exports) {
 
 	/**
@@ -33357,7 +34290,7 @@
 
 
 /***/ },
-/* 307 */
+/* 314 */
 /***/ function(module, exports) {
 
 	/**
@@ -33377,7 +34310,7 @@
 
 
 /***/ },
-/* 308 */
+/* 315 */
 /***/ function(module, exports) {
 
 	/**
@@ -33397,12 +34330,12 @@
 
 
 /***/ },
-/* 309 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(297),
-	    Map = __webpack_require__(310),
-	    MapCache = __webpack_require__(322);
+	var ListCache = __webpack_require__(304),
+	    Map = __webpack_require__(317),
+	    MapCache = __webpack_require__(329);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -33435,11 +34368,11 @@
 
 
 /***/ },
-/* 310 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(311),
-	    root = __webpack_require__(318);
+	var getNative = __webpack_require__(318),
+	    root = __webpack_require__(325);
 
 	/* Built-in method references that are verified to be native. */
 	var Map = getNative(root, 'Map');
@@ -33448,11 +34381,11 @@
 
 
 /***/ },
-/* 311 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsNative = __webpack_require__(312),
-	    getValue = __webpack_require__(321);
+	var baseIsNative = __webpack_require__(319),
+	    getValue = __webpack_require__(328);
 
 	/**
 	 * Gets the native function at `key` of `object`.
@@ -33471,14 +34404,14 @@
 
 
 /***/ },
-/* 312 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(313),
-	    isHostObject = __webpack_require__(315),
-	    isMasked = __webpack_require__(316),
-	    isObject = __webpack_require__(314),
-	    toSource = __webpack_require__(320);
+	var isFunction = __webpack_require__(320),
+	    isHostObject = __webpack_require__(322),
+	    isMasked = __webpack_require__(323),
+	    isObject = __webpack_require__(321),
+	    toSource = __webpack_require__(327);
 
 	/**
 	 * Used to match `RegExp`
@@ -33524,10 +34457,10 @@
 
 
 /***/ },
-/* 313 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(314);
+	var isObject = __webpack_require__(321);
 
 	/** `Object#toString` result references. */
 	var funcTag = '[object Function]',
@@ -33572,7 +34505,7 @@
 
 
 /***/ },
-/* 314 */
+/* 321 */
 /***/ function(module, exports) {
 
 	/**
@@ -33609,7 +34542,7 @@
 
 
 /***/ },
-/* 315 */
+/* 322 */
 /***/ function(module, exports) {
 
 	/**
@@ -33635,10 +34568,10 @@
 
 
 /***/ },
-/* 316 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var coreJsData = __webpack_require__(317);
+	var coreJsData = __webpack_require__(324);
 
 	/** Used to detect methods masquerading as native. */
 	var maskSrcKey = (function() {
@@ -33661,10 +34594,10 @@
 
 
 /***/ },
-/* 317 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(318);
+	var root = __webpack_require__(325);
 
 	/** Used to detect overreaching core-js shims. */
 	var coreJsData = root['__core-js_shared__'];
@@ -33673,10 +34606,10 @@
 
 
 /***/ },
-/* 318 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var freeGlobal = __webpack_require__(319);
+	var freeGlobal = __webpack_require__(326);
 
 	/** Detect free variable `self`. */
 	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -33688,7 +34621,7 @@
 
 
 /***/ },
-/* 319 */
+/* 326 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -33699,7 +34632,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 320 */
+/* 327 */
 /***/ function(module, exports) {
 
 	/** Used to resolve the decompiled source of functions. */
@@ -33728,7 +34661,7 @@
 
 
 /***/ },
-/* 321 */
+/* 328 */
 /***/ function(module, exports) {
 
 	/**
@@ -33747,14 +34680,14 @@
 
 
 /***/ },
-/* 322 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var mapCacheClear = __webpack_require__(323),
-	    mapCacheDelete = __webpack_require__(331),
-	    mapCacheGet = __webpack_require__(334),
-	    mapCacheHas = __webpack_require__(335),
-	    mapCacheSet = __webpack_require__(336);
+	var mapCacheClear = __webpack_require__(330),
+	    mapCacheDelete = __webpack_require__(338),
+	    mapCacheGet = __webpack_require__(341),
+	    mapCacheHas = __webpack_require__(342),
+	    mapCacheSet = __webpack_require__(343);
 
 	/**
 	 * Creates a map cache object to store key-value pairs.
@@ -33785,12 +34718,12 @@
 
 
 /***/ },
-/* 323 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Hash = __webpack_require__(324),
-	    ListCache = __webpack_require__(297),
-	    Map = __webpack_require__(310);
+	var Hash = __webpack_require__(331),
+	    ListCache = __webpack_require__(304),
+	    Map = __webpack_require__(317);
 
 	/**
 	 * Removes all key-value entries from the map.
@@ -33811,14 +34744,14 @@
 
 
 /***/ },
-/* 324 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hashClear = __webpack_require__(325),
-	    hashDelete = __webpack_require__(327),
-	    hashGet = __webpack_require__(328),
-	    hashHas = __webpack_require__(329),
-	    hashSet = __webpack_require__(330);
+	var hashClear = __webpack_require__(332),
+	    hashDelete = __webpack_require__(334),
+	    hashGet = __webpack_require__(335),
+	    hashHas = __webpack_require__(336),
+	    hashSet = __webpack_require__(337);
 
 	/**
 	 * Creates a hash object.
@@ -33849,10 +34782,10 @@
 
 
 /***/ },
-/* 325 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(326);
+	var nativeCreate = __webpack_require__(333);
 
 	/**
 	 * Removes all key-value entries from the hash.
@@ -33869,10 +34802,10 @@
 
 
 /***/ },
-/* 326 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(311);
+	var getNative = __webpack_require__(318);
 
 	/* Built-in method references that are verified to be native. */
 	var nativeCreate = getNative(Object, 'create');
@@ -33881,7 +34814,7 @@
 
 
 /***/ },
-/* 327 */
+/* 334 */
 /***/ function(module, exports) {
 
 	/**
@@ -33902,10 +34835,10 @@
 
 
 /***/ },
-/* 328 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(326);
+	var nativeCreate = __webpack_require__(333);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -33938,10 +34871,10 @@
 
 
 /***/ },
-/* 329 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(326);
+	var nativeCreate = __webpack_require__(333);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -33967,10 +34900,10 @@
 
 
 /***/ },
-/* 330 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(326);
+	var nativeCreate = __webpack_require__(333);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -33995,10 +34928,10 @@
 
 
 /***/ },
-/* 331 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(332);
+	var getMapData = __webpack_require__(339);
 
 	/**
 	 * Removes `key` and its value from the map.
@@ -34017,10 +34950,10 @@
 
 
 /***/ },
-/* 332 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isKeyable = __webpack_require__(333);
+	var isKeyable = __webpack_require__(340);
 
 	/**
 	 * Gets the data for `map`.
@@ -34041,7 +34974,7 @@
 
 
 /***/ },
-/* 333 */
+/* 340 */
 /***/ function(module, exports) {
 
 	/**
@@ -34062,10 +34995,10 @@
 
 
 /***/ },
-/* 334 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(332);
+	var getMapData = __webpack_require__(339);
 
 	/**
 	 * Gets the map value for `key`.
@@ -34084,10 +35017,10 @@
 
 
 /***/ },
-/* 335 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(332);
+	var getMapData = __webpack_require__(339);
 
 	/**
 	 * Checks if a map value for `key` exists.
@@ -34106,10 +35039,10 @@
 
 
 /***/ },
-/* 336 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(332);
+	var getMapData = __webpack_require__(339);
 
 	/**
 	 * Sets the map `key` to `value`.
@@ -34130,12 +35063,12 @@
 
 
 /***/ },
-/* 337 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqualDeep = __webpack_require__(338),
-	    isObject = __webpack_require__(314),
-	    isObjectLike = __webpack_require__(363);
+	var baseIsEqualDeep = __webpack_require__(345),
+	    isObject = __webpack_require__(321),
+	    isObjectLike = __webpack_require__(370);
 
 	/**
 	 * The base implementation of `_.isEqual` which supports partial comparisons
@@ -34166,17 +35099,17 @@
 
 
 /***/ },
-/* 338 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(296),
-	    equalArrays = __webpack_require__(339),
-	    equalByTag = __webpack_require__(344),
-	    equalObjects = __webpack_require__(349),
-	    getTag = __webpack_require__(368),
-	    isArray = __webpack_require__(364),
-	    isHostObject = __webpack_require__(315),
-	    isTypedArray = __webpack_require__(374);
+	var Stack = __webpack_require__(303),
+	    equalArrays = __webpack_require__(346),
+	    equalByTag = __webpack_require__(351),
+	    equalObjects = __webpack_require__(356),
+	    getTag = __webpack_require__(375),
+	    isArray = __webpack_require__(371),
+	    isHostObject = __webpack_require__(322),
+	    isTypedArray = __webpack_require__(381);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -34254,11 +35187,11 @@
 
 
 /***/ },
-/* 339 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(340),
-	    arraySome = __webpack_require__(343);
+	var SetCache = __webpack_require__(347),
+	    arraySome = __webpack_require__(350);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -34343,12 +35276,12 @@
 
 
 /***/ },
-/* 340 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(322),
-	    setCacheAdd = __webpack_require__(341),
-	    setCacheHas = __webpack_require__(342);
+	var MapCache = __webpack_require__(329),
+	    setCacheAdd = __webpack_require__(348),
+	    setCacheHas = __webpack_require__(349);
 
 	/**
 	 *
@@ -34376,7 +35309,7 @@
 
 
 /***/ },
-/* 341 */
+/* 348 */
 /***/ function(module, exports) {
 
 	/** Used to stand-in for `undefined` hash values. */
@@ -34401,7 +35334,7 @@
 
 
 /***/ },
-/* 342 */
+/* 349 */
 /***/ function(module, exports) {
 
 	/**
@@ -34421,7 +35354,7 @@
 
 
 /***/ },
-/* 343 */
+/* 350 */
 /***/ function(module, exports) {
 
 	/**
@@ -34450,15 +35383,15 @@
 
 
 /***/ },
-/* 344 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(345),
-	    Uint8Array = __webpack_require__(346),
-	    eq = __webpack_require__(301),
-	    equalArrays = __webpack_require__(339),
-	    mapToArray = __webpack_require__(347),
-	    setToArray = __webpack_require__(348);
+	var Symbol = __webpack_require__(352),
+	    Uint8Array = __webpack_require__(353),
+	    eq = __webpack_require__(308),
+	    equalArrays = __webpack_require__(346),
+	    mapToArray = __webpack_require__(354),
+	    setToArray = __webpack_require__(355);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -34569,10 +35502,10 @@
 
 
 /***/ },
-/* 345 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(318);
+	var root = __webpack_require__(325);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -34581,10 +35514,10 @@
 
 
 /***/ },
-/* 346 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(318);
+	var root = __webpack_require__(325);
 
 	/** Built-in value references. */
 	var Uint8Array = root.Uint8Array;
@@ -34593,7 +35526,7 @@
 
 
 /***/ },
-/* 347 */
+/* 354 */
 /***/ function(module, exports) {
 
 	/**
@@ -34617,7 +35550,7 @@
 
 
 /***/ },
-/* 348 */
+/* 355 */
 /***/ function(module, exports) {
 
 	/**
@@ -34641,11 +35574,11 @@
 
 
 /***/ },
-/* 349 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(350),
-	    keys = __webpack_require__(353);
+	var baseHas = __webpack_require__(357),
+	    keys = __webpack_require__(360);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -34732,10 +35665,10 @@
 
 
 /***/ },
-/* 350 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getPrototype = __webpack_require__(351);
+	var getPrototype = __webpack_require__(358);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -34764,10 +35697,10 @@
 
 
 /***/ },
-/* 351 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(352);
+	var overArg = __webpack_require__(359);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeGetPrototype = Object.getPrototypeOf;
@@ -34785,7 +35718,7 @@
 
 
 /***/ },
-/* 352 */
+/* 359 */
 /***/ function(module, exports) {
 
 	/**
@@ -34806,15 +35739,15 @@
 
 
 /***/ },
-/* 353 */
+/* 360 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(350),
-	    baseKeys = __webpack_require__(354),
-	    indexKeys = __webpack_require__(355),
-	    isArrayLike = __webpack_require__(359),
-	    isIndex = __webpack_require__(366),
-	    isPrototype = __webpack_require__(367);
+	var baseHas = __webpack_require__(357),
+	    baseKeys = __webpack_require__(361),
+	    indexKeys = __webpack_require__(362),
+	    isArrayLike = __webpack_require__(366),
+	    isIndex = __webpack_require__(373),
+	    isPrototype = __webpack_require__(374);
 
 	/**
 	 * Creates an array of the own enumerable property names of `object`.
@@ -34868,10 +35801,10 @@
 
 
 /***/ },
-/* 354 */
+/* 361 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(352);
+	var overArg = __webpack_require__(359);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeKeys = Object.keys;
@@ -34890,14 +35823,14 @@
 
 
 /***/ },
-/* 355 */
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseTimes = __webpack_require__(356),
-	    isArguments = __webpack_require__(357),
-	    isArray = __webpack_require__(364),
-	    isLength = __webpack_require__(362),
-	    isString = __webpack_require__(365);
+	var baseTimes = __webpack_require__(363),
+	    isArguments = __webpack_require__(364),
+	    isArray = __webpack_require__(371),
+	    isLength = __webpack_require__(369),
+	    isString = __webpack_require__(372);
 
 	/**
 	 * Creates an array of index keys for `object` values of arrays,
@@ -34920,7 +35853,7 @@
 
 
 /***/ },
-/* 356 */
+/* 363 */
 /***/ function(module, exports) {
 
 	/**
@@ -34946,10 +35879,10 @@
 
 
 /***/ },
-/* 357 */
+/* 364 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLikeObject = __webpack_require__(358);
+	var isArrayLikeObject = __webpack_require__(365);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]';
@@ -34998,11 +35931,11 @@
 
 
 /***/ },
-/* 358 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLike = __webpack_require__(359),
-	    isObjectLike = __webpack_require__(363);
+	var isArrayLike = __webpack_require__(366),
+	    isObjectLike = __webpack_require__(370);
 
 	/**
 	 * This method is like `_.isArrayLike` except that it also checks if `value`
@@ -35037,12 +35970,12 @@
 
 
 /***/ },
-/* 359 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getLength = __webpack_require__(360),
-	    isFunction = __webpack_require__(313),
-	    isLength = __webpack_require__(362);
+	var getLength = __webpack_require__(367),
+	    isFunction = __webpack_require__(320),
+	    isLength = __webpack_require__(369);
 
 	/**
 	 * Checks if `value` is array-like. A value is considered array-like if it's
@@ -35077,10 +36010,10 @@
 
 
 /***/ },
-/* 360 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseProperty = __webpack_require__(361);
+	var baseProperty = __webpack_require__(368);
 
 	/**
 	 * Gets the "length" property value of `object`.
@@ -35099,7 +36032,7 @@
 
 
 /***/ },
-/* 361 */
+/* 368 */
 /***/ function(module, exports) {
 
 	/**
@@ -35119,7 +36052,7 @@
 
 
 /***/ },
-/* 362 */
+/* 369 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -35161,7 +36094,7 @@
 
 
 /***/ },
-/* 363 */
+/* 370 */
 /***/ function(module, exports) {
 
 	/**
@@ -35196,7 +36129,7 @@
 
 
 /***/ },
-/* 364 */
+/* 371 */
 /***/ function(module, exports) {
 
 	/**
@@ -35228,11 +36161,11 @@
 
 
 /***/ },
-/* 365 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(364),
-	    isObjectLike = __webpack_require__(363);
+	var isArray = __webpack_require__(371),
+	    isObjectLike = __webpack_require__(370);
 
 	/** `Object#toString` result references. */
 	var stringTag = '[object String]';
@@ -35273,7 +36206,7 @@
 
 
 /***/ },
-/* 366 */
+/* 373 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -35301,7 +36234,7 @@
 
 
 /***/ },
-/* 367 */
+/* 374 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -35325,16 +36258,16 @@
 
 
 /***/ },
-/* 368 */
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DataView = __webpack_require__(369),
-	    Map = __webpack_require__(310),
-	    Promise = __webpack_require__(370),
-	    Set = __webpack_require__(371),
-	    WeakMap = __webpack_require__(372),
-	    baseGetTag = __webpack_require__(373),
-	    toSource = __webpack_require__(320);
+	var DataView = __webpack_require__(376),
+	    Map = __webpack_require__(317),
+	    Promise = __webpack_require__(377),
+	    Set = __webpack_require__(378),
+	    WeakMap = __webpack_require__(379),
+	    baseGetTag = __webpack_require__(380),
+	    toSource = __webpack_require__(327);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -35400,11 +36333,11 @@
 
 
 /***/ },
-/* 369 */
+/* 376 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(311),
-	    root = __webpack_require__(318);
+	var getNative = __webpack_require__(318),
+	    root = __webpack_require__(325);
 
 	/* Built-in method references that are verified to be native. */
 	var DataView = getNative(root, 'DataView');
@@ -35413,11 +36346,11 @@
 
 
 /***/ },
-/* 370 */
+/* 377 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(311),
-	    root = __webpack_require__(318);
+	var getNative = __webpack_require__(318),
+	    root = __webpack_require__(325);
 
 	/* Built-in method references that are verified to be native. */
 	var Promise = getNative(root, 'Promise');
@@ -35426,11 +36359,11 @@
 
 
 /***/ },
-/* 371 */
+/* 378 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(311),
-	    root = __webpack_require__(318);
+	var getNative = __webpack_require__(318),
+	    root = __webpack_require__(325);
 
 	/* Built-in method references that are verified to be native. */
 	var Set = getNative(root, 'Set');
@@ -35439,11 +36372,11 @@
 
 
 /***/ },
-/* 372 */
+/* 379 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(311),
-	    root = __webpack_require__(318);
+	var getNative = __webpack_require__(318),
+	    root = __webpack_require__(325);
 
 	/* Built-in method references that are verified to be native. */
 	var WeakMap = getNative(root, 'WeakMap');
@@ -35452,7 +36385,7 @@
 
 
 /***/ },
-/* 373 */
+/* 380 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -35480,12 +36413,12 @@
 
 
 /***/ },
-/* 374 */
+/* 381 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsTypedArray = __webpack_require__(375),
-	    baseUnary = __webpack_require__(376),
-	    nodeUtil = __webpack_require__(377);
+	var baseIsTypedArray = __webpack_require__(382),
+	    baseUnary = __webpack_require__(383),
+	    nodeUtil = __webpack_require__(384);
 
 	/* Node.js helper references. */
 	var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
@@ -35513,11 +36446,11 @@
 
 
 /***/ },
-/* 375 */
+/* 382 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isLength = __webpack_require__(362),
-	    isObjectLike = __webpack_require__(363);
+	var isLength = __webpack_require__(369),
+	    isObjectLike = __webpack_require__(370);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]',
@@ -35588,7 +36521,7 @@
 
 
 /***/ },
-/* 376 */
+/* 383 */
 /***/ function(module, exports) {
 
 	/**
@@ -35608,10 +36541,10 @@
 
 
 /***/ },
-/* 377 */
+/* 384 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(319);
+	/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(326);
 
 	/** Detect free variable `exports`. */
 	var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -35634,10 +36567,10 @@
 
 	module.exports = nodeUtil;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(378)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(385)(module)))
 
 /***/ },
-/* 378 */
+/* 385 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -35653,11 +36586,11 @@
 
 
 /***/ },
-/* 379 */
+/* 386 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isStrictComparable = __webpack_require__(380),
-	    keys = __webpack_require__(353);
+	var isStrictComparable = __webpack_require__(387),
+	    keys = __webpack_require__(360);
 
 	/**
 	 * Gets the property names, values, and compare flags of `object`.
@@ -35683,10 +36616,10 @@
 
 
 /***/ },
-/* 380 */
+/* 387 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(314);
+	var isObject = __webpack_require__(321);
 
 	/**
 	 * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
@@ -35704,7 +36637,7 @@
 
 
 /***/ },
-/* 381 */
+/* 388 */
 /***/ function(module, exports) {
 
 	/**
@@ -35730,16 +36663,16 @@
 
 
 /***/ },
-/* 382 */
+/* 389 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqual = __webpack_require__(337),
-	    get = __webpack_require__(383),
-	    hasIn = __webpack_require__(393),
-	    isKey = __webpack_require__(391),
-	    isStrictComparable = __webpack_require__(380),
-	    matchesStrictComparable = __webpack_require__(381),
-	    toKey = __webpack_require__(392);
+	var baseIsEqual = __webpack_require__(344),
+	    get = __webpack_require__(390),
+	    hasIn = __webpack_require__(400),
+	    isKey = __webpack_require__(398),
+	    isStrictComparable = __webpack_require__(387),
+	    matchesStrictComparable = __webpack_require__(388),
+	    toKey = __webpack_require__(399);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -35769,10 +36702,10 @@
 
 
 /***/ },
-/* 383 */
+/* 390 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(384);
+	var baseGet = __webpack_require__(391);
 
 	/**
 	 * Gets the value at `path` of `object`. If the resolved value is
@@ -35808,12 +36741,12 @@
 
 
 /***/ },
-/* 384 */
+/* 391 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(385),
-	    isKey = __webpack_require__(391),
-	    toKey = __webpack_require__(392);
+	var castPath = __webpack_require__(392),
+	    isKey = __webpack_require__(398),
+	    toKey = __webpack_require__(399);
 
 	/**
 	 * The base implementation of `_.get` without support for default values.
@@ -35839,11 +36772,11 @@
 
 
 /***/ },
-/* 385 */
+/* 392 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(364),
-	    stringToPath = __webpack_require__(386);
+	var isArray = __webpack_require__(371),
+	    stringToPath = __webpack_require__(393);
 
 	/**
 	 * Casts `value` to a path array if it's not one.
@@ -35860,11 +36793,11 @@
 
 
 /***/ },
-/* 386 */
+/* 393 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var memoize = __webpack_require__(387),
-	    toString = __webpack_require__(388);
+	var memoize = __webpack_require__(394),
+	    toString = __webpack_require__(395);
 
 	/** Used to match property names within property paths. */
 	var reLeadingDot = /^\./,
@@ -35897,10 +36830,10 @@
 
 
 /***/ },
-/* 387 */
+/* 394 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(322);
+	var MapCache = __webpack_require__(329);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -35976,10 +36909,10 @@
 
 
 /***/ },
-/* 388 */
+/* 395 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseToString = __webpack_require__(389);
+	var baseToString = __webpack_require__(396);
 
 	/**
 	 * Converts `value` to a string. An empty string is returned for `null`
@@ -36010,11 +36943,11 @@
 
 
 /***/ },
-/* 389 */
+/* 396 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(345),
-	    isSymbol = __webpack_require__(390);
+	var Symbol = __webpack_require__(352),
+	    isSymbol = __webpack_require__(397);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -36047,10 +36980,10 @@
 
 
 /***/ },
-/* 390 */
+/* 397 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObjectLike = __webpack_require__(363);
+	var isObjectLike = __webpack_require__(370);
 
 	/** `Object#toString` result references. */
 	var symbolTag = '[object Symbol]';
@@ -36091,11 +37024,11 @@
 
 
 /***/ },
-/* 391 */
+/* 398 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(364),
-	    isSymbol = __webpack_require__(390);
+	var isArray = __webpack_require__(371),
+	    isSymbol = __webpack_require__(397);
 
 	/** Used to match property names within property paths. */
 	var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -36126,10 +37059,10 @@
 
 
 /***/ },
-/* 392 */
+/* 399 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isSymbol = __webpack_require__(390);
+	var isSymbol = __webpack_require__(397);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -36153,11 +37086,11 @@
 
 
 /***/ },
-/* 393 */
+/* 400 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHasIn = __webpack_require__(394),
-	    hasPath = __webpack_require__(395);
+	var baseHasIn = __webpack_require__(401),
+	    hasPath = __webpack_require__(402);
 
 	/**
 	 * Checks if `path` is a direct or inherited property of `object`.
@@ -36193,7 +37126,7 @@
 
 
 /***/ },
-/* 394 */
+/* 401 */
 /***/ function(module, exports) {
 
 	/**
@@ -36212,17 +37145,17 @@
 
 
 /***/ },
-/* 395 */
+/* 402 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(385),
-	    isArguments = __webpack_require__(357),
-	    isArray = __webpack_require__(364),
-	    isIndex = __webpack_require__(366),
-	    isKey = __webpack_require__(391),
-	    isLength = __webpack_require__(362),
-	    isString = __webpack_require__(365),
-	    toKey = __webpack_require__(392);
+	var castPath = __webpack_require__(392),
+	    isArguments = __webpack_require__(364),
+	    isArray = __webpack_require__(371),
+	    isIndex = __webpack_require__(373),
+	    isKey = __webpack_require__(398),
+	    isLength = __webpack_require__(369),
+	    isString = __webpack_require__(372),
+	    toKey = __webpack_require__(399);
 
 	/**
 	 * Checks if `path` exists on `object`.
@@ -36259,7 +37192,7 @@
 
 
 /***/ },
-/* 396 */
+/* 403 */
 /***/ function(module, exports) {
 
 	/**
@@ -36286,13 +37219,13 @@
 
 
 /***/ },
-/* 397 */
+/* 404 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseProperty = __webpack_require__(361),
-	    basePropertyDeep = __webpack_require__(398),
-	    isKey = __webpack_require__(391),
-	    toKey = __webpack_require__(392);
+	var baseProperty = __webpack_require__(368),
+	    basePropertyDeep = __webpack_require__(405),
+	    isKey = __webpack_require__(398),
+	    toKey = __webpack_require__(399);
 
 	/**
 	 * Creates a function that returns the value at `path` of a given object.
@@ -36324,10 +37257,10 @@
 
 
 /***/ },
-/* 398 */
+/* 405 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(384);
+	var baseGet = __webpack_require__(391);
 
 	/**
 	 * A specialized version of `baseProperty` which supports deep paths.
@@ -36346,11 +37279,11 @@
 
 
 /***/ },
-/* 399 */
+/* 406 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseEach = __webpack_require__(400),
-	    isArrayLike = __webpack_require__(359);
+	var baseEach = __webpack_require__(407),
+	    isArrayLike = __webpack_require__(366);
 
 	/**
 	 * The base implementation of `_.map` without support for iteratee shorthands.
@@ -36374,11 +37307,11 @@
 
 
 /***/ },
-/* 400 */
+/* 407 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseForOwn = __webpack_require__(401),
-	    createBaseEach = __webpack_require__(404);
+	var baseForOwn = __webpack_require__(408),
+	    createBaseEach = __webpack_require__(411);
 
 	/**
 	 * The base implementation of `_.forEach` without support for iteratee shorthands.
@@ -36394,11 +37327,11 @@
 
 
 /***/ },
-/* 401 */
+/* 408 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFor = __webpack_require__(402),
-	    keys = __webpack_require__(353);
+	var baseFor = __webpack_require__(409),
+	    keys = __webpack_require__(360);
 
 	/**
 	 * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -36416,10 +37349,10 @@
 
 
 /***/ },
-/* 402 */
+/* 409 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createBaseFor = __webpack_require__(403);
+	var createBaseFor = __webpack_require__(410);
 
 	/**
 	 * The base implementation of `baseForOwn` which iterates over `object`
@@ -36438,7 +37371,7 @@
 
 
 /***/ },
-/* 403 */
+/* 410 */
 /***/ function(module, exports) {
 
 	/**
@@ -36469,10 +37402,10 @@
 
 
 /***/ },
-/* 404 */
+/* 411 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLike = __webpack_require__(359);
+	var isArrayLike = __webpack_require__(366);
 
 	/**
 	 * Creates a `baseEach` or `baseEachRight` function.
@@ -36507,13 +37440,13 @@
 
 
 /***/ },
-/* 405 */
+/* 412 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(406),
-	    baseFilter = __webpack_require__(407),
-	    baseIteratee = __webpack_require__(293),
-	    isArray = __webpack_require__(364);
+	var arrayFilter = __webpack_require__(413),
+	    baseFilter = __webpack_require__(414),
+	    baseIteratee = __webpack_require__(300),
+	    isArray = __webpack_require__(371);
 
 	/**
 	 * Iterates over elements of `collection`, returning an array of all elements
@@ -36562,7 +37495,7 @@
 
 
 /***/ },
-/* 406 */
+/* 413 */
 /***/ function(module, exports) {
 
 	/**
@@ -36593,10 +37526,10 @@
 
 
 /***/ },
-/* 407 */
+/* 414 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseEach = __webpack_require__(400);
+	var baseEach = __webpack_require__(407);
 
 	/**
 	 * The base implementation of `_.filter` without support for iteratee shorthands.
@@ -36620,11 +37553,11 @@
 
 
 /***/ },
-/* 408 */
+/* 415 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createFind = __webpack_require__(409),
-	    findIndex = __webpack_require__(410);
+	var createFind = __webpack_require__(416),
+	    findIndex = __webpack_require__(417);
 
 	/**
 	 * Iterates over elements of `collection`, returning the first element
@@ -36669,12 +37602,12 @@
 
 
 /***/ },
-/* 409 */
+/* 416 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIteratee = __webpack_require__(293),
-	    isArrayLike = __webpack_require__(359),
-	    keys = __webpack_require__(353);
+	var baseIteratee = __webpack_require__(300),
+	    isArrayLike = __webpack_require__(366),
+	    keys = __webpack_require__(360);
 
 	/**
 	 * Creates a `_.find` or `_.findLast` function.
@@ -36700,12 +37633,12 @@
 
 
 /***/ },
-/* 410 */
+/* 417 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFindIndex = __webpack_require__(411),
-	    baseIteratee = __webpack_require__(293),
-	    toInteger = __webpack_require__(412);
+	var baseFindIndex = __webpack_require__(418),
+	    baseIteratee = __webpack_require__(300),
+	    toInteger = __webpack_require__(419);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -36762,7 +37695,7 @@
 
 
 /***/ },
-/* 411 */
+/* 418 */
 /***/ function(module, exports) {
 
 	/**
@@ -36792,10 +37725,10 @@
 
 
 /***/ },
-/* 412 */
+/* 419 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toFinite = __webpack_require__(413);
+	var toFinite = __webpack_require__(420);
 
 	/**
 	 * Converts `value` to an integer.
@@ -36834,10 +37767,10 @@
 
 
 /***/ },
-/* 413 */
+/* 420 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toNumber = __webpack_require__(414);
+	var toNumber = __webpack_require__(421);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0,
@@ -36882,12 +37815,12 @@
 
 
 /***/ },
-/* 414 */
+/* 421 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(313),
-	    isObject = __webpack_require__(314),
-	    isSymbol = __webpack_require__(390);
+	var isFunction = __webpack_require__(320),
+	    isObject = __webpack_require__(321),
+	    isSymbol = __webpack_require__(397);
 
 	/** Used as references for various `Number` constants. */
 	var NAN = 0 / 0;
@@ -36955,13 +37888,13 @@
 
 
 /***/ },
-/* 415 */
+/* 422 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFlatten = __webpack_require__(416),
-	    baseOrderBy = __webpack_require__(419),
-	    baseRest = __webpack_require__(423),
-	    isIterateeCall = __webpack_require__(425);
+	var baseFlatten = __webpack_require__(423),
+	    baseOrderBy = __webpack_require__(426),
+	    baseRest = __webpack_require__(430),
+	    isIterateeCall = __webpack_require__(432);
 
 	/**
 	 * Creates an array of elements, sorted in ascending order by the results of
@@ -37014,11 +37947,11 @@
 
 
 /***/ },
-/* 416 */
+/* 423 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(417),
-	    isFlattenable = __webpack_require__(418);
+	var arrayPush = __webpack_require__(424),
+	    isFlattenable = __webpack_require__(425);
 
 	/**
 	 * The base implementation of `_.flatten` with support for restricting flattening.
@@ -37058,7 +37991,7 @@
 
 
 /***/ },
-/* 417 */
+/* 424 */
 /***/ function(module, exports) {
 
 	/**
@@ -37084,12 +38017,12 @@
 
 
 /***/ },
-/* 418 */
+/* 425 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(345),
-	    isArguments = __webpack_require__(357),
-	    isArray = __webpack_require__(364);
+	var Symbol = __webpack_require__(352),
+	    isArguments = __webpack_require__(364),
+	    isArray = __webpack_require__(371);
 
 	/** Built-in value references. */
 	var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined;
@@ -37110,16 +38043,16 @@
 
 
 /***/ },
-/* 419 */
+/* 426 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(292),
-	    baseIteratee = __webpack_require__(293),
-	    baseMap = __webpack_require__(399),
-	    baseSortBy = __webpack_require__(420),
-	    baseUnary = __webpack_require__(376),
-	    compareMultiple = __webpack_require__(421),
-	    identity = __webpack_require__(396);
+	var arrayMap = __webpack_require__(299),
+	    baseIteratee = __webpack_require__(300),
+	    baseMap = __webpack_require__(406),
+	    baseSortBy = __webpack_require__(427),
+	    baseUnary = __webpack_require__(383),
+	    compareMultiple = __webpack_require__(428),
+	    identity = __webpack_require__(403);
 
 	/**
 	 * The base implementation of `_.orderBy` without param guards.
@@ -37150,7 +38083,7 @@
 
 
 /***/ },
-/* 420 */
+/* 427 */
 /***/ function(module, exports) {
 
 	/**
@@ -37177,10 +38110,10 @@
 
 
 /***/ },
-/* 421 */
+/* 428 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var compareAscending = __webpack_require__(422);
+	var compareAscending = __webpack_require__(429);
 
 	/**
 	 * Used by `_.orderBy` to compare multiple properties of a value to another
@@ -37227,10 +38160,10 @@
 
 
 /***/ },
-/* 422 */
+/* 429 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isSymbol = __webpack_require__(390);
+	var isSymbol = __webpack_require__(397);
 
 	/**
 	 * Compares values to sort them in ascending order.
@@ -37274,10 +38207,10 @@
 
 
 /***/ },
-/* 423 */
+/* 430 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var apply = __webpack_require__(424);
+	var apply = __webpack_require__(431);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -37315,7 +38248,7 @@
 
 
 /***/ },
-/* 424 */
+/* 431 */
 /***/ function(module, exports) {
 
 	/**
@@ -37342,13 +38275,13 @@
 
 
 /***/ },
-/* 425 */
+/* 432 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(301),
-	    isArrayLike = __webpack_require__(359),
-	    isIndex = __webpack_require__(366),
-	    isObject = __webpack_require__(314);
+	var eq = __webpack_require__(308),
+	    isArrayLike = __webpack_require__(366),
+	    isIndex = __webpack_require__(373),
+	    isObject = __webpack_require__(321);
 
 	/**
 	 * Checks if the given arguments are from an iteratee call.
@@ -37378,13 +38311,13 @@
 
 
 /***/ },
-/* 426 */
+/* 433 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseDifference = __webpack_require__(427),
-	    baseFlatten = __webpack_require__(416),
-	    baseRest = __webpack_require__(423),
-	    isArrayLikeObject = __webpack_require__(358);
+	var baseDifference = __webpack_require__(434),
+	    baseFlatten = __webpack_require__(423),
+	    baseRest = __webpack_require__(430),
+	    isArrayLikeObject = __webpack_require__(365);
 
 	/**
 	 * Creates an array of `array` values not included in the other given arrays
@@ -37417,15 +38350,15 @@
 
 
 /***/ },
-/* 427 */
+/* 434 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(340),
-	    arrayIncludes = __webpack_require__(428),
-	    arrayIncludesWith = __webpack_require__(431),
-	    arrayMap = __webpack_require__(292),
-	    baseUnary = __webpack_require__(376),
-	    cacheHas = __webpack_require__(432);
+	var SetCache = __webpack_require__(347),
+	    arrayIncludes = __webpack_require__(435),
+	    arrayIncludesWith = __webpack_require__(438),
+	    arrayMap = __webpack_require__(299),
+	    baseUnary = __webpack_require__(383),
+	    cacheHas = __webpack_require__(439);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -37490,10 +38423,10 @@
 
 
 /***/ },
-/* 428 */
+/* 435 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIndexOf = __webpack_require__(429);
+	var baseIndexOf = __webpack_require__(436);
 
 	/**
 	 * A specialized version of `_.includes` for arrays without support for
@@ -37513,11 +38446,11 @@
 
 
 /***/ },
-/* 429 */
+/* 436 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFindIndex = __webpack_require__(411),
-	    baseIsNaN = __webpack_require__(430);
+	var baseFindIndex = __webpack_require__(418),
+	    baseIsNaN = __webpack_require__(437);
 
 	/**
 	 * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
@@ -37547,7 +38480,7 @@
 
 
 /***/ },
-/* 430 */
+/* 437 */
 /***/ function(module, exports) {
 
 	/**
@@ -37565,7 +38498,7 @@
 
 
 /***/ },
-/* 431 */
+/* 438 */
 /***/ function(module, exports) {
 
 	/**
@@ -37593,7 +38526,7 @@
 
 
 /***/ },
-/* 432 */
+/* 439 */
 /***/ function(module, exports) {
 
 	/**
@@ -37612,15 +38545,15 @@
 
 
 /***/ },
-/* 433 */
+/* 440 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignValue = __webpack_require__(434),
-	    copyObject = __webpack_require__(435),
-	    createAssigner = __webpack_require__(436),
-	    isArrayLike = __webpack_require__(359),
-	    isPrototype = __webpack_require__(367),
-	    keys = __webpack_require__(353);
+	var assignValue = __webpack_require__(441),
+	    copyObject = __webpack_require__(442),
+	    createAssigner = __webpack_require__(443),
+	    isArrayLike = __webpack_require__(366),
+	    isPrototype = __webpack_require__(374),
+	    keys = __webpack_require__(360);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -37682,10 +38615,10 @@
 
 
 /***/ },
-/* 434 */
+/* 441 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(301);
+	var eq = __webpack_require__(308);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -37715,10 +38648,10 @@
 
 
 /***/ },
-/* 435 */
+/* 442 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignValue = __webpack_require__(434);
+	var assignValue = __webpack_require__(441);
 
 	/**
 	 * Copies properties of `source` to `object`.
@@ -37752,11 +38685,11 @@
 
 
 /***/ },
-/* 436 */
+/* 443 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseRest = __webpack_require__(423),
-	    isIterateeCall = __webpack_require__(425);
+	var baseRest = __webpack_require__(430),
+	    isIterateeCall = __webpack_require__(432);
 
 	/**
 	 * Creates a function like `_.assign`.
@@ -37795,7 +38728,7 @@
 
 
 /***/ },
-/* 437 */
+/* 444 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -37804,8 +38737,8 @@
 	'use strict';
 
 	var React = __webpack_require__(2);
-	var ColumnProperties = __webpack_require__(290);
-	var pick = __webpack_require__(438);
+	var ColumnProperties = __webpack_require__(297);
+	var pick = __webpack_require__(445);
 
 	var GridRowContainer = React.createClass({
 	  displayName: 'GridRowContainer',
@@ -37926,14 +38859,14 @@
 
 
 /***/ },
-/* 438 */
+/* 445 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(292),
-	    baseFlatten = __webpack_require__(416),
-	    basePick = __webpack_require__(439),
-	    baseRest = __webpack_require__(423),
-	    toKey = __webpack_require__(392);
+	var arrayMap = __webpack_require__(299),
+	    baseFlatten = __webpack_require__(423),
+	    basePick = __webpack_require__(446),
+	    baseRest = __webpack_require__(430),
+	    toKey = __webpack_require__(399);
 
 	/**
 	 * Creates an object composed of the picked `object` properties.
@@ -37960,10 +38893,10 @@
 
 
 /***/ },
-/* 439 */
+/* 446 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var basePickBy = __webpack_require__(440);
+	var basePickBy = __webpack_require__(447);
 
 	/**
 	 * The base implementation of `_.pick` without support for individual
@@ -37985,7 +38918,7 @@
 
 
 /***/ },
-/* 440 */
+/* 447 */
 /***/ function(module, exports) {
 
 	/**
@@ -38017,7 +38950,7 @@
 
 
 /***/ },
-/* 441 */
+/* 448 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38026,7 +38959,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _uniqueId = __webpack_require__(442);
+	var _uniqueId = __webpack_require__(449);
 
 	var RowProperties = (function () {
 	  function RowProperties() {
@@ -38093,10 +39026,10 @@
 
 
 /***/ },
-/* 442 */
+/* 449 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toString = __webpack_require__(388);
+	var toString = __webpack_require__(395);
 
 	/** Used to generate unique IDs. */
 	var idCounter = 0;
@@ -38127,7 +39060,7 @@
 
 
 /***/ },
-/* 443 */
+/* 450 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -38157,7 +39090,7 @@
 
 
 /***/ },
-/* 444 */
+/* 451 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -38166,7 +39099,7 @@
 	'use strict';
 
 	var React = __webpack_require__(2);
-	var assign = __webpack_require__(433);
+	var assign = __webpack_require__(440);
 
 	//needs props maxPage, currentPage, nextFunction, prevFunction
 	var GridPagination = React.createClass({
@@ -38230,7 +39163,7 @@
 
 
 /***/ },
-/* 445 */
+/* 452 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -38239,9 +39172,9 @@
 	'use strict';
 
 	var React = __webpack_require__(2);
-	var includes = __webpack_require__(446);
-	var without = __webpack_require__(449);
-	var find = __webpack_require__(408);
+	var includes = __webpack_require__(453);
+	var without = __webpack_require__(456);
+	var find = __webpack_require__(415);
 
 	var GridSettings = React.createClass({
 	    displayName: 'GridSettings',
@@ -38311,14 +39244,14 @@
 
 
 /***/ },
-/* 446 */
+/* 453 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIndexOf = __webpack_require__(429),
-	    isArrayLike = __webpack_require__(359),
-	    isString = __webpack_require__(365),
-	    toInteger = __webpack_require__(412),
-	    values = __webpack_require__(447);
+	var baseIndexOf = __webpack_require__(436),
+	    isArrayLike = __webpack_require__(366),
+	    isString = __webpack_require__(372),
+	    toInteger = __webpack_require__(419),
+	    values = __webpack_require__(454);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -38370,11 +39303,11 @@
 
 
 /***/ },
-/* 447 */
+/* 454 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseValues = __webpack_require__(448),
-	    keys = __webpack_require__(353);
+	var baseValues = __webpack_require__(455),
+	    keys = __webpack_require__(360);
 
 	/**
 	 * Creates an array of the own enumerable string keyed property values of `object`.
@@ -38410,10 +39343,10 @@
 
 
 /***/ },
-/* 448 */
+/* 455 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(292);
+	var arrayMap = __webpack_require__(299);
 
 	/**
 	 * The base implementation of `_.values` and `_.valuesIn` which creates an
@@ -38435,12 +39368,12 @@
 
 
 /***/ },
-/* 449 */
+/* 456 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseDifference = __webpack_require__(427),
-	    baseRest = __webpack_require__(423),
-	    isArrayLikeObject = __webpack_require__(358);
+	var baseDifference = __webpack_require__(434),
+	    baseRest = __webpack_require__(430),
+	    isArrayLikeObject = __webpack_require__(365);
 
 	/**
 	 * Creates an array excluding all given values using
@@ -38472,7 +39405,7 @@
 
 
 /***/ },
-/* 450 */
+/* 457 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -38501,7 +39434,7 @@
 
 
 /***/ },
-/* 451 */
+/* 458 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -38510,14 +39443,14 @@
 	'use strict';
 
 	var React = __webpack_require__(2);
-	var ColumnProperties = __webpack_require__(290);
-	var deep = __webpack_require__(452);
-	var isFunction = __webpack_require__(313);
-	var fromPairs = __webpack_require__(455);
-	var assign = __webpack_require__(433);
-	var defaults = __webpack_require__(456);
-	var toPairs = __webpack_require__(463);
-	var without = __webpack_require__(449);
+	var ColumnProperties = __webpack_require__(297);
+	var deep = __webpack_require__(459);
+	var isFunction = __webpack_require__(320);
+	var fromPairs = __webpack_require__(462);
+	var assign = __webpack_require__(440);
+	var defaults = __webpack_require__(463);
+	var toPairs = __webpack_require__(470);
+	var without = __webpack_require__(456);
 
 	var GridRow = React.createClass({
 	  displayName: 'GridRow',
@@ -38646,15 +39579,15 @@
 
 
 /***/ },
-/* 452 */
+/* 459 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var forEach = __webpack_require__(453);
-	var isObject = __webpack_require__(314);
-	var isArray = __webpack_require__(364);
-	var isFunction = __webpack_require__(313);
+	var forEach = __webpack_require__(460);
+	var isObject = __webpack_require__(321);
+	var isArray = __webpack_require__(371);
+	var isFunction = __webpack_require__(320);
 
 	// Credits: https://github.com/documentcloud/underscore-contrib
 	// Sub module: underscore.object.selectors
@@ -38765,13 +39698,13 @@
 
 
 /***/ },
-/* 453 */
+/* 460 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayEach = __webpack_require__(454),
-	    baseEach = __webpack_require__(400),
-	    baseIteratee = __webpack_require__(293),
-	    isArray = __webpack_require__(364);
+	var arrayEach = __webpack_require__(461),
+	    baseEach = __webpack_require__(407),
+	    baseIteratee = __webpack_require__(300),
+	    isArray = __webpack_require__(371);
 
 	/**
 	 * Iterates over elements of `collection` and invokes `iteratee` for each element.
@@ -38812,7 +39745,7 @@
 
 
 /***/ },
-/* 454 */
+/* 461 */
 /***/ function(module, exports) {
 
 	/**
@@ -38840,7 +39773,7 @@
 
 
 /***/ },
-/* 455 */
+/* 462 */
 /***/ function(module, exports) {
 
 	/**
@@ -38874,13 +39807,13 @@
 
 
 /***/ },
-/* 456 */
+/* 463 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var apply = __webpack_require__(424),
-	    assignInDefaults = __webpack_require__(457),
-	    assignInWith = __webpack_require__(458),
-	    baseRest = __webpack_require__(423);
+	var apply = __webpack_require__(431),
+	    assignInDefaults = __webpack_require__(464),
+	    assignInWith = __webpack_require__(465),
+	    baseRest = __webpack_require__(430);
 
 	/**
 	 * Assigns own and inherited enumerable string keyed properties of source
@@ -38912,10 +39845,10 @@
 
 
 /***/ },
-/* 457 */
+/* 464 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(301);
+	var eq = __webpack_require__(308);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -38945,12 +39878,12 @@
 
 
 /***/ },
-/* 458 */
+/* 465 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var copyObject = __webpack_require__(435),
-	    createAssigner = __webpack_require__(436),
-	    keysIn = __webpack_require__(459);
+	var copyObject = __webpack_require__(442),
+	    createAssigner = __webpack_require__(443),
+	    keysIn = __webpack_require__(466);
 
 	/**
 	 * This method is like `_.assignIn` except that it accepts `customizer`
@@ -38989,13 +39922,13 @@
 
 
 /***/ },
-/* 459 */
+/* 466 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseKeysIn = __webpack_require__(460),
-	    indexKeys = __webpack_require__(355),
-	    isIndex = __webpack_require__(366),
-	    isPrototype = __webpack_require__(367);
+	var baseKeysIn = __webpack_require__(467),
+	    indexKeys = __webpack_require__(362),
+	    isIndex = __webpack_require__(373),
+	    isPrototype = __webpack_require__(374);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -39050,11 +39983,11 @@
 
 
 /***/ },
-/* 460 */
+/* 467 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflect = __webpack_require__(461),
-	    iteratorToArray = __webpack_require__(462);
+	var Reflect = __webpack_require__(468),
+	    iteratorToArray = __webpack_require__(469);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -39092,10 +40025,10 @@
 
 
 /***/ },
-/* 461 */
+/* 468 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(318);
+	var root = __webpack_require__(325);
 
 	/** Built-in value references. */
 	var Reflect = root.Reflect;
@@ -39104,7 +40037,7 @@
 
 
 /***/ },
-/* 462 */
+/* 469 */
 /***/ function(module, exports) {
 
 	/**
@@ -39128,11 +40061,11 @@
 
 
 /***/ },
-/* 463 */
+/* 470 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createToPairs = __webpack_require__(464),
-	    keys = __webpack_require__(353);
+	var createToPairs = __webpack_require__(471),
+	    keys = __webpack_require__(360);
 
 	/**
 	 * Creates an array of own enumerable string keyed-value pairs for `object`
@@ -39164,13 +40097,13 @@
 
 
 /***/ },
-/* 464 */
+/* 471 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseToPairs = __webpack_require__(465),
-	    getTag = __webpack_require__(368),
-	    mapToArray = __webpack_require__(347),
-	    setToPairs = __webpack_require__(466);
+	var baseToPairs = __webpack_require__(472),
+	    getTag = __webpack_require__(375),
+	    mapToArray = __webpack_require__(354),
+	    setToPairs = __webpack_require__(473);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -39200,10 +40133,10 @@
 
 
 /***/ },
-/* 465 */
+/* 472 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(292);
+	var arrayMap = __webpack_require__(299);
 
 	/**
 	 * The base implementation of `_.toPairs` and `_.toPairsIn` which creates an array
@@ -39224,7 +40157,7 @@
 
 
 /***/ },
-/* 466 */
+/* 473 */
 /***/ function(module, exports) {
 
 	/**
@@ -39248,7 +40181,7 @@
 
 
 /***/ },
-/* 467 */
+/* 474 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39295,7 +40228,7 @@
 
 
 /***/ },
-/* 468 */
+/* 475 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39348,7 +40281,7 @@
 
 
 /***/ },
-/* 469 */
+/* 476 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39386,11 +40319,11 @@
 
 
 /***/ },
-/* 470 */
+/* 477 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSlice = __webpack_require__(471),
-	    toInteger = __webpack_require__(412);
+	var baseSlice = __webpack_require__(478),
+	    toInteger = __webpack_require__(419);
 
 	/**
 	 * Creates a slice of `array` with `n` elements dropped from the beginning.
@@ -39430,7 +40363,7 @@
 
 
 /***/ },
-/* 471 */
+/* 478 */
 /***/ function(module, exports) {
 
 	/**
@@ -39467,11 +40400,11 @@
 
 
 /***/ },
-/* 472 */
+/* 479 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSlice = __webpack_require__(471),
-	    toInteger = __webpack_require__(412);
+	var baseSlice = __webpack_require__(478),
+	    toInteger = __webpack_require__(419);
 
 	/**
 	 * Creates a slice of `array` with `n` elements dropped from the end.
@@ -39512,11 +40445,11 @@
 
 
 /***/ },
-/* 473 */
+/* 480 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSlice = __webpack_require__(471),
-	    toInteger = __webpack_require__(412);
+	var baseSlice = __webpack_require__(478),
+	    toInteger = __webpack_require__(419);
 
 	/**
 	 * Creates a slice of `array` with `n` elements taken from the beginning.
@@ -39555,10 +40488,10 @@
 
 
 /***/ },
-/* 474 */
+/* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dropRight = __webpack_require__(472);
+	var dropRight = __webpack_require__(479);
 
 	/**
 	 * Gets all but the last element of `array`.
@@ -39582,18 +40515,18 @@
 
 
 /***/ },
-/* 475 */
+/* 482 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getTag = __webpack_require__(368),
-	    isArguments = __webpack_require__(357),
-	    isArray = __webpack_require__(364),
-	    isArrayLike = __webpack_require__(359),
-	    isBuffer = __webpack_require__(476),
-	    isFunction = __webpack_require__(313),
-	    isObjectLike = __webpack_require__(363),
-	    isString = __webpack_require__(365),
-	    keys = __webpack_require__(353);
+	var getTag = __webpack_require__(375),
+	    isArguments = __webpack_require__(364),
+	    isArray = __webpack_require__(371),
+	    isArrayLike = __webpack_require__(366),
+	    isBuffer = __webpack_require__(483),
+	    isFunction = __webpack_require__(320),
+	    isObjectLike = __webpack_require__(370),
+	    isString = __webpack_require__(372),
+	    keys = __webpack_require__(360);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -39668,11 +40601,11 @@
 
 
 /***/ },
-/* 476 */
+/* 483 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(318),
-	    stubFalse = __webpack_require__(477);
+	/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(325),
+	    stubFalse = __webpack_require__(484);
 
 	/** Detect free variable `exports`. */
 	var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -39710,10 +40643,10 @@
 
 	module.exports = isBuffer;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(378)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(385)(module)))
 
 /***/ },
-/* 477 */
+/* 484 */
 /***/ function(module, exports) {
 
 	/**
@@ -39737,7 +40670,7 @@
 
 
 /***/ },
-/* 478 */
+/* 485 */
 /***/ function(module, exports) {
 
 	/**
@@ -39765,7 +40698,7 @@
 
 
 /***/ },
-/* 479 */
+/* 486 */
 /***/ function(module, exports) {
 
 	/**
@@ -39793,16 +40726,16 @@
 
 
 /***/ },
-/* 480 */
+/* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(292),
-	    baseDifference = __webpack_require__(427),
-	    baseFlatten = __webpack_require__(416),
-	    basePick = __webpack_require__(439),
-	    baseRest = __webpack_require__(423),
-	    getAllKeysIn = __webpack_require__(481),
-	    toKey = __webpack_require__(392);
+	var arrayMap = __webpack_require__(299),
+	    baseDifference = __webpack_require__(434),
+	    baseFlatten = __webpack_require__(423),
+	    basePick = __webpack_require__(446),
+	    baseRest = __webpack_require__(430),
+	    getAllKeysIn = __webpack_require__(488),
+	    toKey = __webpack_require__(399);
 
 	/**
 	 * The opposite of `_.pick`; this method creates an object composed of the
@@ -39835,12 +40768,12 @@
 
 
 /***/ },
-/* 481 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetAllKeys = __webpack_require__(482),
-	    getSymbolsIn = __webpack_require__(483),
-	    keysIn = __webpack_require__(459);
+	var baseGetAllKeys = __webpack_require__(489),
+	    getSymbolsIn = __webpack_require__(490),
+	    keysIn = __webpack_require__(466);
 
 	/**
 	 * Creates an array of own and inherited enumerable property names and
@@ -39858,11 +40791,11 @@
 
 
 /***/ },
-/* 482 */
+/* 489 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(417),
-	    isArray = __webpack_require__(364);
+	var arrayPush = __webpack_require__(424),
+	    isArray = __webpack_require__(371);
 
 	/**
 	 * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
@@ -39884,13 +40817,13 @@
 
 
 /***/ },
-/* 483 */
+/* 490 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(417),
-	    getPrototype = __webpack_require__(351),
-	    getSymbols = __webpack_require__(484),
-	    stubArray = __webpack_require__(485);
+	var arrayPush = __webpack_require__(424),
+	    getPrototype = __webpack_require__(358),
+	    getSymbols = __webpack_require__(491),
+	    stubArray = __webpack_require__(492);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeGetSymbols = Object.getOwnPropertySymbols;
@@ -39916,11 +40849,11 @@
 
 
 /***/ },
-/* 484 */
+/* 491 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(352),
-	    stubArray = __webpack_require__(485);
+	var overArg = __webpack_require__(359),
+	    stubArray = __webpack_require__(492);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeGetSymbols = Object.getOwnPropertySymbols;
@@ -39938,7 +40871,7 @@
 
 
 /***/ },
-/* 485 */
+/* 492 */
 /***/ function(module, exports) {
 
 	/**
@@ -39967,11 +40900,11 @@
 
 
 /***/ },
-/* 486 */
+/* 493 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseOrderBy = __webpack_require__(419),
-	    isArray = __webpack_require__(364);
+	var baseOrderBy = __webpack_require__(426),
+	    isArray = __webpack_require__(371);
 
 	/**
 	 * This method is like `_.sortBy` except that it allows specifying the sort
@@ -40020,753 +40953,1400 @@
 
 
 /***/ },
-/* 487 */,
-/* 488 */,
-/* 489 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * numeral.js
-	 * version : 1.5.3
-	 * author : Adam Draper
-	 * license : MIT
-	 * http://adamwdraper.github.com/Numeral-js/
-	 */
-
-	(function () {
-
-	    /************************************
-	        Constants
-	    ************************************/
-
-	    var numeral,
-	        VERSION = '1.5.3',
-	        // internal storage for language config files
-	        languages = {},
-	        currentLanguage = 'en',
-	        zeroFormat = null,
-	        defaultFormat = '0,0',
-	        // check for nodeJS
-	        hasModule = (typeof module !== 'undefined' && module.exports);
-
-
-	    /************************************
-	        Constructors
-	    ************************************/
-
-
-	    // Numeral prototype object
-	    function Numeral (number) {
-	        this._value = number;
-	    }
-
-	    /**
-	     * Implementation of toFixed() that treats floats more like decimals
-	     *
-	     * Fixes binary rounding issues (eg. (0.615).toFixed(2) === '0.61') that present
-	     * problems for accounting- and finance-related software.
-	     */
-	    function toFixed (value, precision, roundingFunction, optionals) {
-	        var power = Math.pow(10, precision),
-	            optionalsRegExp,
-	            output;
-	            
-	        //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
-	        // Multiply up by precision, round accurately, then divide and use native toFixed():
-	        output = (roundingFunction(value * power) / power).toFixed(precision);
-
-	        if (optionals) {
-	            optionalsRegExp = new RegExp('0{1,' + optionals + '}$');
-	            output = output.replace(optionalsRegExp, '');
-	        }
-
-	        return output;
-	    }
-
-	    /************************************
-	        Formatting
-	    ************************************/
-
-	    // determine what type of formatting we need to do
-	    function formatNumeral (n, format, roundingFunction) {
-	        var output;
-
-	        // figure out what kind of format we are dealing with
-	        if (format.indexOf('$') > -1) { // currency!!!!!
-	            output = formatCurrency(n, format, roundingFunction);
-	        } else if (format.indexOf('%') > -1) { // percentage
-	            output = formatPercentage(n, format, roundingFunction);
-	        } else if (format.indexOf(':') > -1) { // time
-	            output = formatTime(n, format);
-	        } else { // plain ol' numbers or bytes
-	            output = formatNumber(n._value, format, roundingFunction);
-	        }
-
-	        // return string
-	        return output;
-	    }
-
-	    // revert to number
-	    function unformatNumeral (n, string) {
-	        var stringOriginal = string,
-	            thousandRegExp,
-	            millionRegExp,
-	            billionRegExp,
-	            trillionRegExp,
-	            suffixes = ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-	            bytesMultiplier = false,
-	            power;
-
-	        if (string.indexOf(':') > -1) {
-	            n._value = unformatTime(string);
-	        } else {
-	            if (string === zeroFormat) {
-	                n._value = 0;
-	            } else {
-	                if (languages[currentLanguage].delimiters.decimal !== '.') {
-	                    string = string.replace(/\./g,'').replace(languages[currentLanguage].delimiters.decimal, '.');
-	                }
-
-	                // see if abbreviations are there so that we can multiply to the correct number
-	                thousandRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.thousand + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
-	                millionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.million + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
-	                billionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.billion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
-	                trillionRegExp = new RegExp('[^a-zA-Z]' + languages[currentLanguage].abbreviations.trillion + '(?:\\)|(\\' + languages[currentLanguage].currency.symbol + ')?(?:\\))?)?$');
-
-	                // see if bytes are there so that we can multiply to the correct number
-	                for (power = 0; power <= suffixes.length; power++) {
-	                    bytesMultiplier = (string.indexOf(suffixes[power]) > -1) ? Math.pow(1024, power + 1) : false;
-
-	                    if (bytesMultiplier) {
-	                        break;
-	                    }
-	                }
-
-	                // do some math to create our number
-	                n._value = ((bytesMultiplier) ? bytesMultiplier : 1) * ((stringOriginal.match(thousandRegExp)) ? Math.pow(10, 3) : 1) * ((stringOriginal.match(millionRegExp)) ? Math.pow(10, 6) : 1) * ((stringOriginal.match(billionRegExp)) ? Math.pow(10, 9) : 1) * ((stringOriginal.match(trillionRegExp)) ? Math.pow(10, 12) : 1) * ((string.indexOf('%') > -1) ? 0.01 : 1) * (((string.split('-').length + Math.min(string.split('(').length-1, string.split(')').length-1)) % 2)? 1: -1) * Number(string.replace(/[^0-9\.]+/g, ''));
-
-	                // round if we are talking about bytes
-	                n._value = (bytesMultiplier) ? Math.ceil(n._value) : n._value;
-	            }
-	        }
-	        return n._value;
-	    }
-
-	    function formatCurrency (n, format, roundingFunction) {
-	        var symbolIndex = format.indexOf('$'),
-	            openParenIndex = format.indexOf('('),
-	            minusSignIndex = format.indexOf('-'),
-	            space = '',
-	            spliceIndex,
-	            output;
-
-	        // check for space before or after currency
-	        if (format.indexOf(' $') > -1) {
-	            space = ' ';
-	            format = format.replace(' $', '');
-	        } else if (format.indexOf('$ ') > -1) {
-	            space = ' ';
-	            format = format.replace('$ ', '');
-	        } else {
-	            format = format.replace('$', '');
-	        }
-
-	        // format the number
-	        output = formatNumber(n._value, format, roundingFunction);
-
-	        // position the symbol
-	        if (symbolIndex <= 1) {
-	            if (output.indexOf('(') > -1 || output.indexOf('-') > -1) {
-	                output = output.split('');
-	                spliceIndex = 1;
-	                if (symbolIndex < openParenIndex || symbolIndex < minusSignIndex){
-	                    // the symbol appears before the "(" or "-"
-	                    spliceIndex = 0;
-	                }
-	                output.splice(spliceIndex, 0, languages[currentLanguage].currency.symbol + space);
-	                output = output.join('');
-	            } else {
-	                output = languages[currentLanguage].currency.symbol + space + output;
-	            }
-	        } else {
-	            if (output.indexOf(')') > -1) {
-	                output = output.split('');
-	                output.splice(-1, 0, space + languages[currentLanguage].currency.symbol);
-	                output = output.join('');
-	            } else {
-	                output = output + space + languages[currentLanguage].currency.symbol;
-	            }
-	        }
-
-	        return output;
-	    }
-
-	    function formatPercentage (n, format, roundingFunction) {
-	        var space = '',
-	            output,
-	            value = n._value * 100;
-
-	        // check for space before %
-	        if (format.indexOf(' %') > -1) {
-	            space = ' ';
-	            format = format.replace(' %', '');
-	        } else {
-	            format = format.replace('%', '');
-	        }
-
-	        output = formatNumber(value, format, roundingFunction);
-	        
-	        if (output.indexOf(')') > -1 ) {
-	            output = output.split('');
-	            output.splice(-1, 0, space + '%');
-	            output = output.join('');
-	        } else {
-	            output = output + space + '%';
-	        }
-
-	        return output;
-	    }
-
-	    function formatTime (n) {
-	        var hours = Math.floor(n._value/60/60),
-	            minutes = Math.floor((n._value - (hours * 60 * 60))/60),
-	            seconds = Math.round(n._value - (hours * 60 * 60) - (minutes * 60));
-	        return hours + ':' + ((minutes < 10) ? '0' + minutes : minutes) + ':' + ((seconds < 10) ? '0' + seconds : seconds);
-	    }
-
-	    function unformatTime (string) {
-	        var timeArray = string.split(':'),
-	            seconds = 0;
-	        // turn hours and minutes into seconds and add them all up
-	        if (timeArray.length === 3) {
-	            // hours
-	            seconds = seconds + (Number(timeArray[0]) * 60 * 60);
-	            // minutes
-	            seconds = seconds + (Number(timeArray[1]) * 60);
-	            // seconds
-	            seconds = seconds + Number(timeArray[2]);
-	        } else if (timeArray.length === 2) {
-	            // minutes
-	            seconds = seconds + (Number(timeArray[0]) * 60);
-	            // seconds
-	            seconds = seconds + Number(timeArray[1]);
-	        }
-	        return Number(seconds);
-	    }
-
-	    function formatNumber (value, format, roundingFunction) {
-	        var negP = false,
-	            signed = false,
-	            optDec = false,
-	            abbr = '',
-	            abbrK = false, // force abbreviation to thousands
-	            abbrM = false, // force abbreviation to millions
-	            abbrB = false, // force abbreviation to billions
-	            abbrT = false, // force abbreviation to trillions
-	            abbrForce = false, // force abbreviation
-	            bytes = '',
-	            ord = '',
-	            abs = Math.abs(value),
-	            suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-	            min,
-	            max,
-	            power,
-	            w,
-	            precision,
-	            thousands,
-	            d = '',
-	            neg = false;
-
-	        // check if number is zero and a custom zero format has been set
-	        if (value === 0 && zeroFormat !== null) {
-	            return zeroFormat;
-	        } else {
-	            // see if we should use parentheses for negative number or if we should prefix with a sign
-	            // if both are present we default to parentheses
-	            if (format.indexOf('(') > -1) {
-	                negP = true;
-	                format = format.slice(1, -1);
-	            } else if (format.indexOf('+') > -1) {
-	                signed = true;
-	                format = format.replace(/\+/g, '');
-	            }
-
-	            // see if abbreviation is wanted
-	            if (format.indexOf('a') > -1) {
-	                // check if abbreviation is specified
-	                abbrK = format.indexOf('aK') >= 0;
-	                abbrM = format.indexOf('aM') >= 0;
-	                abbrB = format.indexOf('aB') >= 0;
-	                abbrT = format.indexOf('aT') >= 0;
-	                abbrForce = abbrK || abbrM || abbrB || abbrT;
-
-	                // check for space before abbreviation
-	                if (format.indexOf(' a') > -1) {
-	                    abbr = ' ';
-	                    format = format.replace(' a', '');
-	                } else {
-	                    format = format.replace('a', '');
-	                }
-
-	                if (abs >= Math.pow(10, 12) && !abbrForce || abbrT) {
-	                    // trillion
-	                    abbr = abbr + languages[currentLanguage].abbreviations.trillion;
-	                    value = value / Math.pow(10, 12);
-	                } else if (abs < Math.pow(10, 12) && abs >= Math.pow(10, 9) && !abbrForce || abbrB) {
-	                    // billion
-	                    abbr = abbr + languages[currentLanguage].abbreviations.billion;
-	                    value = value / Math.pow(10, 9);
-	                } else if (abs < Math.pow(10, 9) && abs >= Math.pow(10, 6) && !abbrForce || abbrM) {
-	                    // million
-	                    abbr = abbr + languages[currentLanguage].abbreviations.million;
-	                    value = value / Math.pow(10, 6);
-	                } else if (abs < Math.pow(10, 6) && abs >= Math.pow(10, 3) && !abbrForce || abbrK) {
-	                    // thousand
-	                    abbr = abbr + languages[currentLanguage].abbreviations.thousand;
-	                    value = value / Math.pow(10, 3);
-	                }
-	            }
-
-	            // see if we are formatting bytes
-	            if (format.indexOf('b') > -1) {
-	                // check for space before
-	                if (format.indexOf(' b') > -1) {
-	                    bytes = ' ';
-	                    format = format.replace(' b', '');
-	                } else {
-	                    format = format.replace('b', '');
-	                }
-
-	                for (power = 0; power <= suffixes.length; power++) {
-	                    min = Math.pow(1024, power);
-	                    max = Math.pow(1024, power+1);
-
-	                    if (value >= min && value < max) {
-	                        bytes = bytes + suffixes[power];
-	                        if (min > 0) {
-	                            value = value / min;
-	                        }
-	                        break;
-	                    }
-	                }
-	            }
-
-	            // see if ordinal is wanted
-	            if (format.indexOf('o') > -1) {
-	                // check for space before
-	                if (format.indexOf(' o') > -1) {
-	                    ord = ' ';
-	                    format = format.replace(' o', '');
-	                } else {
-	                    format = format.replace('o', '');
-	                }
-
-	                ord = ord + languages[currentLanguage].ordinal(value);
-	            }
-
-	            if (format.indexOf('[.]') > -1) {
-	                optDec = true;
-	                format = format.replace('[.]', '.');
-	            }
-
-	            w = value.toString().split('.')[0];
-	            precision = format.split('.')[1];
-	            thousands = format.indexOf(',');
-
-	            if (precision) {
-	                if (precision.indexOf('[') > -1) {
-	                    precision = precision.replace(']', '');
-	                    precision = precision.split('[');
-	                    d = toFixed(value, (precision[0].length + precision[1].length), roundingFunction, precision[1].length);
-	                } else {
-	                    d = toFixed(value, precision.length, roundingFunction);
-	                }
-
-	                w = d.split('.')[0];
-
-	                if (d.split('.')[1].length) {
-	                    d = languages[currentLanguage].delimiters.decimal + d.split('.')[1];
-	                } else {
-	                    d = '';
-	                }
-
-	                if (optDec && Number(d.slice(1)) === 0) {
-	                    d = '';
-	                }
-	            } else {
-	                w = toFixed(value, null, roundingFunction);
-	            }
-
-	            // format number
-	            if (w.indexOf('-') > -1) {
-	                w = w.slice(1);
-	                neg = true;
-	            }
-
-	            if (thousands > -1) {
-	                w = w.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + languages[currentLanguage].delimiters.thousands);
-	            }
-
-	            if (format.indexOf('.') === 0) {
-	                w = '';
-	            }
-
-	            return ((negP && neg) ? '(' : '') + ((!negP && neg) ? '-' : '') + ((!neg && signed) ? '+' : '') + w + d + ((ord) ? ord : '') + ((abbr) ? abbr : '') + ((bytes) ? bytes : '') + ((negP && neg) ? ')' : '');
-	        }
-	    }
-
-	    /************************************
-	        Top Level Functions
-	    ************************************/
-
-	    numeral = function (input) {
-	        if (numeral.isNumeral(input)) {
-	            input = input.value();
-	        } else if (input === 0 || typeof input === 'undefined') {
-	            input = 0;
-	        } else if (!Number(input)) {
-	            input = numeral.fn.unformat(input);
-	        }
-
-	        return new Numeral(Number(input));
-	    };
-
-	    // version number
-	    numeral.version = VERSION;
-
-	    // compare numeral object
-	    numeral.isNumeral = function (obj) {
-	        return obj instanceof Numeral;
-	    };
-
-	    // This function will load languages and then set the global language.  If
-	    // no arguments are passed in, it will simply return the current global
-	    // language key.
-	    numeral.language = function (key, values) {
-	        if (!key) {
-	            return currentLanguage;
-	        }
-
-	        if (key && !values) {
-	            if(!languages[key]) {
-	                throw new Error('Unknown language : ' + key);
-	            }
-	            currentLanguage = key;
-	        }
-
-	        if (values || !languages[key]) {
-	            loadLanguage(key, values);
-	        }
-
-	        return numeral;
-	    };
-	    
-	    // This function provides access to the loaded language data.  If
-	    // no arguments are passed in, it will simply return the current
-	    // global language object.
-	    numeral.languageData = function (key) {
-	        if (!key) {
-	            return languages[currentLanguage];
-	        }
-	        
-	        if (!languages[key]) {
-	            throw new Error('Unknown language : ' + key);
-	        }
-	        
-	        return languages[key];
-	    };
-
-	    numeral.language('en', {
-	        delimiters: {
-	            thousands: ',',
-	            decimal: '.'
-	        },
-	        abbreviations: {
-	            thousand: 'k',
-	            million: 'm',
-	            billion: 'b',
-	            trillion: 't'
-	        },
-	        ordinal: function (number) {
-	            var b = number % 10;
-	            return (~~ (number % 100 / 10) === 1) ? 'th' :
-	                (b === 1) ? 'st' :
-	                (b === 2) ? 'nd' :
-	                (b === 3) ? 'rd' : 'th';
-	        },
-	        currency: {
-	            symbol: '$'
-	        }
-	    });
-
-	    numeral.zeroFormat = function (format) {
-	        zeroFormat = typeof(format) === 'string' ? format : null;
-	    };
-
-	    numeral.defaultFormat = function (format) {
-	        defaultFormat = typeof(format) === 'string' ? format : '0.0';
-	    };
-
-	    /************************************
-	        Helpers
-	    ************************************/
-
-	    function loadLanguage(key, values) {
-	        languages[key] = values;
-	    }
-
-	    /************************************
-	        Floating-point helpers
-	    ************************************/
-
-	    // The floating-point helper functions and implementation
-	    // borrows heavily from sinful.js: http://guipn.github.io/sinful.js/
-
-	    /**
-	     * Array.prototype.reduce for browsers that don't support it
-	     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
-	     */
-	    if ('function' !== typeof Array.prototype.reduce) {
-	        Array.prototype.reduce = function (callback, opt_initialValue) {
-	            'use strict';
-	            
-	            if (null === this || 'undefined' === typeof this) {
-	                // At the moment all modern browsers, that support strict mode, have
-	                // native implementation of Array.prototype.reduce. For instance, IE8
-	                // does not support strict mode, so this check is actually useless.
-	                throw new TypeError('Array.prototype.reduce called on null or undefined');
-	            }
-	            
-	            if ('function' !== typeof callback) {
-	                throw new TypeError(callback + ' is not a function');
-	            }
-
-	            var index,
-	                value,
-	                length = this.length >>> 0,
-	                isValueSet = false;
-
-	            if (1 < arguments.length) {
-	                value = opt_initialValue;
-	                isValueSet = true;
-	            }
-
-	            for (index = 0; length > index; ++index) {
-	                if (this.hasOwnProperty(index)) {
-	                    if (isValueSet) {
-	                        value = callback(value, this[index], index, this);
-	                    } else {
-	                        value = this[index];
-	                        isValueSet = true;
-	                    }
-	                }
-	            }
-
-	            if (!isValueSet) {
-	                throw new TypeError('Reduce of empty array with no initial value');
-	            }
-
-	            return value;
-	        };
-	    }
-
-	    
-	    /**
-	     * Computes the multiplier necessary to make x >= 1,
-	     * effectively eliminating miscalculations caused by
-	     * finite precision.
-	     */
-	    function multiplier(x) {
-	        var parts = x.toString().split('.');
-	        if (parts.length < 2) {
-	            return 1;
-	        }
-	        return Math.pow(10, parts[1].length);
-	    }
-
-	    /**
-	     * Given a variable number of arguments, returns the maximum
-	     * multiplier that must be used to normalize an operation involving
-	     * all of them.
-	     */
-	    function correctionFactor() {
-	        var args = Array.prototype.slice.call(arguments);
-	        return args.reduce(function (prev, next) {
-	            var mp = multiplier(prev),
-	                mn = multiplier(next);
-	        return mp > mn ? mp : mn;
-	        }, -Infinity);
-	    }        
-
-
-	    /************************************
-	        Numeral Prototype
-	    ************************************/
-
-
-	    numeral.fn = Numeral.prototype = {
-
-	        clone : function () {
-	            return numeral(this);
-	        },
-
-	        format : function (inputString, roundingFunction) {
-	            return formatNumeral(this, 
-	                  inputString ? inputString : defaultFormat, 
-	                  (roundingFunction !== undefined) ? roundingFunction : Math.round
-	              );
-	        },
-
-	        unformat : function (inputString) {
-	            if (Object.prototype.toString.call(inputString) === '[object Number]') { 
-	                return inputString; 
-	            }
-	            return unformatNumeral(this, inputString ? inputString : defaultFormat);
-	        },
-
-	        value : function () {
-	            return this._value;
-	        },
-
-	        valueOf : function () {
-	            return this._value;
-	        },
-
-	        set : function (value) {
-	            this._value = Number(value);
-	            return this;
-	        },
-
-	        add : function (value) {
-	            var corrFactor = correctionFactor.call(null, this._value, value);
-	            function cback(accum, curr, currI, O) {
-	                return accum + corrFactor * curr;
-	            }
-	            this._value = [this._value, value].reduce(cback, 0) / corrFactor;
-	            return this;
-	        },
-
-	        subtract : function (value) {
-	            var corrFactor = correctionFactor.call(null, this._value, value);
-	            function cback(accum, curr, currI, O) {
-	                return accum - corrFactor * curr;
-	            }
-	            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;            
-	            return this;
-	        },
-
-	        multiply : function (value) {
-	            function cback(accum, curr, currI, O) {
-	                var corrFactor = correctionFactor(accum, curr);
-	                return (accum * corrFactor) * (curr * corrFactor) /
-	                    (corrFactor * corrFactor);
-	            }
-	            this._value = [this._value, value].reduce(cback, 1);
-	            return this;
-	        },
-
-	        divide : function (value) {
-	            function cback(accum, curr, currI, O) {
-	                var corrFactor = correctionFactor(accum, curr);
-	                return (accum * corrFactor) / (curr * corrFactor);
-	            }
-	            this._value = [this._value, value].reduce(cback);            
-	            return this;
-	        },
-
-	        difference : function (value) {
-	            return Math.abs(numeral(this._value).subtract(value).value());
-	        }
-
-	    };
-
-	    /************************************
-	        Exposing Numeral
-	    ************************************/
-
-	    // CommonJS module is defined
-	    if (hasModule) {
-	        module.exports = numeral;
-	    }
-
-	    /*global ender:false */
-	    if (typeof ender === 'undefined') {
-	        // here, `this` means `window` in the browser, or `global` on the server
-	        // add `numeral` as a global object via a string identifier,
-	        // for Closure Compiler 'advanced' mode
-	        this['numeral'] = numeral;
-	    }
-
-	    /*global define:false */
-	    if (true) {
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
-	            return numeral;
-	        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	    }
-	}).call(this);
-
-
-/***/ },
-/* 490 */,
-/* 491 */,
-/* 492 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var numeral = __webpack_require__(489);
-
-	var AppendPercent = React.createClass({
-	  displayName: 'AppendPercent',
-
-	  render: function () {
-	    var num = this.props.data;
-	    var result = numeral(num / 100).format('0.0%');
-	    return React.createElement(
-	      'div',
-	      null,
-	      result
-	    );
-	  }
-	});
-
-	module.exports = AppendPercent;
-
-/***/ },
-/* 493 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var numeral = __webpack_require__(489);
-
-	var MoneyFormat = React.createClass({
-	  displayName: 'MoneyFormat',
-
-	  render: function () {
-	    var num = this.props.data;
-	    var result = numeral(num).format('0,0');
-	    return React.createElement(
-	      'div',
-	      null,
-	      result
-	    );
-	  }
-	});
-
-	module.exports = MoneyFormat;
-
-/***/ },
 /* 494 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var numeral = __webpack_require__(489);
+	var ListBlackListedStocksContainer = __webpack_require__(264);
+	var StockExceptionsContainer = __webpack_require__(495);
+	var NDaysHistoryStocksContainer = __webpack_require__(498);
+	var UnrealizedDetailsContainer = __webpack_require__(500);
+	var ProfitAndLossContainer = __webpack_require__(540);
+	var Main = __webpack_require__(262);
+	var PageHeader = __webpack_require__(502);
 
-	var ConvertToPercent = React.createClass({
-	  displayName: 'ConvertToPercent',
+	var WrapperContainer = React.createClass({
+	          displayName: "WrapperContainer",
+
+	          contextTypes: {
+	                    router: React.PropTypes.object.isRequired
+	          },
+	          render: function () {
+	                    return React.createElement(
+	                              Main,
+	                              null,
+	                              React.createElement(StockExceptionsContainer, null),
+	                              React.createElement(
+	                                        PageHeader,
+	                                        null,
+	                                        "Summary"
+	                              ),
+	                              React.createElement(ProfitAndLossContainer, null),
+	                              React.createElement(
+	                                        PageHeader,
+	                                        null,
+	                                        "Black List"
+	                              ),
+	                              React.createElement(ListBlackListedStocksContainer, null),
+	                              React.createElement(
+	                                        PageHeader,
+	                                        null,
+	                                        "Watch List "
+	                              ),
+	                              React.createElement(NDaysHistoryStocksContainer, null),
+	                              React.createElement(
+	                                        PageHeader,
+	                                        null,
+	                                        "Unrealized"
+	                              ),
+	                              React.createElement(UnrealizedDetailsContainer, null)
+	                    );
+	          }
+
+	});
+
+	module.exports = WrapperContainer;
+
+/***/ },
+/* 495 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var finchakksapi = __webpack_require__(266);
+	var StocksException = __webpack_require__(496);
+
+	var StockExceptionsContainer = React.createClass({
+	  displayName: 'StockExceptionsContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listStockExceptions().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
 
 	  render: function () {
-	    var num = this.props.data;
-	    var result = numeral(num).format('0.00%');
+	    return React.createElement(StocksException, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo });
+	  }
+
+	});
+
+	module.exports = StockExceptionsContainer;
+
+/***/ },
+/* 496 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Loading = __webpack_require__(286);
+	var PropTypes = React.PropTypes;
+	var Griddle = __webpack_require__(294);
+	var NoDataComponent = __webpack_require__(497);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function StocksException(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading StocksException' });
+	  } else {
+	    return React.createElement(Griddle, { customNoDataComponent: NoDataComponent,
+	      results: props.stocksInfo });
+	  }
+	}
+
+	StocksException.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array
+	};
+
+	module.exports = StocksException;
+
+/***/ },
+/* 497 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+
+	function NoDataComponent(props) {
+	  return React.createElement('div', null);
+	}
+
+	module.exports = NoDataComponent;
+
+/***/ },
+/* 498 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var NDaysHistoryStocks = __webpack_require__(499);
+	var finchakksapi = __webpack_require__(266);
+
+	var NDaysHistoryStocksContainer = React.createClass({
+	  displayName: 'NDaysHistoryStocksContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(NDaysHistoryStocks, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = NDaysHistoryStocksContainer;
+
+/***/ },
+/* 499 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var finchakksapi = __webpack_require__(266);
+	var Loading = __webpack_require__(286);
+	var columnMetadata = __webpack_require__(287);
+	var PropTypes = React.PropTypes;
+	var Griddle = __webpack_require__(294);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function NDaysHistoryStocks(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading NDaysHistoryStocks' });
+	  } else {
+	    var metaData = columnMetadata.listColumnMetadata();
+
+	    return React.createElement(Griddle, { results: props.stocksInfo, tableClassName: 'table', showFilter: true, resultsPerPage: '10',
+	      columns: ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"],
+	      columnMetadata: metaData,
+	      enableInfiniteScroll: true, bodyHeight: 400, showSettings: true
+	    });
+	  }
+	}
+
+	NDaysHistoryStocks.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = NDaysHistoryStocks;
+
+/***/ },
+/* 500 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var UnrealizedDetails = __webpack_require__(501);
+	var finchakksapi = __webpack_require__(266);
+
+	var UnrealizedDetailsContainer = React.createClass({
+	  displayName: 'UnrealizedDetailsContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listUnrealizedDetails().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(UnrealizedDetails, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = UnrealizedDetailsContainer;
+
+/***/ },
+/* 501 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var finchakksapi = __webpack_require__(266);
+	var Loading = __webpack_require__(286);
+	var columnMetadata = __webpack_require__(287);
+	var PropTypes = React.PropTypes;
+	var Griddle = __webpack_require__(294);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function UnrealizedDetails(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading UnrealizedDetails' });
+	  } else {
+	    var metaData = columnMetadata.listColumnMetadata();
+
+	    return React.createElement(Griddle, { results: props.stocksInfo, tableClassName: 'table', showFilter: true, resultsPerPage: '10',
+	      columns: ["stockName", "returnTillDate", "buyDate", "buyPrice", "duration", "sellPrice", "bankSellPrice", "quantity", "sellableQuantity"],
+	      columnMetadata: metaData,
+	      enableInfiniteScroll: true, bodyHeight: 400
+	    });
+	  }
+	}
+
+	UnrealizedDetails.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = UnrealizedDetails;
+
+/***/ },
+/* 502 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(503)['default'];
+
+	var _classCallCheck = __webpack_require__(518)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(519)['default'];
+
+	var _extends = __webpack_require__(520)['default'];
+
+	var _interopRequireDefault = __webpack_require__(530)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(531);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(532);
+
+	var PageHeader = (function (_React$Component) {
+	  _inherits(PageHeader, _React$Component);
+
+	  function PageHeader() {
+	    _classCallCheck(this, PageHeader);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  PageHeader.prototype.render = function render() {
+	    var _props = this.props;
+	    var className = _props.className;
+	    var children = _props.children;
+
+	    var props = _objectWithoutProperties(_props, ['className', 'children']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _utilsBootstrapUtils.getClassSet(bsProps);
+
+	    return _react2['default'].createElement(
+	      'div',
+	      _extends({}, elementProps, {
+	        className: _classnames2['default'](className, classes)
+	      }),
+	      _react2['default'].createElement(
+	        'h1',
+	        null,
+	        children
+	      )
+	    );
+	  };
+
+	  return PageHeader;
+	})(_react2['default'].Component);
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('page-header', PageHeader);
+	module.exports = exports['default'];
+
+/***/ },
+/* 503 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _Object$create = __webpack_require__(504)["default"];
+
+	var _Object$setPrototypeOf = __webpack_require__(507)["default"];
+
+	exports["default"] = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	  }
+
+	  subClass.prototype = _Object$create(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      enumerable: false,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  if (superClass) _Object$setPrototypeOf ? _Object$setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	};
+
+	exports.__esModule = true;
+
+/***/ },
+/* 504 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(505), __esModule: true };
+
+/***/ },
+/* 505 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $ = __webpack_require__(506);
+	module.exports = function create(P, D){
+	  return $.create(P, D);
+	};
+
+/***/ },
+/* 506 */
+/***/ function(module, exports) {
+
+	var $Object = Object;
+	module.exports = {
+	  create:     $Object.create,
+	  getProto:   $Object.getPrototypeOf,
+	  isEnum:     {}.propertyIsEnumerable,
+	  getDesc:    $Object.getOwnPropertyDescriptor,
+	  setDesc:    $Object.defineProperty,
+	  setDescs:   $Object.defineProperties,
+	  getKeys:    $Object.keys,
+	  getNames:   $Object.getOwnPropertyNames,
+	  getSymbols: $Object.getOwnPropertySymbols,
+	  each:       [].forEach
+	};
+
+/***/ },
+/* 507 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(508), __esModule: true };
+
+/***/ },
+/* 508 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(509);
+	module.exports = __webpack_require__(512).Object.setPrototypeOf;
+
+/***/ },
+/* 509 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 19.1.3.19 Object.setPrototypeOf(O, proto)
+	var $export = __webpack_require__(510);
+	$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(515).set});
+
+/***/ },
+/* 510 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var global    = __webpack_require__(511)
+	  , core      = __webpack_require__(512)
+	  , ctx       = __webpack_require__(513)
+	  , PROTOTYPE = 'prototype';
+
+	var $export = function(type, name, source){
+	  var IS_FORCED = type & $export.F
+	    , IS_GLOBAL = type & $export.G
+	    , IS_STATIC = type & $export.S
+	    , IS_PROTO  = type & $export.P
+	    , IS_BIND   = type & $export.B
+	    , IS_WRAP   = type & $export.W
+	    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
+	    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE]
+	    , key, own, out;
+	  if(IS_GLOBAL)source = name;
+	  for(key in source){
+	    // contains in native
+	    own = !IS_FORCED && target && key in target;
+	    if(own && key in exports)continue;
+	    // export native or passed
+	    out = own ? target[key] : source[key];
+	    // prevent global pollution for namespaces
+	    exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key]
+	    // bind timers to global for call from export context
+	    : IS_BIND && own ? ctx(out, global)
+	    // wrap global constructors for prevent change them in library
+	    : IS_WRAP && target[key] == out ? (function(C){
+	      var F = function(param){
+	        return this instanceof C ? new C(param) : C(param);
+	      };
+	      F[PROTOTYPE] = C[PROTOTYPE];
+	      return F;
+	    // make static versions for prototype methods
+	    })(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+	    if(IS_PROTO)(exports[PROTOTYPE] || (exports[PROTOTYPE] = {}))[key] = out;
+	  }
+	};
+	// type bitmap
+	$export.F = 1;  // forced
+	$export.G = 2;  // global
+	$export.S = 4;  // static
+	$export.P = 8;  // proto
+	$export.B = 16; // bind
+	$export.W = 32; // wrap
+	module.exports = $export;
+
+/***/ },
+/* 511 */
+/***/ function(module, exports) {
+
+	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+	var global = module.exports = typeof window != 'undefined' && window.Math == Math
+	  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+	if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+
+/***/ },
+/* 512 */
+/***/ function(module, exports) {
+
+	var core = module.exports = {version: '1.2.6'};
+	if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+
+/***/ },
+/* 513 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// optional / simple context binding
+	var aFunction = __webpack_require__(514);
+	module.exports = function(fn, that, length){
+	  aFunction(fn);
+	  if(that === undefined)return fn;
+	  switch(length){
+	    case 1: return function(a){
+	      return fn.call(that, a);
+	    };
+	    case 2: return function(a, b){
+	      return fn.call(that, a, b);
+	    };
+	    case 3: return function(a, b, c){
+	      return fn.call(that, a, b, c);
+	    };
+	  }
+	  return function(/* ...args */){
+	    return fn.apply(that, arguments);
+	  };
+	};
+
+/***/ },
+/* 514 */
+/***/ function(module, exports) {
+
+	module.exports = function(it){
+	  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
+	  return it;
+	};
+
+/***/ },
+/* 515 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Works with __proto__ only. Old v8 can't work with null proto objects.
+	/* eslint-disable no-proto */
+	var getDesc  = __webpack_require__(506).getDesc
+	  , isObject = __webpack_require__(516)
+	  , anObject = __webpack_require__(517);
+	var check = function(O, proto){
+	  anObject(O);
+	  if(!isObject(proto) && proto !== null)throw TypeError(proto + ": can't set as prototype!");
+	};
+	module.exports = {
+	  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
+	    function(test, buggy, set){
+	      try {
+	        set = __webpack_require__(513)(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
+	        set(test, []);
+	        buggy = !(test instanceof Array);
+	      } catch(e){ buggy = true; }
+	      return function setPrototypeOf(O, proto){
+	        check(O, proto);
+	        if(buggy)O.__proto__ = proto;
+	        else set(O, proto);
+	        return O;
+	      };
+	    }({}, false) : undefined),
+	  check: check
+	};
+
+/***/ },
+/* 516 */
+/***/ function(module, exports) {
+
+	module.exports = function(it){
+	  return typeof it === 'object' ? it !== null : typeof it === 'function';
+	};
+
+/***/ },
+/* 517 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isObject = __webpack_require__(516);
+	module.exports = function(it){
+	  if(!isObject(it))throw TypeError(it + ' is not an object!');
+	  return it;
+	};
+
+/***/ },
+/* 518 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	exports["default"] = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+
+	exports.__esModule = true;
+
+/***/ },
+/* 519 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	exports["default"] = function (obj, keys) {
+	  var target = {};
+
+	  for (var i in obj) {
+	    if (keys.indexOf(i) >= 0) continue;
+	    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+	    target[i] = obj[i];
+	  }
+
+	  return target;
+	};
+
+	exports.__esModule = true;
+
+/***/ },
+/* 520 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _Object$assign = __webpack_require__(521)["default"];
+
+	exports["default"] = _Object$assign || function (target) {
+	  for (var i = 1; i < arguments.length; i++) {
+	    var source = arguments[i];
+
+	    for (var key in source) {
+	      if (Object.prototype.hasOwnProperty.call(source, key)) {
+	        target[key] = source[key];
+	      }
+	    }
+	  }
+
+	  return target;
+	};
+
+	exports.__esModule = true;
+
+/***/ },
+/* 521 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(522), __esModule: true };
+
+/***/ },
+/* 522 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(523);
+	module.exports = __webpack_require__(512).Object.assign;
+
+/***/ },
+/* 523 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 19.1.3.1 Object.assign(target, source)
+	var $export = __webpack_require__(510);
+
+	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(524)});
+
+/***/ },
+/* 524 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 19.1.2.1 Object.assign(target, source, ...)
+	var $        = __webpack_require__(506)
+	  , toObject = __webpack_require__(525)
+	  , IObject  = __webpack_require__(527);
+
+	// should work with symbols and should have deterministic property order (V8 bug)
+	module.exports = __webpack_require__(529)(function(){
+	  var a = Object.assign
+	    , A = {}
+	    , B = {}
+	    , S = Symbol()
+	    , K = 'abcdefghijklmnopqrst';
+	  A[S] = 7;
+	  K.split('').forEach(function(k){ B[k] = k; });
+	  return a({}, A)[S] != 7 || Object.keys(a({}, B)).join('') != K;
+	}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
+	  var T     = toObject(target)
+	    , $$    = arguments
+	    , $$len = $$.length
+	    , index = 1
+	    , getKeys    = $.getKeys
+	    , getSymbols = $.getSymbols
+	    , isEnum     = $.isEnum;
+	  while($$len > index){
+	    var S      = IObject($$[index++])
+	      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
+	      , length = keys.length
+	      , j      = 0
+	      , key;
+	    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
+	  }
+	  return T;
+	} : Object.assign;
+
+/***/ },
+/* 525 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 7.1.13 ToObject(argument)
+	var defined = __webpack_require__(526);
+	module.exports = function(it){
+	  return Object(defined(it));
+	};
+
+/***/ },
+/* 526 */
+/***/ function(module, exports) {
+
+	// 7.2.1 RequireObjectCoercible(argument)
+	module.exports = function(it){
+	  if(it == undefined)throw TypeError("Can't call method on  " + it);
+	  return it;
+	};
+
+/***/ },
+/* 527 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// fallback for non-array-like ES3 and non-enumerable old V8 strings
+	var cof = __webpack_require__(528);
+	module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+	  return cof(it) == 'String' ? it.split('') : Object(it);
+	};
+
+/***/ },
+/* 528 */
+/***/ function(module, exports) {
+
+	var toString = {}.toString;
+
+	module.exports = function(it){
+	  return toString.call(it).slice(8, -1);
+	};
+
+/***/ },
+/* 529 */
+/***/ function(module, exports) {
+
+	module.exports = function(exec){
+	  try {
+	    return !!exec();
+	  } catch(e){
+	    return true;
+	  }
+	};
+
+/***/ },
+/* 530 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	exports["default"] = function (obj) {
+	  return obj && obj.__esModule ? obj : {
+	    "default": obj
+	  };
+	};
+
+	exports.__esModule = true;
+
+/***/ },
+/* 531 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	  Copyright (c) 2016 Jed Watson.
+	  Licensed under the MIT License (MIT), see
+	  http://jedwatson.github.io/classnames
+	*/
+	/* global define */
+
+	(function () {
+		'use strict';
+
+		var hasOwn = {}.hasOwnProperty;
+
+		function classNames () {
+			var classes = [];
+
+			for (var i = 0; i < arguments.length; i++) {
+				var arg = arguments[i];
+				if (!arg) continue;
+
+				var argType = typeof arg;
+
+				if (argType === 'string' || argType === 'number') {
+					classes.push(arg);
+				} else if (Array.isArray(arg)) {
+					classes.push(classNames.apply(null, arg));
+				} else if (argType === 'object') {
+					for (var key in arg) {
+						if (hasOwn.call(arg, key) && arg[key]) {
+							classes.push(key);
+						}
+					}
+				}
+			}
+
+			return classes.join(' ');
+		}
+
+		if (typeof module !== 'undefined' && module.exports) {
+			module.exports = classNames;
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return classNames;
+			}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+			window.classNames = classNames;
+		}
+	}());
+
+
+/***/ },
+/* 532 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {// TODO: The publicly exposed parts of this should be in lib/BootstrapUtils.
+
+	'use strict';
+
+	var _extends = __webpack_require__(520)['default'];
+
+	var _Object$entries = __webpack_require__(533)['default'];
+
+	var _interopRequireDefault = __webpack_require__(530)['default'];
+
+	exports.__esModule = true;
+	exports.prefix = prefix;
+	exports.getClassSet = getClassSet;
+	exports.splitBsProps = splitBsProps;
+	exports.splitBsPropsAndOmit = splitBsPropsAndOmit;
+	exports.addStyle = addStyle;
+
+	var _invariant = __webpack_require__(538);
+
+	var _invariant2 = _interopRequireDefault(_invariant);
+
+	var _react = __webpack_require__(2);
+
+	var _StyleConfig = __webpack_require__(539);
+
+	function curry(fn) {
+	  return function () {
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    var last = args[args.length - 1];
+	    if (typeof last === 'function') {
+	      return fn.apply(undefined, args);
+	    }
+	    return function (Component) {
+	      return fn.apply(undefined, args.concat([Component]));
+	    };
+	  };
+	}
+
+	function prefix(props, variant) {
+	  !(props.bsClass != null) ? process.env.NODE_ENV !== 'production' ? _invariant2['default'](false, 'A `bsClass` prop is required for this component') : _invariant2['default'](false) : undefined;
+	  return props.bsClass + (variant ? '-' + variant : '');
+	}
+
+	var bsClass = curry(function (defaultClass, Component) {
+	  var propTypes = Component.propTypes || (Component.propTypes = {});
+	  var defaultProps = Component.defaultProps || (Component.defaultProps = {});
+
+	  propTypes.bsClass = _react.PropTypes.string;
+	  defaultProps.bsClass = defaultClass;
+
+	  return Component;
+	});
+
+	exports.bsClass = bsClass;
+	var bsStyles = curry(function (styles, defaultStyle, Component) {
+	  if (typeof defaultStyle !== 'string') {
+	    Component = defaultStyle;
+	    defaultStyle = undefined;
+	  }
+
+	  var existing = Component.STYLES || [];
+	  var propTypes = Component.propTypes || {};
+
+	  styles.forEach(function (style) {
+	    if (existing.indexOf(style) === -1) {
+	      existing.push(style);
+	    }
+	  });
+
+	  var propType = _react.PropTypes.oneOf(existing);
+
+	  // expose the values on the propType function for documentation
+	  Component.STYLES = propType._values = existing;
+
+	  Component.propTypes = _extends({}, propTypes, {
+	    bsStyle: propType
+	  });
+
+	  if (defaultStyle !== undefined) {
+	    var defaultProps = Component.defaultProps || (Component.defaultProps = {});
+	    defaultProps.bsStyle = defaultStyle;
+	  }
+
+	  return Component;
+	});
+
+	exports.bsStyles = bsStyles;
+	var bsSizes = curry(function (sizes, defaultSize, Component) {
+	  if (typeof defaultSize !== 'string') {
+	    Component = defaultSize;
+	    defaultSize = undefined;
+	  }
+
+	  var existing = Component.SIZES || [];
+	  var propTypes = Component.propTypes || {};
+
+	  sizes.forEach(function (size) {
+	    if (existing.indexOf(size) === -1) {
+	      existing.push(size);
+	    }
+	  });
+
+	  var values = [];
+	  existing.forEach(function (size) {
+	    var mappedSize = _StyleConfig.SIZE_MAP[size];
+	    if (mappedSize && mappedSize !== size) {
+	      values.push(mappedSize);
+	    }
+
+	    values.push(size);
+	  });
+
+	  var propType = _react.PropTypes.oneOf(values);
+	  propType._values = values;
+
+	  // expose the values on the propType function for documentation
+	  Component.SIZES = existing;
+
+	  Component.propTypes = _extends({}, propTypes, {
+	    bsSize: propType
+	  });
+
+	  if (defaultSize !== undefined) {
+	    if (!Component.defaultProps) {
+	      Component.defaultProps = {};
+	    }
+	    Component.defaultProps.bsSize = defaultSize;
+	  }
+
+	  return Component;
+	});
+
+	exports.bsSizes = bsSizes;
+
+	function getClassSet(props) {
+	  var _classes;
+
+	  var classes = (_classes = {}, _classes[prefix(props)] = true, _classes);
+
+	  if (props.bsSize) {
+	    var bsSize = _StyleConfig.SIZE_MAP[props.bsSize] || props.bsSize;
+	    classes[prefix(props, bsSize)] = true;
+	  }
+
+	  if (props.bsStyle) {
+	    classes[prefix(props, props.bsStyle)] = true;
+	  }
+
+	  return classes;
+	}
+
+	function getBsProps(props) {
+	  return {
+	    bsClass: props.bsClass,
+	    bsSize: props.bsSize,
+	    bsStyle: props.bsStyle,
+	    bsRole: props.bsRole
+	  };
+	}
+
+	function isBsProp(propName) {
+	  return propName === 'bsClass' || propName === 'bsSize' || propName === 'bsStyle' || propName === 'bsRole';
+	}
+
+	function splitBsProps(props) {
+	  var elementProps = {};
+	  _Object$entries(props).forEach(function (_ref) {
+	    var propName = _ref[0];
+	    var propValue = _ref[1];
+
+	    if (!isBsProp(propName)) {
+	      elementProps[propName] = propValue;
+	    }
+	  });
+
+	  return [getBsProps(props), elementProps];
+	}
+
+	function splitBsPropsAndOmit(props, omittedPropNames) {
+	  var isOmittedProp = {};
+	  omittedPropNames.forEach(function (propName) {
+	    isOmittedProp[propName] = true;
+	  });
+
+	  var elementProps = {};
+	  _Object$entries(props).forEach(function (_ref2) {
+	    var propName = _ref2[0];
+	    var propValue = _ref2[1];
+
+	    if (!isBsProp(propName) && !isOmittedProp[propName]) {
+	      elementProps[propName] = propValue;
+	    }
+	  });
+
+	  return [getBsProps(props), elementProps];
+	}
+
+	/**
+	 * Add a style variant to a Component. Mutates the propTypes of the component
+	 * in order to validate the new variant.
+	 */
+
+	function addStyle(Component) {
+	  for (var _len2 = arguments.length, styleVariant = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	    styleVariant[_key2 - 1] = arguments[_key2];
+	  }
+
+	  bsStyles(styleVariant, Component);
+	}
+
+	var _curry = curry;
+	exports._curry = _curry;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+/* 533 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(534), __esModule: true };
+
+/***/ },
+/* 534 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(535);
+	module.exports = __webpack_require__(512).Object.entries;
+
+/***/ },
+/* 535 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// http://goo.gl/XkBrjD
+	var $export  = __webpack_require__(510)
+	  , $entries = __webpack_require__(536)(true);
+
+	$export($export.S, 'Object', {
+	  entries: function entries(it){
+	    return $entries(it);
+	  }
+	});
+
+/***/ },
+/* 536 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $         = __webpack_require__(506)
+	  , toIObject = __webpack_require__(537)
+	  , isEnum    = $.isEnum;
+	module.exports = function(isEntries){
+	  return function(it){
+	    var O      = toIObject(it)
+	      , keys   = $.getKeys(O)
+	      , length = keys.length
+	      , i      = 0
+	      , result = []
+	      , key;
+	    while(length > i)if(isEnum.call(O, key = keys[i++])){
+	      result.push(isEntries ? [key, O[key]] : O[key]);
+	    } return result;
+	  };
+	};
+
+/***/ },
+/* 537 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// to indexed object, toObject with fallback for non-array-like ES3 strings
+	var IObject = __webpack_require__(527)
+	  , defined = __webpack_require__(526);
+	module.exports = function(it){
+	  return IObject(defined(it));
+	};
+
+/***/ },
+/* 538 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 */
+
+	'use strict';
+
+	/**
+	 * Use invariant() to assert state which your program assumes to be true.
+	 *
+	 * Provide sprintf-style format (only %s is supported) and arguments
+	 * to provide information about what broke and what you were
+	 * expecting.
+	 *
+	 * The invariant message will be stripped in production, but the invariant
+	 * will remain to ensure logic does not differ in production.
+	 */
+
+	var invariant = function(condition, format, a, b, c, d, e, f) {
+	  if (process.env.NODE_ENV !== 'production') {
+	    if (format === undefined) {
+	      throw new Error('invariant requires an error message argument');
+	    }
+	  }
+
+	  if (!condition) {
+	    var error;
+	    if (format === undefined) {
+	      error = new Error(
+	        'Minified exception occurred; use the non-minified dev environment ' +
+	        'for the full error message and additional helpful warnings.'
+	      );
+	    } else {
+	      var args = [a, b, c, d, e, f];
+	      var argIndex = 0;
+	      error = new Error(
+	        format.replace(/%s/g, function() { return args[argIndex++]; })
+	      );
+	      error.name = 'Invariant Violation';
+	    }
+
+	    error.framesToPop = 1; // we don't care about invariant's own frame
+	    throw error;
+	  }
+	};
+
+	module.exports = invariant;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+/* 539 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	var Size = {
+	  LARGE: 'large',
+	  SMALL: 'small',
+	  XSMALL: 'xsmall'
+	};
+
+	exports.Size = Size;
+	var SIZE_MAP = {
+	  large: 'lg',
+	  medium: 'md',
+	  small: 'sm',
+	  xsmall: 'xs',
+	  lg: 'lg',
+	  md: 'md',
+	  sm: 'sm',
+	  xs: 'xs'
+	};
+
+	exports.SIZE_MAP = SIZE_MAP;
+	var DEVICE_SIZES = ['lg', 'md', 'sm', 'xs'];
+
+	exports.DEVICE_SIZES = DEVICE_SIZES;
+	var State = {
+	  SUCCESS: 'success',
+	  WARNING: 'warning',
+	  DANGER: 'danger',
+	  INFO: 'info'
+	};
+
+	exports.State = State;
+	var Style = {
+	  DEFAULT: 'default',
+	  PRIMARY: 'primary',
+	  LINK: 'link',
+	  INVERSE: 'inverse'
+	};
+	exports.Style = Style;
+
+/***/ },
+/* 540 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var ProfitAndLoss = __webpack_require__(541);
+	var finchakksapi = __webpack_require__(266);
+
+	var ProfitAndLossContainer = React.createClass({
+	  displayName: 'ProfitAndLossContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listprofitAndloss().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(ProfitAndLoss, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = ProfitAndLossContainer;
+
+/***/ },
+/* 541 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var finchakksapi = __webpack_require__(266);
+	var Loading = __webpack_require__(286);
+	var columnMetadata = __webpack_require__(287);
+	var PropTypes = React.PropTypes;
+	var Table = __webpack_require__(543);
+	var formatter = __webpack_require__(544);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function ProfitAndLoss(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading ProfitAndLoss' });
+	  } else {
+	    var metaData = columnMetadata.listColumnMetadata();
+	    var stockData = props.stocksInfo;
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        Table,
+	        { striped: true, bordered: true, condensed: true, hover: true },
+	        React.createElement(
+	          'thead',
+	          null,
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'th',
+	              null,
+	              'Return(%)'
+	            ),
+	            React.createElement(
+	              'th',
+	              null,
+	              'Investment'
+	            ),
+	            React.createElement(
+	              'th',
+	              null,
+	              'Return'
+	            ),
+	            React.createElement(
+	              'th',
+	              null,
+	              'Return(Bank)'
+	            ),
+	            React.createElement(
+	              'th',
+	              null,
+	              'Diff'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'tbody',
+	          null,
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'td',
+	              null,
+	              formatter.convertToPercent(stockData.averageReturn)
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              formatter.moneyFormat(stockData.totalInvestment)
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              formatter.moneyFormat(stockData.totalReturn)
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              formatter.moneyFormat(stockData.totalReturnIfBank)
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              formatter.moneyFormat(stockData.totalReturnVsIfBank)
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	}
+
+	ProfitAndLoss.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.shape({
+	    averageReturn: PropTypes.number.isRequired,
+	    totalInvestment: PropTypes.number.isRequired,
+	    totalReturn: PropTypes.number.isRequired,
+	    totalInvestment: PropTypes.number.isRequired,
+	    totalReturnIfBank: PropTypes.number.isRequired,
+	    totalReturnVsIfBank: PropTypes.number.isRequired
+	  })
+	};
+
+	module.exports = ProfitAndLoss;
+
+/***/ },
+/* 542 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+
+	var Trim = React.createClass({
+	  displayName: 'Trim',
+
+	  render: function () {
+	    var name = this.props.data;
+	    var result = name.substring(0, 8);
 	    return React.createElement(
 	      'div',
 	      null,
@@ -40775,7 +42355,140 @@
 	  }
 	});
 
-	module.exports = ConvertToPercent;
+	module.exports = Trim;
+
+/***/ },
+/* 543 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(503)['default'];
+
+	var _classCallCheck = __webpack_require__(518)['default'];
+
+	var _extends = __webpack_require__(520)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(519)['default'];
+
+	var _interopRequireDefault = __webpack_require__(530)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(531);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(532);
+
+	var propTypes = {
+	  striped: _react2['default'].PropTypes.bool,
+	  bordered: _react2['default'].PropTypes.bool,
+	  condensed: _react2['default'].PropTypes.bool,
+	  hover: _react2['default'].PropTypes.bool,
+	  responsive: _react2['default'].PropTypes.bool
+	};
+
+	var defaultProps = {
+	  bordered: false,
+	  condensed: false,
+	  hover: false,
+	  responsive: false,
+	  striped: false
+	};
+
+	var Table = (function (_React$Component) {
+	  _inherits(Table, _React$Component);
+
+	  function Table() {
+	    _classCallCheck(this, Table);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Table.prototype.render = function render() {
+	    var _extends2;
+
+	    var _props = this.props;
+	    var striped = _props.striped;
+	    var bordered = _props.bordered;
+	    var condensed = _props.condensed;
+	    var hover = _props.hover;
+	    var responsive = _props.responsive;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['striped', 'bordered', 'condensed', 'hover', 'responsive', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), (_extends2 = {}, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'striped')] = striped, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'bordered')] = bordered, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'condensed')] = condensed, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'hover')] = hover, _extends2));
+
+	    var table = _react2['default'].createElement('table', _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+
+	    if (responsive) {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: _utilsBootstrapUtils.prefix(bsProps, 'responsive') },
+	        table
+	      );
+	    }
+
+	    return table;
+	  };
+
+	  return Table;
+	})(_react2['default'].Component);
+
+	Table.propTypes = propTypes;
+	Table.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('table', Table);
+	module.exports = exports['default'];
+
+/***/ },
+/* 544 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var axios = __webpack_require__(267);
+	var numeral = __webpack_require__(289);
+
+	function format(num, requiredFormat) {
+	  return numeral(num).format(requiredFormat);
+	}
+
+	var helpers = {
+	  convertToPercent: function (num) {
+	    return format(num, '0.00%');
+	  },
+
+	  appendPercent: function (num) {
+	    return format(num / 100, '0.0%');
+	  },
+
+	  appendPercentRoundedOff: function (num) {
+	    return format(num / 100, '0%');
+	  },
+
+	  convertToPercentRoundedOff: function (num) {
+	    return format(num, '0%');
+	  },
+
+	  moneyFormat: function (num) {
+	    return format(num, '0,0');
+	  }
+
+	};
+
+	module.exports = helpers;
 
 /***/ }
 /******/ ]);

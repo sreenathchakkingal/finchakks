@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
+import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 import com.finanalyzer.processors.Processor;
 import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.util.Adapter;
@@ -29,8 +30,17 @@ public class NDaysHistoryController {
 		
 		persistResult(stocks);
 		
+		persistFlattnedResult(stocks);
+		
 		return new ModelAndView("nDaysHistory", "stocks", stocks);  
     }
+
+	private void persistFlattnedResult(List<Stock> stocks) {
+		List<NDaysHistoryFlattenedDbObject> nDaysHistoryFlattenedDbObject = Adapter.stockToNDaysHistoryFlattenedDbObject(stocks);
+		JdoDbOperations<NDaysHistoryFlattenedDbObject>  dbOperations = new JdoDbOperations<>(NDaysHistoryFlattenedDbObject.class);
+		dbOperations.deleteEntries();
+		dbOperations.insertEntries(nDaysHistoryFlattenedDbObject);
+	}
 
 	private void persistResult(List<Stock> stocks) 
 	{

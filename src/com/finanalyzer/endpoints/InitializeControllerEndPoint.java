@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
+import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
@@ -40,6 +41,15 @@ public class InitializeControllerEndPoint {
 		Collections.sort(ndaysHistoryDbObjects, NDaysHistoryDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
 		
 		return ndaysHistoryDbObjects;
+	}	
+	
+	@ApiMethod(name = "listNDaysHistoryFlattenedStocks")
+	public List<NDaysHistoryFlattenedDbObject> listNDaysHistoryFlattenedStocks()
+	{
+		JdoDbOperations<NDaysHistoryFlattenedDbObject>  nDaysHistoryFlattenedDbOperations = new JdoDbOperations<>(NDaysHistoryFlattenedDbObject.class);
+		final List<NDaysHistoryFlattenedDbObject> ndaysHistoryFlattenedDbObjects =nDaysHistoryFlattenedDbOperations.getEntries();
+		Collections.sort(ndaysHistoryFlattenedDbObjects, NDaysHistoryFlattenedDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
+		return ndaysHistoryFlattenedDbObjects;
 	}	
 	
 	@ApiMethod(name = "listUnrealizedDetails")
