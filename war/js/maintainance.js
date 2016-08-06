@@ -15,7 +15,7 @@ app.controller('maintainanceController',
     
     $scope.load_initialize_end_points = function() {
     	var ROOT = 'https://finchakks.appspot.com/_ah/api';
-    	//var ROOT = 'https://3-dot-finchakks.appspot.com/_ah/api';
+    	
 //    	var ROOT = 'http://localhost:8888/_ah/api';
 
     	gapi.client.load('allScripsControllerEndPoint', 'v1', function() {

@@ -8,7 +8,7 @@ import javax.jdo.annotations.Persistent;
 public class UnrealizedDetailDbObject {
 
 	@Persistent
-	private String stockName; //moneycontrolName
+	private String stockName;
 	
 	@Persistent
 	private float returnTillDate;

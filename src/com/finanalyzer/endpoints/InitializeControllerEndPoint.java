@@ -10,8 +10,11 @@ import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.util.StringUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.Named;
+import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "initalizeControllerEndPoint", version = "v1")
@@ -55,9 +58,27 @@ public class InitializeControllerEndPoint {
 	@ApiMethod(name = "listUnrealizedDetails")
 	public List<UnrealizedDetailDbObject> listUnrealizedDetails()
 	{
+		return getUnrealizedDetails(null);
+	}
+	
+	@ApiMethod(name = "listSelectedUnrealizedDetails")
+	public List<UnrealizedDetailDbObject> listSelectedUnrealizedDetails(@Named("stockName") String stockName)
+	{
+		return getUnrealizedDetails(stockName);
+	}
+	
+	private List<UnrealizedDetailDbObject> getUnrealizedDetails(String stockName)
+	{
+		final String sortBy = "stockName asc, buyDate desc";
 		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
-		final List<UnrealizedDetailDbObject> unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName asc, buyDate desc");
-
+		List<UnrealizedDetailDbObject> unrealizedDetailObjects=null;
+		if(StringUtil.isValidValue(stockName))
+		{
+			unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries("stockName", FastList.newListWith(stockName), sortBy);
+			return unrealizedDetailObjects;
+		}
+		
+		unrealizedDetailObjects = unrealizedDetailDbOperations.getEntries(sortBy);
 		return unrealizedDetailObjects;
 	}
 	

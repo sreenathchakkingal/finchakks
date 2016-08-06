@@ -128,36 +128,48 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			String moneycontrolName = dbObject.getMoneycontrolName();
 			if(StringUtil.isValidValue(moneycontrolName))
 			{
-				String buyDate = dbObject.getBuyDate();
-				double buyPriceDouble = dbObject.getBuyPrice();
-				long quantity = dbObject.getBuyQuantity();
-
-				stock = new StockBuilder().name(moneycontrolName)
-						.quantity((int) quantity).buyPrice((float) buyPriceDouble)
-						.buyDate(buyDate).sellDate(DateUtil.todaysDate()).build();
-
 				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME,FastList.newListWith(moneycontrolName));
-
+				LOG.info("stamping nse and bse id for "+moneycontrolName);
+				
 				if (!scrips.isEmpty()) 
 				{
 					final AllScripsDbObject aScrip = scrips.get(0);
+
+					String buyDate = dbObject.getBuyDate();
+					double buyPriceDouble = dbObject.getBuyPrice();
+					long quantity = dbObject.getBuyQuantity();
+
+					stock = new StockBuilder().name(aScrip.getNseId())
+							.quantity((int) quantity).buyPrice((float) buyPriceDouble)
+							.buyDate(buyDate).sellDate(DateUtil.todaysDate()).blackListed(aScrip.isBlackListed()).
+							build();
+					stocks.add(stock);
+/*
 					if (StringUtil.isValidValue(aScrip.getBseId())) 
 					{
 						stock.addNames(StockExchange.BSE, aScrip.getBseId());
 						stock.addNames(StockExchange.NSE, aScrip.getNseId());
 						stock.setBlackListed(aScrip.isBlackListed());
 						stocks.add(stock);
-					}
+					}*/
 				} 
 				else 
 				{
 					LOG.info("No mapping found: "+moneycontrolName);
-					stock.setIsException("No mapping found");//remove later on
+					//stock.setIsException("No mapping found");//remove later on
 					exceptionStocks.add(new StockExceptionDbObject(moneycontrolName, "No mapping found"));
 				}
 			}
 		}
 
+		for(Stock eachStock: stocks)
+		{
+			if(eachStock.isBlackListed())
+			{
+				LOG.info("execute: stock.getStockName(): "+eachStock.getStockName());
+			}
+		}
+		
 		Iterate.sortThis(stocks, NAME_DATE_PRICE_COMPARATOR);
 		
 		final List<Stock> bonusScnearioHandledStocks = handleBonusScneario(stocks);
@@ -241,7 +253,24 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				dbDetailOperations.deleteEntries();
 				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
 
+				for(Stock eachStock: stocksSummary)
+				{
+					if(eachStock.isBlackListed())
+					{
+						LOG.info("persistResults, stocksSummary: "+eachStock.getStockName());
+					}
+				}
+				
 				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
+				
+				for(UnrealizedSummaryDbObject unrealizedSummaryDbObject: unrealizedSummaryDbObjects)
+				{
+					if(unrealizedSummaryDbObject.isBlackListed())
+					{
+						LOG.info("persistResults, unrealizedSummaryDbObject: "+unrealizedSummaryDbObject.getStockName());
+					}
+				}
+				
 				final JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
 				dbSummaryOperations.deleteEntries();
 				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);

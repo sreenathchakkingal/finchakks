@@ -93,13 +93,11 @@ public class Adapter {
 		for (Stock stock : stocksSummary)
 		{
 			
-			final String stockName = stock.getStockName();
-			
 			final UnrealizedSummaryDbObjectBuilder unrealizedSummaryBuilder = new UnrealizedSummaryDbObjectBuilder(); 
 			
 			final UnrealizedSummaryDbObject unrealizedSummaryDbObject = 
 			unrealizedSummaryBuilder
-			.stockName(stockName)
+			.stockName(stock.getStockName())
 			.returnTillDate(stock.getReturnTillDate())
 			.quantity(stock.getQuantity())
 			.sellableQuantity(stock.getSellableQuantity())
@@ -129,7 +127,7 @@ public class Adapter {
 			.sellableQuantity(stock.getSellableQuantity())
 			.isMoreThanAnYear(stock.getIsMoreThanAnYear())
 			.isMaturityIsCloseToAnYear(stock.getIsMaturityIsCloseToAnYear())
-			.stockName(stock.getStockName())
+			.stockName(stock.getStockName(StockExchange.NSE))
 			.returnTillDate(stock.getReturnTillDate())
 			.buyDate(stock.getBuyDate())
 			.buyPrice(stock.getBuyPrice())

@@ -9,8 +9,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
@@ -38,6 +40,8 @@ import com.gs.collections.impl.utility.Iterate;
 
 public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExceptionDbObject> >>
 {
+	private static final Logger LOG = Logger.getLogger(PnLProcessor.class.getName());
+	
 	public final InputStream statusInputStream;
 
 	private static final  Predicate<Stock> IS_ZERO_BUY_PRICE = new Predicate<Stock>() {
@@ -165,6 +169,12 @@ public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExce
 		for (Stock stock : stockLines)
 		{
 			Stock existingStock = map.get(stock.getStockName());
+			
+			if(stock.isBlackListed())
+			{
+				LOG.info("stock.getStockName(): "+stock.getStockName());
+			}
+			
 			if (existingStock != null)
 			{
 				float existingInterestReturn =existingStock.getReturnTillDate();

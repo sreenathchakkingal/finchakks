@@ -115,7 +115,13 @@ public class Stock
 
 	public void setStockName(String stockName)
 	{
-		this.stockName = stockName;
+		this.stockName=stockName;
+		this.stockExchangeStocknameMap.put(StockExchange.NSE, stockName);
+	}
+
+	public String getStockName(StockExchange stockExchange)
+	{
+		return this.stockExchangeStocknameMap.get(stockExchange);
 	}
 
 	public List<DateValueObject> getDividends()
