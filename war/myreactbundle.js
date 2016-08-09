@@ -26946,7 +26946,7 @@
 	  },
 
 	  listBlackListedStocks: function () {
-	    return getApiResult('unrealizedsummarydbobject').then(function (response) {
+	    return getApiResult('listBlackListedStocks').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -27019,6 +27019,15 @@
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listUnrealizedDetails ', err);
+	    });
+	  },
+
+	  listUnrealizedSummary: function () {
+	    return getApiResult('listUnrealizedSummaryStocks').then(function (response) {
+	      var stocksInfo = response.data.items;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listUnrealizedSummary', err);
 	    });
 	  },
 
@@ -28571,6 +28580,15 @@
 	      "customComponent": MoneyFormat
 	    };
 	    return bankSellPrice;
+	  },
+
+	  diff: function () {
+	    var diff = {
+	      "columnName": "diff",
+	      "displayName": "Diff",
+	      "customComponent": MoneyFormat
+	    };
+	    return diff;
 	  }
 
 	  /*
@@ -33842,10 +33860,26 @@
 	      "columnName": "quantity",
 	      "displayName": "Qty",
 	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalInvestment",
+	      "displayName": "Inv",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalReturn",
+	      "displayName": "Return",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalReturnIfBank",
+	      "displayName": "Bank",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "diff",
+	      "displayName": "Diff",
+	      "customComponent": MoneyFormat
 	    }];
 
 	    return React.createElement(Griddle, { results: props.stocksInfo, tableClassName: 'table', showFilter: true, resultsPerPage: '10',
-	      columns: ["stockName", "returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity"],
+	      columns: ["stockName", "returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
 	      columnMetadata: metaData,
 	      enableInfiniteScroll: true, bodyHeight: 400
 	    });
@@ -44388,6 +44422,7 @@
 
 	var React = __webpack_require__(2);
 	var UnrealizedDetailsContainer = __webpack_require__(581);
+	var UnrealizedSummaryContainer = __webpack_require__(583);
 	var ProfitAndLossContainer = __webpack_require__(572);
 	var Main = __webpack_require__(237);
 
@@ -44402,7 +44437,8 @@
 	      Main,
 	      null,
 	      React.createElement(ProfitAndLossContainer, null),
-	      React.createElement(UnrealizedDetailsContainer, null)
+	      React.createElement(UnrealizedDetailsContainer, null),
+	      React.createElement(UnrealizedSummaryContainer, null)
 	    );
 	  }
 
@@ -44475,13 +44511,13 @@
 	  if (props.isLoading === true) {
 	    return React.createElement(Loading, { text: 'Loading UnrealizedDetails' });
 	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.buyDate(), columnMetadata.buyPrice(), columnMetadata.duration(), columnMetadata.sellPrice(), columnMetadata.bankSellPrice(), columnMetadata.quantity()];
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.buyDate(), columnMetadata.buyPrice(), columnMetadata.duration(), columnMetadata.sellPrice(), columnMetadata.bankSellPrice(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.diff()];
 
 	    return React.createElement(
 	      PanelWrapper,
 	      { header: 'Unrealized Details' },
 	      React.createElement(Griddle, { results: props.stocksInfo, tableClassName: 'table', showFilter: true, resultsPerPage: '10',
-	        columns: ["stockName", "returnTillDate", "buyDate", "buyPrice", "duration", "sellPrice", "bankSellPrice", "quantity"],
+	        columns: ["stockName", "returnTillDate", "buyDate", "buyPrice", "duration", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
 	        columnMetadata: metaData,
 	        enableInfiniteScroll: true, bodyHeight: 400
 	      })
@@ -44495,6 +44531,47 @@
 	};
 
 	module.exports = UnrealizedDetails;
+
+/***/ },
+/* 583 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var UnrealizedDetails = __webpack_require__(582);
+	var finchakksapi = __webpack_require__(242);
+
+	var UnrealizedSummaryContainer = React.createClass({
+	  displayName: 'UnrealizedSummaryContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listUnrealizedSummary().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(UnrealizedDetails, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = UnrealizedSummaryContainer;
 
 /***/ }
 /******/ ]);

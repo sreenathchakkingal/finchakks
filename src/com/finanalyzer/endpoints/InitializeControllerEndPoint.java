@@ -27,13 +27,20 @@ public class InitializeControllerEndPoint {
 		return stockExceptionDbOperations.getEntries("stockName");
 	}
 	
-	@ApiMethod(name = "listBlackListedStocks")
+	@ApiMethod(name = "listBlackListedStocks", path="listBlackListedStocks")
 	public List<UnrealizedSummaryDbObject> listBlackListedStocks()
+	{
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = listUnrealizedSummaryStocks();
+		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
+		return blackListedStocks;
+	}
+	
+	@ApiMethod(name = "listUnrealizedSummaryStocks", path="listUnrealizedSummaryStocks")
+	public List<UnrealizedSummaryDbObject> listUnrealizedSummaryStocks()
 	{
 		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
 		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries("stockName");
-		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
-		return blackListedStocks;
+		return unrealizedSummaryDbObjects;
 	}
 	
 	@ApiMethod(name = "listNDaysHistoryStocks")
