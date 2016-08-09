@@ -67,6 +67,16 @@ public class InitializeControllerEndPoint {
 		return getUnrealizedDetails(stockName);
 	}
 	
+	@ApiMethod(name = "getProfitAndLoss")
+	public ProfitAndLossDbObject getProfitAndLoss()
+	{
+		JdoDbOperations<ProfitAndLossDbObject> profitAndLossDbOperations = new JdoDbOperations<>(ProfitAndLossDbObject.class);
+		final ProfitAndLossDbObject profitAndLossDbObject = profitAndLossDbOperations.getEntries().get(0);
+		return profitAndLossDbObject;
+	}
+	
+//helper methods
+	
 	private List<UnrealizedDetailDbObject> getUnrealizedDetails(String stockName)
 	{
 		final String sortBy = "stockName asc, buyDate desc";
@@ -82,13 +92,6 @@ public class InitializeControllerEndPoint {
 		return unrealizedDetailObjects;
 	}
 	
-	@ApiMethod(name = "getProfitAndLoss")
-	public ProfitAndLossDbObject getProfitAndLoss()
-	{
-		JdoDbOperations<ProfitAndLossDbObject> profitAndLossDbOperations = new JdoDbOperations<>(ProfitAndLossDbObject.class);
-		final ProfitAndLossDbObject profitAndLossDbObject = profitAndLossDbOperations.getEntries().get(0);
-		return profitAndLossDbObject;
-	}
 	
 	
 	

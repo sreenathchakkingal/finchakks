@@ -43,6 +43,8 @@ public class Stock
 	
 	private float totalReturn;
 	private float totalReturnIfBank;
+	private float diff;
+	
 	private boolean isException=false;
 	private String graphToEquityOpinion;
 	private String reportedNetProfitOpinion;
@@ -335,6 +337,12 @@ public class Stock
 			return this.quantity * this.getBankSellPrice();
 		}
 		return this.totalReturnIfBank;
+	}
+	
+	public float getDiff()
+	{
+		this.diff = getTotalReturn()-getTotalReturnIfBank();
+		return this.diff;
 	}
 
 	public void setTotalReturnIfBank(float totalReturnIfBank)

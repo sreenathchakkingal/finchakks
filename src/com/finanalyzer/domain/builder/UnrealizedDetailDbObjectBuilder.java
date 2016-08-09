@@ -62,6 +62,25 @@ public class UnrealizedDetailDbObjectBuilder {
 		return this;
 	}
 	
+	public UnrealizedDetailDbObjectBuilder totalInvestment(float totalInvestment) {
+		this.unrealizedDetailDbObject.setTotalInvestment(totalInvestment);
+		return this;
+	}
+
+	public UnrealizedDetailDbObjectBuilder totalReturn(float totalReturn) {
+		this.unrealizedDetailDbObject.setTotalReturn(totalReturn);
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder totalReturnIfBank(float totalReturnIfBank) {
+		this.unrealizedDetailDbObject.setTotalReturnIfBank(totalReturnIfBank);
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder diff(float diff) {
+		this.unrealizedDetailDbObject.setDiff(diff);
+		return this;
+	}
 	
 	public UnrealizedDetailDbObject build()
 	{

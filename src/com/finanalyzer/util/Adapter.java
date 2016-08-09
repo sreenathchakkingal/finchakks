@@ -117,7 +117,7 @@ public class Adapter {
 
 	public static List<UnrealizedDetailDbObject> stockToUnrealizedDetailDbObject(List<Stock> stocks) {
 		
-		List<UnrealizedDetailDbObject> unrealizedSummaryDbObjects = FastList.newList();
+		List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = FastList.newList();
 		
 		for (Stock stock : stocks)
 		{
@@ -135,12 +135,16 @@ public class Adapter {
 			.bankSellPrice(stock.getBankSellPrice())
 			.quantity(stock.getQuantity())
 			.duration(DateUtil.approxDurationInMonthsAndYears(stock.getBuyDate()))
+			.totalInvestment(stock.getTotalInvestment())
+			.totalReturn(stock.getTotalReturn())
+			.totalReturnIfBank(stock.getTotalReturnIfBank())
+			.diff(stock.getDiff())
 			.build();
 			
-			unrealizedSummaryDbObjects.add(unrealizedDetailDbObject);
+			unrealizedDetailDbObjects.add(unrealizedDetailDbObject);
 		}
 		
-		return unrealizedSummaryDbObjects;
+		return unrealizedDetailDbObjects;
 	}
 
 

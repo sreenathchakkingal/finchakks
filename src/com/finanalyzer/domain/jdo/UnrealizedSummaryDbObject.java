@@ -47,6 +47,9 @@ public class UnrealizedSummaryDbObject {
 	@Persistent
 	private float impactOnAverageReturn;
 	
+	@Persistent
+	private float diff;
+	
 	public static final Predicate<UnrealizedSummaryDbObject> IS_BLACKLISTED = new Predicate<UnrealizedSummaryDbObject>() {
 		
 		@Override

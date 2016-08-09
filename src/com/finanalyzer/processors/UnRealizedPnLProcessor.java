@@ -144,19 +144,10 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 							.buyDate(buyDate).sellDate(DateUtil.todaysDate()).blackListed(aScrip.isBlackListed()).
 							build();
 					stocks.add(stock);
-/*
-					if (StringUtil.isValidValue(aScrip.getBseId())) 
-					{
-						stock.addNames(StockExchange.BSE, aScrip.getBseId());
-						stock.addNames(StockExchange.NSE, aScrip.getNseId());
-						stock.setBlackListed(aScrip.isBlackListed());
-						stocks.add(stock);
-					}*/
 				} 
 				else 
 				{
 					LOG.info("No mapping found: "+moneycontrolName);
-					//stock.setIsException("No mapping found");//remove later on
 					exceptionStocks.add(new StockExceptionDbObject(moneycontrolName, "No mapping found"));
 				}
 			}
@@ -193,8 +184,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 
 				float totalReturns = 0.0f;
 				float totalInvestment = 0.0f;
-
-//				List<Stock> stocksWithMaturityMoreThanAQuarter = ((FastList<Stock>)stocksSummary).select(MATURITY_MORE_THAN_A_QUARTER);
 
 				for (Stock stock : stocksSummary)
 				{
@@ -253,24 +242,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				dbDetailOperations.deleteEntries();
 				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
 
-				for(Stock eachStock: stocksSummary)
-				{
-					if(eachStock.isBlackListed())
-					{
-						LOG.info("persistResults, stocksSummary: "+eachStock.getStockName());
-					}
-				}
-				
 				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
-				
-				for(UnrealizedSummaryDbObject unrealizedSummaryDbObject: unrealizedSummaryDbObjects)
-				{
-					if(unrealizedSummaryDbObject.isBlackListed())
-					{
-						LOG.info("persistResults, unrealizedSummaryDbObject: "+unrealizedSummaryDbObject.getStockName());
-					}
-				}
-				
 				final JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
 				dbSummaryOperations.deleteEntries();
 				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);

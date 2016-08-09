@@ -40,6 +40,18 @@ public class UnrealizedDetailDbObject {
 	@Persistent
 	private boolean isMaturityIsCloseToAnYear;
 	
+	@Persistent
+	private float totalInvestment;
+	
+	@Persistent
+	private float totalReturn;
+	
+	@Persistent
+	private float totalReturnIfBank;
+
+	@Persistent
+	private float diff;
+	
 	public UnrealizedDetailDbObject()
 	{
 		
@@ -133,6 +145,38 @@ public class UnrealizedDetailDbObject {
 		this.isMaturityIsCloseToAnYear = isMaturityIsCloseToAnYear;
 	}
 	
+	public float getTotalInvestment() {
+		return totalInvestment;
+	}
+
+	public void setTotalInvestment(float totalInvestment) {
+		this.totalInvestment = totalInvestment;
+	}
+
+	public float getTotalReturn() {
+		return totalReturn;
+	}
+
+	public void setTotalReturn(float totalReturn) {
+		this.totalReturn = totalReturn;
+	}
+
+	public float getTotalReturnIfBank() {
+		return totalReturnIfBank;
+	}
+
+	public void setTotalReturnIfBank(float totalReturnIfBank) {
+		this.totalReturnIfBank = totalReturnIfBank;
+	}
+
+	public float getDiff() {
+		return diff;
+	}
+
+	public void setDiff(float diff) {
+		this.diff = diff;
+	}
+
 	@Override
 	public String toString()
 	{
