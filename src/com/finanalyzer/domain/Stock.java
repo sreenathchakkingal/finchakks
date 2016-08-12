@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jdo.annotations.Persistent;
+
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
 import com.gs.collections.api.block.function.Function;
@@ -63,12 +65,17 @@ public class Stock
 	private String industry;
 	private Float industryInvestmentRatio;
 
-	private boolean isBlackListed;
-
 	private String exceptionComment="";
 	
 	private float impactOnAverageReturn;
-
+	
+	private float targetReturnPercent;
+	private float targetSellPrice;
+	private String targetDate;
+	private boolean isReachedStopLossTarget;
+	private boolean isBlackListed;
+	
+	
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
 	{
@@ -697,6 +704,38 @@ public class Stock
 	
 	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
 		this.impactOnAverageReturn = impactOnAverageReturn;
+	}
+	
+	public boolean isReachedStopLossTarget() {
+		return isReachedStopLossTarget;
+	}
+	
+	public void setReachedStopLossTarget(boolean isReachedStopLossTarget) {
+		this.isReachedStopLossTarget = isReachedStopLossTarget;
+	}
+	
+	public float getTargetReturnPercent() {
+		return targetReturnPercent;
+	}
+	
+	public void setTargetReturnPercent(float targetReturnPercent) {
+		this.targetReturnPercent = targetReturnPercent;
+	}
+	
+	public float getTargetSellPrice() {
+		return targetSellPrice;
+	}
+	
+	public void setTargetSellPrice(float targetSellPrice) {
+		this.targetSellPrice = targetSellPrice;
+	}
+	
+	public String getTargetDate() {
+		return targetDate;
+	}
+	
+	public void setTargetDate(String targetDate) {
+		this.targetDate = targetDate;
 	}
 	
 	@Override

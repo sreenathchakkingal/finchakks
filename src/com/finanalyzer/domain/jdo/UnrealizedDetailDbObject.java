@@ -3,6 +3,8 @@ package com.finanalyzer.domain.jdo;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import com.gs.collections.api.block.predicate.Predicate;
+
 
 @PersistenceCapable
 public class UnrealizedDetailDbObject {
@@ -51,6 +53,27 @@ public class UnrealizedDetailDbObject {
 
 	@Persistent
 	private float diff;
+	
+	@Persistent
+	private float targetReturnPercent;
+	
+	@Persistent
+	private float targetSellPrice;
+	
+	@Persistent
+	private String targetDate;
+
+	@Persistent
+	private boolean isTargetReached;
+	
+	public static final Predicate<UnrealizedDetailDbObject> IS_TARGET_REACHED = new Predicate<UnrealizedDetailDbObject>() {
+		
+		@Override
+		public boolean accept(UnrealizedDetailDbObject unrealizedDetailDbObject) {
+			return unrealizedDetailDbObject.isTargetReached();
+		}
+	};
+	
 	
 	public UnrealizedDetailDbObject()
 	{
@@ -175,6 +198,38 @@ public class UnrealizedDetailDbObject {
 
 	public void setDiff(float diff) {
 		this.diff = diff;
+	}
+	
+	public boolean isTargetReached() {
+		return isTargetReached;
+	}
+
+	public void setTargetReached(boolean isTargetReached) {
+		this.isTargetReached = isTargetReached;
+	}
+
+	public float getTargetReturnPercent() {
+		return targetReturnPercent;
+	}
+
+	public void setTargetReturnPercent(float targetReturnPercent) {
+		this.targetReturnPercent = targetReturnPercent;
+	}
+
+	public float getTargetSellPrice() {
+		return targetSellPrice;
+	}
+
+	public void setTargetSellPrice(float targetSellPrice) {
+		this.targetSellPrice = targetSellPrice;
+	}
+
+	public String getTargetDate() {
+		return targetDate;
+	}
+
+	public void setTargetDate(String targetDate) {
+		this.targetDate = targetDate;
 	}
 
 	@Override

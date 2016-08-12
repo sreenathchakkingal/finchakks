@@ -1,43 +1,32 @@
 package com.finanalyzer.processors;
 
-import java.io.Reader;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItemIterator;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
-import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.domain.NDaysPrice;
 import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockExchange;
-import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
+import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
 import com.google.gson.JsonObject;
 import com.gs.collections.api.block.predicate.Predicate;
-import com.gs.collections.api.block.predicate.Predicate2;
-import com.gs.collections.api.list.MutableList;
-import com.gs.collections.api.partition.list.PartitionMutableList;
 import com.gs.collections.api.tuple.Pair;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.set.mutable.UnifiedSet;
 import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
 
@@ -45,7 +34,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 {
 	private static final Logger LOG = Logger.getLogger(UnRealizedPnLProcessor.class.getName());
 	
-	private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("##.##");
 	private String stockName;
 	private FileItemIterator fileItemIterator;
 
@@ -81,6 +69,8 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				}
 			};
 
+			private final JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
+
 
 			public UnRealizedPnLProcessor(FileItemIterator fileItemIterator, String stockName)
 			{
@@ -95,7 +85,9 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				this.unrealizedDetailsContent=unrealizedDetailsContent;
 				this.isUseUnrealizedDetailsContent=true; //if the copy paste works fine remove the other constructor fileItemIterator and this flag
 			}
-
+			
+			//only for junits
+			public UnRealizedPnLProcessor(){}
 
 	@Override
 	public Pair<List<Stock>,List<StockExceptionDbObject>> execute() {
@@ -122,14 +114,13 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			entries = unrealizeddbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME);
 		}
 		
-		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);
+		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<AllScripsDbObject>(AllScripsDbObject.class);//move this as instance variable ?
 		List<StockExceptionDbObject> exceptionStocks = FastList.newList();
 		for (UnrealizedDbObject dbObject : entries) {
 			String moneycontrolName = dbObject.getMoneycontrolName();
 			if(StringUtil.isValidValue(moneycontrolName))
 			{
 				final List<AllScripsDbObject> scrips = allScripsDbOperations.getEntries(AllScripsDbObject.MONEY_CONTROL_NAME,FastList.newListWith(moneycontrolName));
-				LOG.info("stamping nse and bse id for "+moneycontrolName);
 				
 				if (!scrips.isEmpty()) 
 				{
@@ -153,19 +144,13 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			}
 		}
 
-		for(Stock eachStock: stocks)
-		{
-			if(eachStock.isBlackListed())
-			{
-				LOG.info("execute: stock.getStockName(): "+eachStock.getStockName());
-			}
-		}
-		
 		Iterate.sortThis(stocks, NAME_DATE_PRICE_COMPARATOR);
 		
 		final List<Stock> bonusScnearioHandledStocks = handleBonusScneario(stocks);
 		
 		StockQuandlApiAdapter.stampLatestClosePriceAndDate(bonusScnearioHandledStocks);
+		
+		enrichWithStopLossDetails(bonusScnearioHandledStocks);
 		
 		final Pair<List<Stock>,List<StockExceptionDbObject>> stocksAndExceptions = Tuples.pair(bonusScnearioHandledStocks, exceptionStocks);
 		
@@ -224,17 +209,90 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				return jsonData;
 			}
 
-			public NDaysPrice getLatestClosePrice(List<String> rows, String stock)
+			public void enrichWithStopLossDetails(List<Stock> stocksDetail)
 			{
-				Map<String, String> dateToCloseValue = new UnifiedMap<String, String>();
-				if (rows.get(1).split(",").length > 5)
+				for(Stock eachStock : stocksDetail)
 				{
-					double closePrice = ReaderUtil.parseForClosePrice(rows.get(1)).doubleValue();
-					dateToCloseValue.put(ReaderUtil.parseForDate(rows.get(1)), DOUBLE_FORMAT.format(closePrice));
+					final List<StopLossDbObject> matchingStopLossDbObjects = getMatchingStopLossDbObject(eachStock);
+					if(!matchingStopLossDbObjects.isEmpty())
+					{
+						StopLossDbObject matchingStopLossDbObject = matchingStopLossDbObjects.get(0);
+						
+						final float stopLossPrice = matchingStopLossDbObject.getTargetSellPrice();
+						final float stopLossReturnPercent = matchingStopLossDbObject.getTargetReturnPercent();
+						final String stopLossDate = matchingStopLossDbObject.getTargetDate();
+						
+						eachStock.setTargetSellPrice(stopLossPrice);
+						eachStock.setTargetReturnPercent(stopLossReturnPercent);
+						eachStock.setTargetDate(stopLossDate);
+						
+						
+						final float stockSellPrice = eachStock.getSellPrice();
+						final float stockReturnTillDate = eachStock.getReturnTillDate();
+						final String stockName = eachStock.getStockName();
+						
+						
+						boolean isTargetDateValid = matchingStopLossDbObject.getTargetDate()!=null;
+						boolean isTargetPriceValid = matchingStopLossDbObject.getTargetSellPrice()>0.0f;
+						boolean isTargetReturnPercentValid = matchingStopLossDbObject.getTargetReturnPercent()>0.0f;
+						
+						boolean isByTargetDateAndPrice = isTargetDateValid && isTargetPriceValid;
+						boolean isByTargetDateAndReturn = isTargetDateValid && isTargetReturnPercentValid;
+						boolean isOnlyByTargetPrice = !isTargetDateValid && isTargetPriceValid;
+						boolean isOnlyByReturnPercent = !isTargetDateValid && isTargetReturnPercentValid;
+						
+						boolean isBusinessDateLessThanTargetDate=false;
+						boolean isStockPriceMoreThanTargetPrice =false;
+						boolean isStockReturnPercentsMoreThanTargetReturn=false;
+						
+						if(isTargetPriceValid)
+						{
+							isStockPriceMoreThanTargetPrice = CalculatorUtil.isValueMoreThanTarget
+									(stockSellPrice, stopLossPrice, StopLossDbObject.PRICE_DIFF_TOLERANCE);
+						}
+							
+						if(isTargetReturnPercentValid)
+						{
+							isStockReturnPercentsMoreThanTargetReturn = CalculatorUtil.isValueMoreThanTarget
+									(stockReturnTillDate,stopLossReturnPercent,  StopLossDbObject.RETURN_DIFF_TOLERANCE);
+						}
+
+						if(isTargetDateValid)
+						{
+							isBusinessDateLessThanTargetDate = DateUtil.dateCloserToCurrentDate(stopLossDate, StopLossDbObject.DATE_DIFF_TOLERANCE);	
+						}
+						
+						if(isByTargetDateAndPrice)
+						{
+							LOG.info("stockName: "+stockName+" isByTargetDateAndPrice: "+isByTargetDateAndPrice+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockPriceMoreThanTargetPrice: "+isStockPriceMoreThanTargetPrice );
+							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockPriceMoreThanTargetPrice);
+						}
+						else if(isByTargetDateAndReturn)
+						{
+							LOG.info("stockName: "+stockName+" isByTargetDateAndReturn: "+isByTargetDateAndReturn+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsMoreThanTargetReturn );
+							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockReturnPercentsMoreThanTargetReturn);
+						}
+						else if(isOnlyByTargetPrice)
+						{
+							LOG.info("stockName: "+stockName+" isOnlyByTargetPrice: "+isOnlyByTargetPrice+ " isStockPriceMoreThanTargetPrice: "+isStockPriceMoreThanTargetPrice);
+							eachStock.setReachedStopLossTarget(isStockPriceMoreThanTargetPrice);							
+						}
+						else if(isOnlyByReturnPercent)
+						{
+							LOG.info("stockName: "+stockName+" isOnlyByReturnPercent: "+isOnlyByReturnPercent+ " isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsMoreThanTargetReturn);
+							eachStock.setReachedStopLossTarget(isStockReturnPercentsMoreThanTargetReturn);							
+						}
+					}
+					
 				}
-				return new NDaysPrice(stock, dateToCloseValue);
 			}
 
+			//for testing	
+			protected List<StopLossDbObject> getMatchingStopLossDbObject(Stock eachStock) {
+				return stopLossDbOperations.getEntries(AllScripsDbObject.STOCK_NAME,
+																		FastList.newListWith(eachStock.getStockName()));
+			}
+			
 			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss, List<StockExceptionDbObject> exceptionStocks) 
 			{
 				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = Adapter.stockToUnrealizedDetailDbObject(stocksDetail);

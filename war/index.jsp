@@ -184,3 +184,12 @@
 	</table>
 </form>
 
+
+<form action="insertStopLoss" method="get" target="_blank">
+	<table BORDER="1" CELLPADDING="3" CELLSPACING="1">
+		<tr>
+			<td><input type="submit" value="insertStopLoss"></td>
+		</tr>
+	</table>
+</form>
+

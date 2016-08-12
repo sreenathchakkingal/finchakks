@@ -35,6 +35,14 @@ public class InitializeControllerEndPoint {
 		return blackListedStocks;
 	}
 	
+	@ApiMethod(name = "listTargetReachedStocks", path="listTargetReachedStocks")
+	public List<UnrealizedDetailDbObject> listTargetReachedStocks()
+	{
+		final List<UnrealizedDetailDbObject> unrealizedDetailDbObject = listUnrealizedDetails();
+		final List<UnrealizedDetailDbObject> stopLossStocks = (List<UnrealizedDetailDbObject>)Iterate.select(unrealizedDetailDbObject, UnrealizedDetailDbObject.IS_TARGET_REACHED);
+		return stopLossStocks;
+	}
+	
 	@ApiMethod(name = "listUnrealizedSummaryStocks", path="listUnrealizedSummaryStocks")
 	public List<UnrealizedSummaryDbObject> listUnrealizedSummaryStocks()
 	{
@@ -81,7 +89,7 @@ public class InitializeControllerEndPoint {
 		final ProfitAndLossDbObject profitAndLossDbObject = profitAndLossDbOperations.getEntries().get(0);
 		return profitAndLossDbObject;
 	}
-	
+
 //helper methods
 	
 	private List<UnrealizedDetailDbObject> getUnrealizedDetails(String stockName)

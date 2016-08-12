@@ -1,5 +1,7 @@
 package com.finanalyzer.util;
 
+import java.util.Date;
+
 /*
 Regular Compound Interest Formula
 
@@ -37,29 +39,14 @@ public class CalculatorUtil
       return (float) (finalAmount/(Math.pow(1.0f + interestRate / 400.0f, 4L * numberOfDays / 365.0f)));
   }
   
-  public static boolean thresholdComparator(float overallGain, String threshold)
+  public static boolean isValueMoreThanTarget(float value,float targetValue, float tolerance)
   {
-    String operator = getOperator(threshold);
-    float value = getValue(threshold);
-    switch (operator)
-    {
-    case "<": 
-    	return overallGain <= value;
-	case ">": 
-      {
-        return overallGain >= value;
-      }
-    }
-    return overallGain <= value;
+	  return value>= targetValue*(1-tolerance);
   }
   
-  private static float getValue(String threshold)
+  public static boolean isValueLessThanTarget(float value,float targetValue, float tolerance)
   {
-    return Float.valueOf(threshold.replaceAll("\\s", "").substring(1)).floatValue();
+	  return value<= targetValue*(1+tolerance);
   }
-  
-  private static String getOperator(String threshold)
-  {
-    return threshold.replaceAll("\\s", "").substring(0, 1);
-  }
+
 }

@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.management.RuntimeErrorException;
+
 import org.jquantlib.time.calendars.India;
 
 public class DateUtil
@@ -19,6 +21,26 @@ public class DateUtil
 	public static int NUMBER_OF_DAYS_IN_YEAR = 365;
 	public static int NUMBER_OF_DAYS_IN_A_WEEK = 7;
 
+	public static boolean isBusinessDateLessThanTargetDate(Date date, Date targetDate, float tolerance)
+	{
+		long value =date.getTime();
+		long target =targetDate.getTime();
+		return CalculatorUtil.isValueLessThanTarget(value, target, tolerance);
+	}
+	
+	public static boolean dateCloserToCurrentDate(String targetDateAsString, float tolerance)
+	{
+		try
+		{
+			Date dateFrom = YYYY_MM_DD_FORMAT.parse(todaysDate());
+			Date targetDate = YYYY_MM_DD_FORMAT.parse(targetDateAsString);
+			return isBusinessDateLessThanTargetDate(dateFrom, targetDate, tolerance);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("incorrect date format: "+targetDateAsString+" expected : YYYY_MM_DD format");
+		}
+	}
+	
 	public static int differenceBetweenDates(String date1, String date2)
 	{
 		try

@@ -81,6 +81,26 @@ public class UnrealizedDetailDbObjectBuilder {
 		this.unrealizedDetailDbObject.setDiff(diff);
 		return this;
 	}
+
+	public UnrealizedDetailDbObjectBuilder targetReturnPercent(float targetReturnPercent) {
+		this.unrealizedDetailDbObject.setTargetReturnPercent(targetReturnPercent);
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder targetSellPrice(float targetSellPrice) {
+		this.unrealizedDetailDbObject.setTargetSellPrice(targetSellPrice);
+		return this;
+	}
+
+	public UnrealizedDetailDbObjectBuilder targetDate(String targetDate) {
+		this.unrealizedDetailDbObject.setTargetDate(targetDate);
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder isTargetReached(boolean isTargetReached) {
+		this.unrealizedDetailDbObject.setTargetReached(isTargetReached);
+		return this;
+	}
 	
 	public UnrealizedDetailDbObject build()
 	{

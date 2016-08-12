@@ -1,48 +1,26 @@
 package com.finanalyzer.processors;
 
 import java.io.InputStream;
-import java.text.ParseException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
-import com.finanalyzer.helloworld.Employee;
-import com.finanalyzer.util.CalculatorUtil;
-import com.finanalyzer.util.DateUtil;
-import com.gs.collections.api.RichIterable;
-import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.block.procedure.Procedure;
-import com.gs.collections.api.list.MutableList;
 import com.gs.collections.api.multimap.Multimap;
-import com.gs.collections.api.multimap.MutableMultimap;
-import com.gs.collections.api.partition.list.PartitionMutableList;
 import com.gs.collections.api.tuple.Pair;
-import com.gs.collections.impl.block.function.IfFunction;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.multimap.list.FastListMultimap;
-import com.gs.collections.impl.set.mutable.SetAdapter;
-import com.gs.collections.impl.set.mutable.UnifiedSet;
-import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
 
 public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExceptionDbObject> >>
 {
-	private static final Logger LOG = Logger.getLogger(PnLProcessor.class.getName());
-	
-	public final InputStream statusInputStream;
+	public InputStream statusInputStream;
 
 	private static final  Predicate<Stock> IS_ZERO_BUY_PRICE = new Predicate<Stock>() {
 
@@ -61,6 +39,9 @@ public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExce
 			return stock1.getStockName().compareTo(stock2.getStockName());
 		}
 	};
+	
+	//only for junits
+	public PnLProcessor(){}
 	
 	public PnLProcessor(InputStream statusInputStream)
 	{
@@ -169,11 +150,6 @@ public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExce
 		for (Stock stock : stockLines)
 		{
 			Stock existingStock = map.get(stock.getStockName());
-			
-			if(stock.isBlackListed())
-			{
-				LOG.info("stock.getStockName(): "+stock.getStockName());
-			}
 			
 			if (existingStock != null)
 			{

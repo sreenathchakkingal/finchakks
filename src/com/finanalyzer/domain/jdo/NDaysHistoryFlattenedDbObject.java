@@ -74,22 +74,6 @@ public class NDaysHistoryFlattenedDbObject {
 	@Persistent
 	private float nDay6Gain;	
 	
-	/*
-	
-	@Persistent
-	private float returnTillDate;
-
-	@Persistent
-	private String duration;
-
-	@Persistent
-	private float buyPrice;
-	
-	@Persistent
-	private float impactOnAverageReturn;
-
-	*/
-	
 	public String getStockName() {
 		return stockName;
 	}

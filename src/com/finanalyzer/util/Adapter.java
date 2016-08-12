@@ -138,7 +138,11 @@ public class Adapter {
 			.totalInvestment(stock.getTotalInvestment())
 			.totalReturn(stock.getTotalReturn())
 			.totalReturnIfBank(stock.getTotalReturnIfBank())
+			.targetReturnPercent(stock.getTargetReturnPercent())
+			.targetSellPrice(stock.getTargetSellPrice())
+			.targetDate(stock.getTargetDate())
 			.diff(stock.getDiff())
+			.isTargetReached(stock.isReachedStopLossTarget())
 			.build();
 			
 			unrealizedDetailDbObjects.add(unrealizedDetailDbObject);
