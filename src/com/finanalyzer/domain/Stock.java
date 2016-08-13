@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.jdo.annotations.Persistent;
 
+import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
 import com.gs.collections.api.block.function.Function;
@@ -69,6 +70,7 @@ public class Stock
 	
 	private float impactOnAverageReturn;
 	
+	private StopLossDbObject stopLossDbObject;
 	private float targetReturnPercent;
 	private float targetSellPrice;
 	private String targetDate;
@@ -706,6 +708,14 @@ public class Stock
 		this.impactOnAverageReturn = impactOnAverageReturn;
 	}
 	
+	public StopLossDbObject getStopLossDbObject() {
+		return stopLossDbObject;
+	}
+	
+	public void setStopLossDbObject(StopLossDbObject stopLossDbObject) {
+		this.stopLossDbObject = stopLossDbObject;
+	}
+	
 	public boolean isReachedStopLossTarget() {
 		return isReachedStopLossTarget;
 	}
@@ -714,6 +724,7 @@ public class Stock
 		this.isReachedStopLossTarget = isReachedStopLossTarget;
 	}
 	
+	/*
 	public float getTargetReturnPercent() {
 		return targetReturnPercent;
 	}
@@ -737,11 +748,13 @@ public class Stock
 	public void setTargetDate(String targetDate) {
 		this.targetDate = targetDate;
 	}
+	*/
 	
 	@Override
 	public String toString()
 	{
 		return this.stockName+" Qty: "+this.getQuantity()+" Buy Date: "+this.getBuyDate()+" Buy Price: "+this.getBuyPrice();
 	}
+
 	
 }

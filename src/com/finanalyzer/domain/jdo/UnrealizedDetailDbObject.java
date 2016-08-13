@@ -55,13 +55,22 @@ public class UnrealizedDetailDbObject {
 	private float diff;
 	
 	@Persistent
-	private float targetReturnPercent;
+	private float lowerReturnPercentTarget;
+
+	@Persistent
+	private float upperReturnPercentTarget;
+
+	@Persistent
+	private float lowerSellPriceTarget;
 	
 	@Persistent
-	private float targetSellPrice;
+	private float upperSellPriceTarget;
+
+	@Persistent
+	private String achieveAfterDate;
 	
 	@Persistent
-	private String targetDate;
+	private String achieveByDate;
 
 	@Persistent
 	private boolean isTargetReached;
@@ -208,28 +217,52 @@ public class UnrealizedDetailDbObject {
 		this.isTargetReached = isTargetReached;
 	}
 
-	public float getTargetReturnPercent() {
-		return targetReturnPercent;
+	public float getLowerReturnPercentTarget() {
+		return lowerReturnPercentTarget;
 	}
 
-	public void setTargetReturnPercent(float targetReturnPercent) {
-		this.targetReturnPercent = targetReturnPercent;
+	public void setLowerReturnPercentTarget(float lowerReturnPercentTarget) {
+		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
 	}
 
-	public float getTargetSellPrice() {
-		return targetSellPrice;
+	public float getUpperReturnPercentTarget() {
+		return upperReturnPercentTarget;
 	}
 
-	public void setTargetSellPrice(float targetSellPrice) {
-		this.targetSellPrice = targetSellPrice;
+	public void setUpperReturnPercentTarget(float upperReturnPercentTarget) {
+		this.upperReturnPercentTarget = upperReturnPercentTarget;
 	}
 
-	public String getTargetDate() {
-		return targetDate;
+	public float getLowerSellPriceTarget() {
+		return lowerSellPriceTarget;
 	}
 
-	public void setTargetDate(String targetDate) {
-		this.targetDate = targetDate;
+	public void setLowerSellPriceTarget(float lowerSellPriceTarget) {
+		this.lowerSellPriceTarget = lowerSellPriceTarget;
+	}
+
+	public float getUpperSellPriceTarget() {
+		return upperSellPriceTarget;
+	}
+
+	public void setUpperSellPriceTarget(float upperSellPriceTarget) {
+		this.upperSellPriceTarget = upperSellPriceTarget;
+	}
+
+	public String getAchieveAfterDate() {
+		return achieveAfterDate;
+	}
+
+	public void setAchieveAfterDate(String achieveAfterDate) {
+		this.achieveAfterDate = achieveAfterDate;
+	}
+
+	public String getAchieveByDate() {
+		return achieveByDate;
+	}
+
+	public void setAchieveByDate(String achieveByDate) {
+		this.achieveByDate = achieveByDate;
 	}
 
 	@Override

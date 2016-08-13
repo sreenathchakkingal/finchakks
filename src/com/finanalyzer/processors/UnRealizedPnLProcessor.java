@@ -218,70 +218,83 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 					{
 						StopLossDbObject matchingStopLossDbObject = matchingStopLossDbObjects.get(0);
 						
-						final float stopLossPrice = matchingStopLossDbObject.getTargetSellPrice();
-						final float stopLossReturnPercent = matchingStopLossDbObject.getTargetReturnPercent();
-						final String stopLossDate = matchingStopLossDbObject.getTargetDate();
+						eachStock.setStopLossDbObject(matchingStopLossDbObject);
 						
-						eachStock.setTargetSellPrice(stopLossPrice);
-						eachStock.setTargetReturnPercent(stopLossReturnPercent);
-						eachStock.setTargetDate(stopLossDate);
-						
+						final float lowerReturnPercentTarget = matchingStopLossDbObject.getLowerReturnPercentTarget();
+						final float upperReturnPercentTarget = matchingStopLossDbObject.getUpperReturnPercentTarget();
+						final float lowerSellPriceTarget = matchingStopLossDbObject.getLowerSellPriceTarget();
+						final float upperSellPriceTarget = matchingStopLossDbObject.getUpperSellPriceTarget();
+						final String achieveByDate = matchingStopLossDbObject.getAchieveByDate();
+						final String achieveAfterDate = matchingStopLossDbObject.getAchieveAfterDate();
 						
 						final float stockSellPrice = eachStock.getSellPrice();
 						final float stockReturnTillDate = eachStock.getReturnTillDate();
-						final String stockName = eachStock.getStockName();
 						
+						boolean isDateTargetMet=false;
 						
-						boolean isTargetDateValid = matchingStopLossDbObject.getTargetDate()!=null;
-						boolean isTargetPriceValid = matchingStopLossDbObject.getTargetSellPrice()>0.0f;
-						boolean isTargetReturnPercentValid = matchingStopLossDbObject.getTargetReturnPercent()>0.0f;
-						
-						boolean isByTargetDateAndPrice = isTargetDateValid && isTargetPriceValid;
-						boolean isByTargetDateAndReturn = isTargetDateValid && isTargetReturnPercentValid;
-						boolean isOnlyByTargetPrice = !isTargetDateValid && isTargetPriceValid;
-						boolean isOnlyByReturnPercent = !isTargetDateValid && isTargetReturnPercentValid;
-						
-						boolean isBusinessDateLessThanTargetDate=false;
-						boolean isStockPriceMoreThanTargetPrice =false;
-						boolean isStockReturnPercentsMoreThanTargetReturn=false;
-						
-						if(isTargetPriceValid)
+						if(achieveByDate!=null)
 						{
-							isStockPriceMoreThanTargetPrice = CalculatorUtil.isValueMoreThanTarget
-									(stockSellPrice, stopLossPrice, StopLossDbObject.PRICE_DIFF_TOLERANCE);
+							isDateTargetMet = DateUtil.isDateBeforeTargetDate(achieveByDate, StopLossDbObject.DATE_DIFF_TOLERANCE);
 						}
-							
-						if(isTargetReturnPercentValid)
+						
+						if(achieveAfterDate!=null)
 						{
-							isStockReturnPercentsMoreThanTargetReturn = CalculatorUtil.isValueMoreThanTarget
-									(stockReturnTillDate,stopLossReturnPercent,  StopLossDbObject.RETURN_DIFF_TOLERANCE);
+							isDateTargetMet=isDateTargetMet || DateUtil.isDateAfterTargetDate(achieveAfterDate, StopLossDbObject.DATE_DIFF_TOLERANCE);;
 						}
 
+						if (achieveByDate==null && achieveAfterDate==null)
+						{
+							isDateTargetMet=true;
+						}
+						
+						boolean isValueCloseToTarget=false;
+						
+						
+						if(lowerReturnPercentTarget > 0.0f)
+						{
+							isValueCloseToTarget = CalculatorUtil.isValueLessThanTarget(stockReturnTillDate, lowerReturnPercentTarget,StopLossDbObject.RETURN_DIFF_TOLERANCE);
+						}
+						if(upperReturnPercentTarget > 0.0f)
+						{
+							isValueCloseToTarget = isValueCloseToTarget || CalculatorUtil.isValueMoreThanTarget(stockReturnTillDate, upperReturnPercentTarget,StopLossDbObject.RETURN_DIFF_TOLERANCE);
+						}					
+						if(lowerSellPriceTarget > 0.0f)
+						{
+							isValueCloseToTarget = isValueCloseToTarget || CalculatorUtil.isValueLessThanTarget(stockSellPrice, lowerSellPriceTarget,StopLossDbObject.PRICE_DIFF_TOLERANCE);
+						}
+						if(upperSellPriceTarget > 0.0f)
+						{
+							isValueCloseToTarget = isValueCloseToTarget || CalculatorUtil.isValueMoreThanTarget(stockSellPrice, upperSellPriceTarget,StopLossDbObject.PRICE_DIFF_TOLERANCE);
+						}
+						
+						eachStock.setReachedStopLossTarget(isValueCloseToTarget && isDateTargetMet);
+/*
 						if(isTargetDateValid)
 						{
 							isBusinessDateLessThanTargetDate = DateUtil.dateCloserToCurrentDate(stopLossDate, StopLossDbObject.DATE_DIFF_TOLERANCE);	
 						}
 						
-						if(isByTargetDateAndPrice)
+						if(isTargetReturnPercentValid)
 						{
-							LOG.info("stockName: "+stockName+" isByTargetDateAndPrice: "+isByTargetDateAndPrice+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockPriceMoreThanTargetPrice: "+isStockPriceMoreThanTargetPrice );
-							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockPriceMoreThanTargetPrice);
+							LOG.info("stockName: "+stockName+" isByTargetDateAndPrice: "+isByTargetDateAndPrice+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockPriceMoreThanTargetPrice: "+isStockPriceCloseToTarget );
+							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockPriceCloseToTarget);
 						}
-						else if(isByTargetDateAndReturn)
+						else if(isTargetPriceValid)
 						{
-							LOG.info("stockName: "+stockName+" isByTargetDateAndReturn: "+isByTargetDateAndReturn+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsMoreThanTargetReturn );
-							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockReturnPercentsMoreThanTargetReturn);
+							LOG.info("stockName: "+stockName+" isByTargetDateAndReturn: "+isByTargetDateAndReturn+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsCloseToTarget );
+							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockReturnPercentsCloseToTarget);
 						}
 						else if(isOnlyByTargetPrice)
 						{
-							LOG.info("stockName: "+stockName+" isOnlyByTargetPrice: "+isOnlyByTargetPrice+ " isStockPriceMoreThanTargetPrice: "+isStockPriceMoreThanTargetPrice);
-							eachStock.setReachedStopLossTarget(isStockPriceMoreThanTargetPrice);							
+							LOG.info("stockName: "+stockName+" isOnlyByTargetPrice: "+isOnlyByTargetPrice+ " isStockPriceMoreThanTargetPrice: "+isStockPriceCloseToTarget);
+							eachStock.setReachedStopLossTarget(isStockPriceCloseToTarget);							
 						}
 						else if(isOnlyByReturnPercent)
 						{
-							LOG.info("stockName: "+stockName+" isOnlyByReturnPercent: "+isOnlyByReturnPercent+ " isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsMoreThanTargetReturn);
-							eachStock.setReachedStopLossTarget(isStockReturnPercentsMoreThanTargetReturn);							
+							LOG.info("stockName: "+stockName+" isOnlyByReturnPercent: "+isOnlyByReturnPercent+ " isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsCloseToTarget);
+							eachStock.setReachedStopLossTarget(isStockReturnPercentsCloseToTarget);							
 						}
+						*/
 					}
 					
 				}

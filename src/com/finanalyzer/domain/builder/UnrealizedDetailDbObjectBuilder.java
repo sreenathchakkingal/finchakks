@@ -82,21 +82,35 @@ public class UnrealizedDetailDbObjectBuilder {
 		return this;
 	}
 
-	public UnrealizedDetailDbObjectBuilder targetReturnPercent(float targetReturnPercent) {
-		this.unrealizedDetailDbObject.setTargetReturnPercent(targetReturnPercent);
+	public UnrealizedDetailDbObjectBuilder lowerReturnPercentTarget(float lowerReturnPercentTarget) {
+		this.unrealizedDetailDbObject.setLowerReturnPercentTarget(lowerReturnPercentTarget);
 		return this;
 	}
 	
-	public UnrealizedDetailDbObjectBuilder targetSellPrice(float targetSellPrice) {
-		this.unrealizedDetailDbObject.setTargetSellPrice(targetSellPrice);
-		return this;
-	}
-
-	public UnrealizedDetailDbObjectBuilder targetDate(String targetDate) {
-		this.unrealizedDetailDbObject.setTargetDate(targetDate);
+	public UnrealizedDetailDbObjectBuilder upperReturnPercentTarget(float upperReturnPercentTarget) {
+		this.unrealizedDetailDbObject.setUpperReturnPercentTarget(upperReturnPercentTarget);
 		return this;
 	}
 	
+	public UnrealizedDetailDbObjectBuilder lowerSellPriceTarget(float lowerSellPriceTarget) {
+		this.unrealizedDetailDbObject.setLowerSellPriceTarget(lowerSellPriceTarget);
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder upperSellPriceTarget(float upperSellPriceTarget) {
+		this.unrealizedDetailDbObject.setUpperSellPriceTarget(upperSellPriceTarget); 
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder achieveAfterDate(String achieveAfterDate) {
+		this.unrealizedDetailDbObject.setAchieveAfterDate(achieveAfterDate);
+		return this;
+	}
+	
+	public UnrealizedDetailDbObjectBuilder achieveByDate(String achieveByDate) {
+		this.unrealizedDetailDbObject.setAchieveByDate(achieveByDate);
+		return this;
+	}
 	public UnrealizedDetailDbObjectBuilder isTargetReached(boolean isTargetReached) {
 		this.unrealizedDetailDbObject.setTargetReached(isTargetReached);
 		return this;

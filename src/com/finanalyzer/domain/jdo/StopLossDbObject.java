@@ -15,22 +15,40 @@ public class StopLossDbObject {
 	private String stockName;
 	
 	@Persistent
-	private float targetReturnPercent;
-	
-	@Persistent
-	private float targetSellPrice;
-	
-	@Persistent
-	private String targetDate;
+	private float lowerReturnPercentTarget;
 
-	public StopLossDbObject(String stockName, float targetReturnPercent,
-			float targetSellPrice, String targetDate) {
+	@Persistent
+	private float upperReturnPercentTarget;
+
+	@Persistent
+	private float lowerSellPriceTarget;
+	
+	@Persistent
+	private float upperSellPriceTarget;
+
+	@Persistent
+	private String achieveAfterDate;
+	
+	@Persistent
+	private String achieveByDate;
+
+	public StopLossDbObject(){}
+	
+	/*
+	public StopLossDbObject(String stockName, float lowerReturnPercentTarget,
+			float upperReturnPercentTarget, float lowerSellPriceTarget,
+			float upperSellPriceTarget, String achieveAfterDate,
+			String achieveByDate) 
+	{
 		this.stockName = stockName;
-		this.targetReturnPercent = targetReturnPercent;
-		this.targetSellPrice = targetSellPrice;
-		this.targetDate = targetDate;
+		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
+		this.upperReturnPercentTarget = upperReturnPercentTarget;
+		this.lowerSellPriceTarget = lowerSellPriceTarget;
+		this.upperSellPriceTarget = upperSellPriceTarget;
+		this.achieveAfterDate = achieveAfterDate;
+		this.achieveByDate = achieveByDate;
 	}
-
+*/
 	public String getStockName() {
 		return stockName;
 	}
@@ -39,37 +57,58 @@ public class StopLossDbObject {
 		this.stockName = stockName;
 	}
 
-	public float getTargetReturnPercent() {
-		return targetReturnPercent;
+	public float getLowerReturnPercentTarget() {
+		return lowerReturnPercentTarget;
 	}
 
-	public void setTargetReturnPercent(float targetReturnPercent) {
-		this.targetReturnPercent = targetReturnPercent;
+	public void setLowerReturnPercentTarget(float lowerReturnPercentTarget) {
+		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
 	}
 
-	public float getTargetSellPrice() {
-		return targetSellPrice;
+	public float getUpperReturnPercentTarget() {
+		return upperReturnPercentTarget;
 	}
 
-	public void setTargetSellPrice(float targetSellPrice) {
-		this.targetSellPrice = targetSellPrice;
+	public void setUpperReturnPercentTarget(float upperReturnPercentTarget) {
+		this.upperReturnPercentTarget = upperReturnPercentTarget;
 	}
 
-	public String getTargetDate() {
-		return targetDate;
+	public float getLowerSellPriceTarget() {
+		return lowerSellPriceTarget;
 	}
 
-	public void setTargetDate(String targetDate) {
-		this.targetDate = targetDate;
+	public void setLowerSellPriceTarget(float lowerSellPriceTarget) {
+		this.lowerSellPriceTarget = lowerSellPriceTarget;
+	}
+
+	public float getUpperSellPriceTarget() {
+		return upperSellPriceTarget;
+	}
+
+	public void setUpperSellPriceTarget(float upperSellPriceTarget) {
+		this.upperSellPriceTarget = upperSellPriceTarget;
+	}
+	
+	public String getAchieveAfterDate() {
+		return achieveAfterDate;
+	}
+
+	public void setAchieveAfterDate(String achieveAfterDate) {
+		this.achieveAfterDate = achieveAfterDate;
+	}
+
+	public String getAchieveByDate() {
+		return achieveByDate;
+	}
+
+	public void setAchieveByDate(String achieveByDate) {
+		this.achieveByDate = achieveByDate;
 	}
 
 	@Override
 	public String toString()
 	{
-		return this.stockName+
-				" Target %: "+this.getTargetReturnPercent()+
-				" Target Sell Price: "+this.getTargetSellPrice()+
-				" Target Date: "+this.getTargetDate();
+		return this.stockName;
 	}
 	
 }

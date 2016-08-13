@@ -48,7 +48,6 @@ public class UnRealizedPnLController extends PnlController
 		
 		if (isAuthorized)
 		{
-
 			String stockName = request.getParameter("stockName");
 
 			ServletFileUpload upload = new ServletFileUpload();
