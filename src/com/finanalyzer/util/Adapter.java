@@ -2,7 +2,9 @@ package com.finanalyzer.util;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
+import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
@@ -14,11 +16,15 @@ import com.finanalyzer.domain.builder.UnrealizedSummaryDbObjectBuilder;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
+import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class Adapter {
+	
+	private static final Logger LOG = Logger.getLogger(Adapter.class.getName());
+	private static final float ZERO  = 0.0f;
 	
 	public static List<NDaysHistoryDbObject> stockToNdaysHistoryDbObject(List<Stock> stocks)
 	{
@@ -122,6 +128,9 @@ public class Adapter {
 		for (Stock stock : stocks)
 		{
 			
+			final StopLossDbObject stopLossDbObject = stock.getStopLossDbObject();
+			LOG.info("converting stock: "+stock.getStockName()+"to  UnrealizedDetailDbObject. stopLossDbObject: "+stopLossDbObject);
+			
 			final UnrealizedDetailDbObjectBuilder builder = new UnrealizedDetailDbObjectBuilder();
 			final UnrealizedDetailDbObject unrealizedDetailDbObject = builder
 			.sellableQuantity(stock.getSellableQuantity())
@@ -138,12 +147,17 @@ public class Adapter {
 			.totalInvestment(stock.getTotalInvestment())
 			.totalReturn(stock.getTotalReturn())
 			.totalReturnIfBank(stock.getTotalReturnIfBank())
-			.targetReturnPercent(stock.getTargetReturnPercent())
-			.targetSellPrice(stock.getTargetSellPrice())
-			.targetDate(stock.getTargetDate())
 			.diff(stock.getDiff())
+			.lowerReturnPercentTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getLowerReturnPercentTarget())
+			.upperReturnPercentTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getUpperReturnPercentTarget())
+			.lowerSellPriceTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getLowerReturnPercentTarget())
+			.upperSellPriceTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getUpperSellPriceTarget())
+			.achieveAfterDate(stopLossDbObject==null ? null : stopLossDbObject.getAchieveAfterDate())
+			.achieveByDate(stopLossDbObject==null ? null : stopLossDbObject.getAchieveByDate())
 			.isTargetReached(stock.isReachedStopLossTarget())
 			.build();
+			
+			LOG.info("conversion complete for stock: "+stock.getStockName()+"to  UnrealizedDetailDbObject");
 			
 			unrealizedDetailDbObjects.add(unrealizedDetailDbObject);
 		}
