@@ -46,7 +46,7 @@ public class Stock
 	
 	private float totalReturn;
 	private float totalReturnIfBank;
-	private float diff;
+	private float diff=Float.MIN_VALUE;
 	
 	private boolean isException=false;
 	private String graphToEquityOpinion;
@@ -350,8 +350,16 @@ public class Stock
 	
 	public float getDiff()
 	{
-		this.diff = getTotalReturn()-getTotalReturnIfBank();
+		if(this.diff==Float.MIN_VALUE)
+		{
+			this.diff = getTotalReturn()-getTotalReturnIfBank();	
+		}
 		return this.diff;
+	}
+	
+	public void setDiff(float diff)
+	{
+		this.diff = diff;
 	}
 
 	public void setTotalReturnIfBank(float totalReturnIfBank)

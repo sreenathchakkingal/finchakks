@@ -75,13 +75,13 @@ public class InsertStopLossController
 				stockName("EICHERMOT").lowerReturnPercentTarget(60.0f).upperReturnPercentTarget(65.0f).build();	
 		
 		StopLossDbObject IPCALAB =new StopLossDbObjectBuilder().
-				stockName("IPCALAB").upperReturnPercentTarget(0.0f).build();	
+				stockName("IPCALAB").upperReturnPercentTarget(0.1f).build();	
 		
 		StopLossDbObject MARICO =new StopLossDbObjectBuilder().
 				stockName("MARICO").lowerReturnPercentTarget(45.0f).upperReturnPercentTarget(55.0f).build();	
 		
 		StopLossDbObject EMAMILTD =new StopLossDbObjectBuilder().
-				stockName("EMAMILTD").lowerReturnPercentTarget(25.0f).upperReturnPercentTarget(35.0f).build();		
+				stockName("EMAMILTD").lowerReturnPercentTarget(40.0f).upperReturnPercentTarget(50.0f).build();		
 		
 		StopLossDbObject GLENMARK =new StopLossDbObjectBuilder().
 				stockName("GLENMARK").lowerReturnPercentTarget(20.0f).upperReturnPercentTarget(25.0f).build();	
@@ -108,13 +108,13 @@ public class InsertStopLossController
 				stockName("PIDILITIND").lowerReturnPercentTarget(25.0f).upperReturnPercentTarget(35.0f).build();
 		
 		StopLossDbObject TATAGLOBAL =new StopLossDbObjectBuilder().
-				stockName("TATAGLOBAL").upperReturnPercentTarget(0.0f).build();
+				stockName("TATAGLOBAL").upperReturnPercentTarget(0.1f).build();
 		
 		StopLossDbObject HCLTECH =new StopLossDbObjectBuilder().
-				stockName("HCLTECH").upperReturnPercentTarget(0.0f).build();
+				stockName("HCLTECH").upperReturnPercentTarget(0.1f).build();
 		
 		StopLossDbObject ICICIBANK =new StopLossDbObjectBuilder().
-				stockName("ICICIBANK").upperReturnPercentTarget(0.0f).build();
+				stockName("ICICIBANK").upperReturnPercentTarget(0.1f).build();
 		
 		StopLossDbObject TITAN =new StopLossDbObjectBuilder().
 				stockName("TITAN").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(20.0f).build();
@@ -123,7 +123,7 @@ public class InsertStopLossController
 				stockName("NAUKRI").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(15.0f).build();
 		
 		StopLossDbObject CASTROLIND =new StopLossDbObjectBuilder().
-				stockName("CASTROLIND").upperReturnPercentTarget(0.0f).build();
+				stockName("CASTROLIND").upperReturnPercentTarget(0.1f).build();
 		
 		List<StopLossDbObject> stopLossDbObjects = FastList.newList();
 		stopLossDbObjects.add(BATAINDIA);

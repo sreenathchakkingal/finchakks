@@ -1,13 +1,10 @@
 package com.finanalyzer.domain.jdo;
 
-import java.util.Comparator;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.finanalyzer.domain.Stock;
 import com.gs.collections.api.block.predicate.Predicate;
 
 @PersistenceCapable
@@ -49,12 +46,44 @@ public class UnrealizedSummaryDbObject {
 	
 	@Persistent
 	private float diff;
+
+	@Persistent
+	private float sellPrice;
+	
+	@Persistent
+	private float lowerReturnPercentTarget;
+
+	@Persistent
+	private float upperReturnPercentTarget;
+
+	@Persistent
+	private float lowerSellPriceTarget;
+	
+	@Persistent
+	private float upperSellPriceTarget;
+
+	@Persistent
+	private String achieveAfterDate;
+	
+	@Persistent
+	private String achieveByDate;
+
+	@Persistent
+	private boolean isTargetReached;
 	
 	public static final Predicate<UnrealizedSummaryDbObject> IS_BLACKLISTED = new Predicate<UnrealizedSummaryDbObject>() {
 		
 		@Override
 		public boolean accept(UnrealizedSummaryDbObject unrealizedSummaryDbObject) {
 			return unrealizedSummaryDbObject.isBlackListed();
+		}
+	};
+	
+	public static final Predicate<UnrealizedSummaryDbObject> IS_TARGET_REACHED = new Predicate<UnrealizedSummaryDbObject>() {
+		
+		@Override
+		public boolean accept(UnrealizedSummaryDbObject unrealizedSummaryDbObject) {
+			return unrealizedSummaryDbObject.isTargetReached();
 		}
 	};
 	
@@ -133,9 +162,81 @@ public class UnrealizedSummaryDbObject {
 	public float getImpactOnAverageReturn() {
 		return impactOnAverageReturn;
 	}
+	
+	public float getDiff() {
+		return diff;
+	}
+
+	public void setDiff(float diff) {
+		this.diff = diff;
+	}
 
 	public void setImpactOnAverageReturn(float impactOnAverageReturn) {
 		this.impactOnAverageReturn = impactOnAverageReturn;
+	}
+
+	public float getSellPrice() {
+		return sellPrice;
+	}
+
+	public void setSellPrice(float sellPrice) {
+		this.sellPrice = sellPrice;
+	}
+
+	public float getLowerReturnPercentTarget() {
+		return lowerReturnPercentTarget;
+	}
+
+	public void setLowerReturnPercentTarget(float lowerReturnPercentTarget) {
+		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
+	}
+
+	public float getUpperReturnPercentTarget() {
+		return upperReturnPercentTarget;
+	}
+
+	public void setUpperReturnPercentTarget(float upperReturnPercentTarget) {
+		this.upperReturnPercentTarget = upperReturnPercentTarget;
+	}
+
+	public float getLowerSellPriceTarget() {
+		return lowerSellPriceTarget;
+	}
+
+	public void setLowerSellPriceTarget(float lowerSellPriceTarget) {
+		this.lowerSellPriceTarget = lowerSellPriceTarget;
+	}
+
+	public float getUpperSellPriceTarget() {
+		return upperSellPriceTarget;
+	}
+
+	public void setUpperSellPriceTarget(float upperSellPriceTarget) {
+		this.upperSellPriceTarget = upperSellPriceTarget;
+	}
+
+	public String getAchieveAfterDate() {
+		return achieveAfterDate;
+	}
+
+	public void setAchieveAfterDate(String achieveAfterDate) {
+		this.achieveAfterDate = achieveAfterDate;
+	}
+
+	public String getAchieveByDate() {
+		return achieveByDate;
+	}
+
+	public void setAchieveByDate(String achieveByDate) {
+		this.achieveByDate = achieveByDate;
+	}
+
+	public boolean isTargetReached() {
+		return isTargetReached;
+	}
+
+	public void setTargetReached(boolean isTargetReached) {
+		this.isTargetReached = isTargetReached;
 	}
 
 	public Long getId() {

@@ -168,6 +168,8 @@ public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExce
 						quantity(existingStock.getQuantity() + stock.getQuantity()).
 						sellableQuantity(existingStock.getSellableQuantity() + stock.getSellableQuantity()).
 						sellDate(stock.getSellDate()).buyDate(stock.getBuyDate()).blackListed(stock.isBlackListed()).
+						sellPrice(existingStock.getSellPrice()).
+						diff(existingStock.getDiff()+stock.getDiff()).
 						build();
 
 				map.put(stock.getStockName(), stockTemp);
@@ -180,6 +182,7 @@ public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExce
 		}
 		List<Stock> aggregatedStock = FastList.newList();
 		aggregatedStock.addAll(map.values());
+		
 		return aggregatedStock;
 	}
 

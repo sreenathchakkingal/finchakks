@@ -54,34 +54,34 @@ public class UnrealizedDetailDbObject {
 	@Persistent
 	private float diff;
 	
-	@Persistent
-	private float lowerReturnPercentTarget;
-
-	@Persistent
-	private float upperReturnPercentTarget;
-
-	@Persistent
-	private float lowerSellPriceTarget;
+//	@Persistent
+//	private float lowerReturnPercentTarget;
+//
+//	@Persistent
+//	private float upperReturnPercentTarget;
+//
+//	@Persistent
+//	private float lowerSellPriceTarget;
+//	
+//	@Persistent
+//	private float upperSellPriceTarget;
+//
+//	@Persistent
+//	private String achieveAfterDate;
+//	
+//	@Persistent
+//	private String achieveByDate;
+//
+//	@Persistent
+//	private boolean isTargetReached;
 	
-	@Persistent
-	private float upperSellPriceTarget;
-
-	@Persistent
-	private String achieveAfterDate;
-	
-	@Persistent
-	private String achieveByDate;
-
-	@Persistent
-	private boolean isTargetReached;
-	
-	public static final Predicate<UnrealizedDetailDbObject> IS_TARGET_REACHED = new Predicate<UnrealizedDetailDbObject>() {
-		
-		@Override
-		public boolean accept(UnrealizedDetailDbObject unrealizedDetailDbObject) {
-			return unrealizedDetailDbObject.isTargetReached();
-		}
-	};
+//	public static final Predicate<UnrealizedDetailDbObject> IS_TARGET_REACHED = new Predicate<UnrealizedDetailDbObject>() {
+//		
+//		@Override
+//		public boolean accept(UnrealizedDetailDbObject unrealizedDetailDbObject) {
+//			return unrealizedDetailDbObject.isTargetReached();
+//		}
+//	};
 	
 	
 	public UnrealizedDetailDbObject()
@@ -209,61 +209,61 @@ public class UnrealizedDetailDbObject {
 		this.diff = diff;
 	}
 	
-	public boolean isTargetReached() {
-		return isTargetReached;
-	}
-
-	public void setTargetReached(boolean isTargetReached) {
-		this.isTargetReached = isTargetReached;
-	}
-
-	public float getLowerReturnPercentTarget() {
-		return lowerReturnPercentTarget;
-	}
-
-	public void setLowerReturnPercentTarget(float lowerReturnPercentTarget) {
-		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
-	}
-
-	public float getUpperReturnPercentTarget() {
-		return upperReturnPercentTarget;
-	}
-
-	public void setUpperReturnPercentTarget(float upperReturnPercentTarget) {
-		this.upperReturnPercentTarget = upperReturnPercentTarget;
-	}
-
-	public float getLowerSellPriceTarget() {
-		return lowerSellPriceTarget;
-	}
-
-	public void setLowerSellPriceTarget(float lowerSellPriceTarget) {
-		this.lowerSellPriceTarget = lowerSellPriceTarget;
-	}
-
-	public float getUpperSellPriceTarget() {
-		return upperSellPriceTarget;
-	}
-
-	public void setUpperSellPriceTarget(float upperSellPriceTarget) {
-		this.upperSellPriceTarget = upperSellPriceTarget;
-	}
-
-	public String getAchieveAfterDate() {
-		return achieveAfterDate;
-	}
-
-	public void setAchieveAfterDate(String achieveAfterDate) {
-		this.achieveAfterDate = achieveAfterDate;
-	}
-
-	public String getAchieveByDate() {
-		return achieveByDate;
-	}
-
-	public void setAchieveByDate(String achieveByDate) {
-		this.achieveByDate = achieveByDate;
-	}
+//	public boolean isTargetReached() {
+//		return isTargetReached;
+//	}
+//
+//	public void setTargetReached(boolean isTargetReached) {
+//		this.isTargetReached = isTargetReached;
+//	}
+//
+//	public float getLowerReturnPercentTarget() {
+//		return lowerReturnPercentTarget;
+//	}
+//
+//	public void setLowerReturnPercentTarget(float lowerReturnPercentTarget) {
+//		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
+//	}
+//
+//	public float getUpperReturnPercentTarget() {
+//		return upperReturnPercentTarget;
+//	}
+//
+//	public void setUpperReturnPercentTarget(float upperReturnPercentTarget) {
+//		this.upperReturnPercentTarget = upperReturnPercentTarget;
+//	}
+//
+//	public float getLowerSellPriceTarget() {
+//		return lowerSellPriceTarget;
+//	}
+//
+//	public void setLowerSellPriceTarget(float lowerSellPriceTarget) {
+//		this.lowerSellPriceTarget = lowerSellPriceTarget;
+//	}
+//
+//	public float getUpperSellPriceTarget() {
+//		return upperSellPriceTarget;
+//	}
+//
+//	public void setUpperSellPriceTarget(float upperSellPriceTarget) {
+//		this.upperSellPriceTarget = upperSellPriceTarget;
+//	}
+//
+//	public String getAchieveAfterDate() {
+//		return achieveAfterDate;
+//	}
+//
+//	public void setAchieveAfterDate(String achieveAfterDate) {
+//		this.achieveAfterDate = achieveAfterDate;
+//	}
+//
+//	public String getAchieveByDate() {
+//		return achieveByDate;
+//	}
+//
+//	public void setAchieveByDate(String achieveByDate) {
+//		this.achieveByDate = achieveByDate;
+//	}
 
 	@Override
 	public String toString()

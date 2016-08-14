@@ -36,10 +36,10 @@ public class InitializeControllerEndPoint {
 	}
 	
 	@ApiMethod(name = "listTargetReachedStocks", path="listTargetReachedStocks")
-	public List<UnrealizedDetailDbObject> listTargetReachedStocks()
+	public List<UnrealizedSummaryDbObject> listTargetReachedStocks()
 	{
-		final List<UnrealizedDetailDbObject> unrealizedDetailDbObject = listUnrealizedDetails();
-		final List<UnrealizedDetailDbObject> stopLossStocks = (List<UnrealizedDetailDbObject>)Iterate.select(unrealizedDetailDbObject, UnrealizedDetailDbObject.IS_TARGET_REACHED);
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = listUnrealizedSummaryStocks();
+		final List<UnrealizedSummaryDbObject> stopLossStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_TARGET_REACHED);
 		return stopLossStocks;
 	}
 	

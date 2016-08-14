@@ -40,54 +40,56 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 	private String unrealizedDetailsContent;
 
 	private boolean isUseUnrealizedDetailsContent;
-	public static final Predicate<Stock> MATURITY_MORE_THAN_A_QUARTER = new Predicate<Stock>()
-			{
+	public static final Predicate<Stock> MATURITY_MORE_THAN_11_MONTHS = new Predicate<Stock>()
+	{
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public boolean accept(Stock stock)
 		{
-			return stock.getDifferenceBetweeBuyDateAndSellDate() > 3 * DateUtil.NUMBER_OF_DAYS_IN_MONTH; 
+			return stock.getDifferenceBetweeBuyDateAndSellDate() > 11 * DateUtil.NUMBER_OF_DAYS_IN_MONTH; 
 		}
-			};
+	};
 
-			private static final Comparator<Stock> NAME_DATE_PRICE_COMPARATOR = new Comparator<Stock>() {
-				@Override
-				public int compare(Stock o1, Stock o2) {
-					if(o1.getStockName().equals(o2.getStockName()))
-					{
-						if(o1.getBuyDate().equals(o2.getBuyDate()))
-						{
-							return (int)(o1.getBuyPrice()-o2.getBuyPrice());	
-						}
-						return o1.getBuyDate().compareTo(o2.getBuyDate());
-					}
-					else
-					{
-						return o1.getStockName().compareTo(o2.getStockName());	
-					}
+	private static final Comparator<Stock> NAME_DATE_PRICE_COMPARATOR = new Comparator<Stock>() 
+	{
+		@Override
+		public int compare(Stock o1, Stock o2) 
+		{
+			if(o1.getStockName().equals(o2.getStockName()))
+			{
+				if(o1.getBuyDate().equals(o2.getBuyDate()))
+				{
+					return (int)(o1.getBuyPrice()-o2.getBuyPrice());	
 				}
-			};
-
-			private final JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
-
-
-			public UnRealizedPnLProcessor(FileItemIterator fileItemIterator, String stockName)
-			{
-				super(null);//hack remove refactor later;
-				this.fileItemIterator=fileItemIterator;
-				this.stockName = stockName==null ? null : stockName.toUpperCase();
+				return o1.getBuyDate().compareTo(o2.getBuyDate());
 			}
-			
-			public UnRealizedPnLProcessor(String unrealizedDetailsContent)
+			else
 			{
-				super(null);//hack remove refactor later;
-				this.unrealizedDetailsContent=unrealizedDetailsContent;
-				this.isUseUnrealizedDetailsContent=true; //if the copy paste works fine remove the other constructor fileItemIterator and this flag
+				return o1.getStockName().compareTo(o2.getStockName());	
 			}
-			
-			//only for junits
-			public UnRealizedPnLProcessor(){}
+		}
+	};
+
+	private final JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
+
+
+	public UnRealizedPnLProcessor(FileItemIterator fileItemIterator, String stockName)
+	{
+		super(null);//hack remove refactor later;
+		this.fileItemIterator=fileItemIterator;
+		this.stockName = stockName==null ? null : stockName.toUpperCase();
+	}
+	
+	public UnRealizedPnLProcessor(String unrealizedDetailsContent)
+	{
+		super(null);//hack remove refactor later;
+		this.unrealizedDetailsContent=unrealizedDetailsContent;
+		this.isUseUnrealizedDetailsContent=true; //if the copy paste works fine remove the other constructor fileItemIterator and this flag
+	}
+	
+	//only for junits
+	public UnRealizedPnLProcessor(){}
 
 	@Override
 	public Pair<List<Stock>,List<StockExceptionDbObject>> execute() {
@@ -150,7 +152,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		
 		StockQuandlApiAdapter.stampLatestClosePriceAndDate(bonusScnearioHandledStocks);
 		
-		enrichWithStopLossDetails(bonusScnearioHandledStocks);
+//		enrichWithStopLossDetails(bonusScnearioHandledStocks);
 		
 		final Pair<List<Stock>,List<StockExceptionDbObject>> stocksAndExceptions = Tuples.pair(bonusScnearioHandledStocks, exceptionStocks);
 		
@@ -249,7 +251,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						
 						boolean isValueCloseToTarget=false;
 						
-						
 						if(lowerReturnPercentTarget > 0.0f)
 						{
 							isValueCloseToTarget = CalculatorUtil.isValueLessThanTarget(stockReturnTillDate, lowerReturnPercentTarget,StopLossDbObject.RETURN_DIFF_TOLERANCE);
@@ -268,35 +269,7 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						}
 						
 						eachStock.setReachedStopLossTarget(isValueCloseToTarget && isDateTargetMet);
-/*
-						if(isTargetDateValid)
-						{
-							isBusinessDateLessThanTargetDate = DateUtil.dateCloserToCurrentDate(stopLossDate, StopLossDbObject.DATE_DIFF_TOLERANCE);	
-						}
-						
-						if(isTargetReturnPercentValid)
-						{
-							LOG.info("stockName: "+stockName+" isByTargetDateAndPrice: "+isByTargetDateAndPrice+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockPriceMoreThanTargetPrice: "+isStockPriceCloseToTarget );
-							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockPriceCloseToTarget);
-						}
-						else if(isTargetPriceValid)
-						{
-							LOG.info("stockName: "+stockName+" isByTargetDateAndReturn: "+isByTargetDateAndReturn+ " isBusinessDateLessThanTargetDate: "+isBusinessDateLessThanTargetDate+" isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsCloseToTarget );
-							eachStock.setReachedStopLossTarget(isBusinessDateLessThanTargetDate && isStockReturnPercentsCloseToTarget);
-						}
-						else if(isOnlyByTargetPrice)
-						{
-							LOG.info("stockName: "+stockName+" isOnlyByTargetPrice: "+isOnlyByTargetPrice+ " isStockPriceMoreThanTargetPrice: "+isStockPriceCloseToTarget);
-							eachStock.setReachedStopLossTarget(isStockPriceCloseToTarget);							
-						}
-						else if(isOnlyByReturnPercent)
-						{
-							LOG.info("stockName: "+stockName+" isOnlyByReturnPercent: "+isOnlyByReturnPercent+ " isStockReturnPercentsMoreThanTargetReturn: "+isStockReturnPercentsCloseToTarget);
-							eachStock.setReachedStopLossTarget(isStockReturnPercentsCloseToTarget);							
-						}
-						*/
 					}
-					
 				}
 			}
 

@@ -68,8 +68,10 @@ public class UnRealizedPnLController extends PnlController
 			List<StockExceptionDbObject> exceptionStocks  = nonExceptionAndExceptionStocks.getTwo();
 			
 
-			final List<Stock> stocksWithMaturityMoreThanAQuarter = (List<Stock>)Iterate.select(stocks, UnRealizedPnLProcessor.MATURITY_MORE_THAN_A_QUARTER);
-			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocksWithMaturityMoreThanAQuarter);
+			final List<Stock> stocksWithMaturityMoreThan11Months = (List<Stock>)Iterate.select(stocks, UnRealizedPnLProcessor.MATURITY_MORE_THAN_11_MONTHS);
+			List<Stock> stocksSummary = processor.fetchStockSummaryStatus(stocksWithMaturityMoreThan11Months);
+			
+			processor.enrichWithStopLossDetails(stocksSummary);
 			
 			ProfitAndLossDbObject profitAndLoss = processor.getProfitAndLoss(stocksSummary);
 			

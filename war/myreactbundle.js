@@ -28601,30 +28601,56 @@
 	    return diff;
 	  },
 
-	  targetReturnPercent: function () {
-	    var targetReturnPercent = {
-	      "columnName": "targetReturnPercent",
-	      "displayName": "Target Return %",
+	  lowerReturnPercentTarget: function () {
+	    var lowerReturnPercentTarget = {
+	      "columnName": "lowerReturnPercentTarget",
+	      "displayName": "L. Target Return %",
 	      "customComponent": AppendPercent
 	    };
-	    return targetReturnPercent;
+	    return lowerReturnPercentTarget;
 	  },
 
-	  targetSellPrice: function () {
-	    var targetSellPrice = {
-	      "columnName": "targetSellPrice",
-	      "displayName": "Target Price",
+	  upperReturnPercentTarget: function () {
+	    var upperReturnPercentTarget = {
+	      "columnName": "upperReturnPercentTarget",
+	      "displayName": "U. Target Return %",
+	      "customComponent": AppendPercent
+	    };
+	    return upperReturnPercentTarget;
+	  },
+
+	  lowerSellPriceTarget: function () {
+	    var lowerSellPriceTarget = {
+	      "columnName": "lowerSellPriceTarget",
+	      "displayName": "L. Target Price",
 	      "customComponent": MoneyFormat
 	    };
-	    return targetSellPrice;
+	    return lowerSellPriceTarget;
 	  },
 
-	  targetDate: function () {
-	    var targetDate = {
-	      "columnName": "targetDate",
-	      "displayName": "Target Date"
+	  upperSellPriceTarget: function () {
+	    var upperSellPriceTarget = {
+	      "columnName": "upperSellPriceTarget",
+	      "displayName": "U. Target Price",
+	      "customComponent": MoneyFormat
 	    };
-	    return targetDate;
+	    return upperSellPriceTarget;
+	  },
+
+	  achieveAfterDate: function () {
+	    var achieveAfterDate = {
+	      "columnName": "achieveAfterDate",
+	      "displayName": "Achieve After"
+	    };
+	    return achieveAfterDate;
+	  },
+
+	  achieveByDate: function () {
+	    var achieveByDate = {
+	      "columnName": "achieveByDate",
+	      "displayName": "Achieve By"
+	    };
+	    return achieveByDate;
 	  }
 
 	};
@@ -44349,7 +44375,7 @@
 	var UnrealizedDetailsContainer = __webpack_require__(582);
 	var UnrealizedSummaryContainer = __webpack_require__(584);
 	var ProfitAndLossContainer = __webpack_require__(573);
-	var TargetReachedStocksContainer = __webpack_require__(585);
+	var TargetReachedStocksContainer = __webpack_require__(586);
 	var Main = __webpack_require__(237);
 
 	var InvestmentContainer = React.createClass({
@@ -44419,7 +44445,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var finchakksapi = __webpack_require__(242);
 	var Loading = __webpack_require__(262);
 	var columnMetadata = __webpack_require__(263);
 	var PropTypes = React.PropTypes;
@@ -44463,7 +44488,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetails = __webpack_require__(583);
+	var UnrealizedSummary = __webpack_require__(585);
 	var finchakksapi = __webpack_require__(242);
 
 	var UnrealizedSummaryContainer = React.createClass({
@@ -44490,7 +44515,7 @@
 	  },
 
 	  render: function () {
-	    return React.createElement(UnrealizedDetails, { isLoading: this.state.isLoading,
+	    return React.createElement(UnrealizedSummary, { isLoading: this.state.isLoading,
 	      stocksInfo: this.state.stocksInfo
 	    });
 	  }
@@ -44504,7 +44529,50 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var TargetReachedStocks = __webpack_require__(586);
+	var Loading = __webpack_require__(262);
+	var columnMetadata = __webpack_require__(263);
+	var PropTypes = React.PropTypes;
+	var GriddleWrapper = __webpack_require__(367);
+	var PanelWrapper = __webpack_require__(363);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function UnrealizedSummary(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading UnrealizedSummary' });
+	  } else {
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.impact()];
+
+	    return React.createElement(
+	      PanelWrapper,
+	      { header: 'Unrealized Summary' },
+	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	        columns: ["stockName", "returnTillDate", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "impactOnAverageReturn"],
+	        columnMetadata: metaData
+	      })
+	    );
+	  }
+	}
+
+	UnrealizedSummary.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = UnrealizedSummary;
+
+/***/ },
+/* 586 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var TargetReachedStocks = __webpack_require__(587);
 	var finchakksapi = __webpack_require__(242);
 
 	var TargetReachedStocksContainer = React.createClass({
@@ -44541,7 +44609,7 @@
 	module.exports = TargetReachedStocksContainer;
 
 /***/ },
-/* 586 */
+/* 587 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -44564,13 +44632,13 @@
 	  if (props.isLoading === true) {
 	    return React.createElement(Loading, { text: 'Loading TargetReachedStocks' });
 	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.duration(), columnMetadata.quantity(), columnMetadata.buyPrice(), columnMetadata.investment(), columnMetadata.returnPercent(), columnMetadata.sellPrice(), columnMetadata.targetReturnPercent(), columnMetadata.targetSellPrice(), columnMetadata.targetDate()];
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.impact(), columnMetadata.diff(), columnMetadata.lowerReturnPercentTarget(), columnMetadata.upperReturnPercentTarget(), columnMetadata.lowerSellPriceTarget(), columnMetadata.upperSellPriceTarget(), columnMetadata.achieveAfterDate(), columnMetadata.achieveByDate(), columnMetadata.sellPrice()];
 
 	    return React.createElement(
 	      PanelWrapper,
 	      { header: 'Target Reached Stocks' },
 	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "duration", "quantity", "buyPrice", "totalInvestment", "returnTillDate", "sellPrice", "targetReturnPercent", "targetSellPrice", "targetDate"],
+	        columns: ["stockName", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "impactOnAverageReturn", "diff", "sellPrice", "returnTillDate", "lowerReturnPercentTarget", "upperReturnPercentTarget", "lowerSellPriceTarget", "upperSellPriceTarget", "achieveAfterDate", "achieveByDate"],
 	        columnMetadata: metaData
 	      })
 	    );

@@ -130,6 +130,12 @@ public class StockBuilder
     return this;
   }
   
+  public StockBuilder diff(float diff)
+  {
+    this.stock.setDiff(diff);
+    return this;
+  }
+  
   public Stock build()
   {
     return this.stock;
