@@ -26957,7 +26957,6 @@
 	  listTargetReachedStocks: function () {
 	    return getApiResult('listTargetReachedStocks').then(function (response) {
 	      var stocksInfo = response.data.items;
-	      console.log('listTargetReachedStocks.stocksInfo ', stocksInfo);
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listTargetReachedStocks ', err);
@@ -44638,7 +44637,7 @@
 	      PanelWrapper,
 	      { header: 'Target Reached Stocks' },
 	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "impactOnAverageReturn", "diff", "sellPrice", "returnTillDate", "lowerReturnPercentTarget", "upperReturnPercentTarget", "lowerSellPriceTarget", "upperSellPriceTarget", "achieveAfterDate", "achieveByDate"],
+	        columns: ["stockName", "returnTillDate", "lowerReturnPercentTarget", "upperReturnPercentTarget", "sellPrice", "lowerSellPriceTarget", "upperSellPriceTarget", "quantity", "totalInvestment", "totalReturn"],
 	        columnMetadata: metaData
 	      })
 	    );

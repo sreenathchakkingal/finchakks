@@ -26,7 +26,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPercentStopLossDbObject1);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock)); 
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock)); 
 		assertTrue(stock.isReachedStopLossTarget());
 
 		
@@ -36,7 +36,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 																	.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPercentStopLossDbObject2);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertFalse(stock.isReachedStopLossTarget());
 		
 		StopLossDbObject onlyTargetPercentStopLossDbObject3 =new StopLossDbObjectBuilder() 
@@ -45,7 +45,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 				.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPercentStopLossDbObject3);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertTrue(stock.isReachedStopLossTarget());
 		
 		StopLossDbObject onlyTargetPercentStopLossDbObject4 =new StopLossDbObjectBuilder() 
@@ -54,7 +54,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 		.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPercentStopLossDbObject4);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertFalse(stock.isReachedStopLossTarget());
 		
 		StopLossDbObject onlyTargetPriceStopLossDbObject1 =new StopLossDbObjectBuilder() 
@@ -63,7 +63,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 		.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPriceStopLossDbObject1);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertTrue(stock.isReachedStopLossTarget());
 		
 		StopLossDbObject onlyTargetPriceStopLossDbObject2 =
@@ -73,7 +73,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 		.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPriceStopLossDbObject2);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertTrue(stock.isReachedStopLossTarget());
 		
 		StopLossDbObject onlyTargetPriceStopLossDbObject3 = new StopLossDbObjectBuilder() 
@@ -82,7 +82,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 		.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(onlyTargetPriceStopLossDbObject3);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertFalse(stock.isReachedStopLossTarget());
 				
 		StopLossDbObject targetPriceAndDateStopLossDbObject1 = new StopLossDbObjectBuilder() 
@@ -92,7 +92,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 		.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(targetPriceAndDateStopLossDbObject1);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertFalse(stock.isReachedStopLossTarget());
 		
 		
@@ -103,7 +103,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 		.build();
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(targetPriceAndDateStopLossDbObject2);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertTrue(stock.isReachedStopLossTarget());
 		
 		
@@ -116,7 +116,7 @@ public class UnRealizedPnLProcessorTest extends TestCase{
 				
 		dummyUnRealizedPnLProcessor = unRealizedPnLProcessorTest.
 				new DummyUnRealizedPnLProcessor(targetReturnAndDateStopLossDbObject1);
-		dummyUnRealizedPnLProcessor.enrichWithStopLossDetails(FastList.newListWith(stock));
+		dummyUnRealizedPnLProcessor.enrichStocksWithTargets(FastList.newListWith(stock));
 		assertTrue(stock.isReachedStopLossTarget());
 		
 	}

@@ -152,8 +152,6 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 		
 		StockQuandlApiAdapter.stampLatestClosePriceAndDate(bonusScnearioHandledStocks);
 		
-//		enrichWithStopLossDetails(bonusScnearioHandledStocks);
-		
 		final Pair<List<Stock>,List<StockExceptionDbObject>> stocksAndExceptions = Tuples.pair(bonusScnearioHandledStocks, exceptionStocks);
 		
 		return stocksAndExceptions;
@@ -211,9 +209,11 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				return jsonData;
 			}
 
-			public void enrichWithStopLossDetails(List<Stock> stocksDetail)
+			public List<StockExceptionDbObject> enrichStocksWithTargets(List<Stock> stocksSummary)
 			{
-				for(Stock eachStock : stocksDetail)
+				List<StockExceptionDbObject> stocksWithoutTargets = FastList.newList();
+				
+				for(Stock eachStock : stocksSummary)
 				{
 					final List<StopLossDbObject> matchingStopLossDbObjects = getMatchingStopLossDbObject(eachStock);
 					if(!matchingStopLossDbObjects.isEmpty())
@@ -270,7 +270,12 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						
 						eachStock.setReachedStopLossTarget(isValueCloseToTarget && isDateTargetMet);
 					}
+					else
+					{
+						stocksWithoutTargets.add(new StockExceptionDbObject(eachStock.getStockName(), "No Targets Set"));
+					}
 				}
+				return stocksWithoutTargets;
 			}
 
 			//for testing	
