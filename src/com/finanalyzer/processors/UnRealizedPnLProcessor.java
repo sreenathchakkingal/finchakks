@@ -234,17 +234,17 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						
 						boolean isDateTargetMet=false;
 						
-						if(achieveByDate!=null)
+						if(StringUtil.isValidValue(achieveByDate))
 						{
 							isDateTargetMet = DateUtil.isDateBeforeTargetDate(achieveByDate, StopLossDbObject.DATE_DIFF_TOLERANCE);
 						}
 						
-						if(achieveAfterDate!=null)
+						if(StringUtil.isValidValue(achieveAfterDate))
 						{
 							isDateTargetMet=isDateTargetMet || DateUtil.isDateAfterTargetDate(achieveAfterDate, StopLossDbObject.DATE_DIFF_TOLERANCE);;
 						}
 
-						if (achieveByDate==null && achieveAfterDate==null)
+						if (StringUtil.isInvalidValue(achieveByDate) && StringUtil.isInvalidValue(achieveAfterDate))
 						{
 							isDateTargetMet=true;
 						}

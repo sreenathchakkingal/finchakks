@@ -70,6 +70,11 @@ public class StopLossDbObject {
 	}
 
 	public void setUpperReturnPercentTarget(float upperReturnPercentTarget) {
+		if (upperReturnPercentTarget==0.0f)//even if by mistake we set the value to 0.0 - it will be set as 0.01f. 
+			//In the Unrealized processor the empty value check is by comparing with 0.0f.  
+		{
+			this.upperReturnPercentTarget = 0.1f;
+		}
 		this.upperReturnPercentTarget = upperReturnPercentTarget;
 	}
 

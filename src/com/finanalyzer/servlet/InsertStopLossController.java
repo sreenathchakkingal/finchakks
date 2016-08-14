@@ -24,37 +24,34 @@ public class InsertStopLossController
 		stopLossOperations.deleteEntries();
 		
 		StopLossDbObject BATAINDIA =new StopLossDbObjectBuilder().
-				stockName("BATAINDIA").lowerReturnPercentTarget(3.0f).build();
+				stockName("BATAINDIA").upperReturnPercentTarget(5.0f).build();
 		
 		StopLossDbObject YESBANK =new StopLossDbObjectBuilder().
-				stockName("YESBANK").lowerReturnPercentTarget(40.0f).upperReturnPercentTarget(60.0f).build();
+				stockName("YESBANK").lowerReturnPercentTarget(40.0f).upperReturnPercentTarget(50.0f).build();
 
 		StopLossDbObject SYNDIBANK =new StopLossDbObjectBuilder().
-				stockName("SYNDIBANK").upperReturnPercentTarget(6.0f).build();
+				stockName("SYNDIBANK").upperReturnPercentTarget(0.01f).build();
 
 		StopLossDbObject SBIN =new StopLossDbObjectBuilder().
-				stockName("SBIN").upperReturnPercentTarget(11.5f).build();
+				stockName("SBIN").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(12.0f).build();
 
 		StopLossDbObject INDUSINDBK =new StopLossDbObjectBuilder().
-				stockName("INDUSINDBK").lowerReturnPercentTarget(30.0f).upperReturnPercentTarget(40.0f)
-				.achieveAfterDate("2016-12-31").build();
+				stockName("INDUSINDBK").lowerReturnPercentTarget(30.0f).upperReturnPercentTarget(40.0f).build();
 		
 		StopLossDbObject HDFCBANK =new StopLossDbObjectBuilder().
-				stockName("HDFCBANK").lowerReturnPercentTarget(20.0f).upperReturnPercentTarget(25.0f)
-				.achieveAfterDate("2016-12-31").build();
+				stockName("HDFCBANK").lowerReturnPercentTarget(20.0f).upperReturnPercentTarget(25.0f).build();
 		
 		StopLossDbObject ITC =new StopLossDbObjectBuilder().
-				stockName("ITC").lowerReturnPercentTarget(3.0f).upperReturnPercentTarget(10.0f).build();
+				stockName("ITC").lowerReturnPercentTarget(3.0f).upperReturnPercentTarget(7.5f).build();
 		
 		StopLossDbObject TCS =new StopLossDbObjectBuilder().
-				stockName("TCS").lowerReturnPercentTarget(4.0f).upperReturnPercentTarget(15.0f).build();
+				stockName("TCS").lowerReturnPercentTarget(4.0f).upperReturnPercentTarget(10.0f).build();
 		
-		//based on summary
 		StopLossDbObject SUNPHARMA =new StopLossDbObjectBuilder().
 				stockName("SUNPHARMA").lowerReturnPercentTarget(5.0f).upperReturnPercentTarget(15.0f).build();
 
 		StopLossDbObject HDFC =new StopLossDbObjectBuilder().
-				stockName("HDFC").lowerReturnPercentTarget(20.0f).upperReturnPercentTarget(25.0f).build(); //summary hence not looking at date
+				stockName("HDFC").lowerReturnPercentTarget(20.0f).upperReturnPercentTarget(25.0f).build();
 		
 		StopLossDbObject GODREJCP =new StopLossDbObjectBuilder().
 				stockName("GODREJCP").lowerReturnPercentTarget(24.0f).upperReturnPercentTarget(30.0f).build(); 
