@@ -43472,16 +43472,14 @@
 	var InvestmentContainer = React.createClass({
 	  displayName: "InvestmentContainer",
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
+
 	  render: function () {
 	    return React.createElement(
 	      Main,
 	      null,
 	      React.createElement(ProfitAndLossContainer, null),
-	      React.createElement(UnrealizedDetailsContainer, null),
-	      React.createElement(UnrealizedSummaryContainer, null)
+	      React.createElement(UnrealizedSummaryContainer, null),
+	      React.createElement(UnrealizedDetailsContainer, null)
 	    );
 	  }
 
