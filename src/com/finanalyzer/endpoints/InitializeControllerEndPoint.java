@@ -4,10 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
+import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.StringUtil;
@@ -25,6 +27,14 @@ public class InitializeControllerEndPoint {
 	{
 		JdoDbOperations<StockExceptionDbObject> stockExceptionDbOperations = new JdoDbOperations<>(StockExceptionDbObject.class);
 		return stockExceptionDbOperations.getEntries("stockName");
+	}
+	
+	@ApiMethod(name = "listStockTargets", path="listStockTargets")
+	public List<StopLossDbObject> listStockTargets()
+	{
+		JdoDbOperations<StopLossDbObject> dbOperations = new JdoDbOperations<>(StopLossDbObject.class);
+		final List<StopLossDbObject> dbObjects = dbOperations.getEntries("stockName");
+		return dbObjects;
 	}
 	
 	@ApiMethod(name = "listBlackListedStocks", path="listBlackListedStocks")
@@ -89,6 +99,7 @@ public class InitializeControllerEndPoint {
 		final ProfitAndLossDbObject profitAndLossDbObject = profitAndLossDbOperations.getEntries().get(0);
 		return profitAndLossDbObject;
 	}
+	
 
 //helper methods
 	
