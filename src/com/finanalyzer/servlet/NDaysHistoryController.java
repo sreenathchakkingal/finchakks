@@ -28,7 +28,7 @@ public class NDaysHistoryController {
 		Processor<List<Stock>> processor = new QuandlNDaysPricesProcessor(numOfDays, simpleMovingAverage);
 		List<Stock> stocks = processor.execute();
 		
-		persistResult(stocks);
+//		persistResult(stocks);
 		
 		persistFlattnedResult(stocks);
 		

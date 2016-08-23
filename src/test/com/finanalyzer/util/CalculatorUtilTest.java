@@ -1,7 +1,5 @@
 package test.com.finanalyzer.util;
 
-import org.junit.Test;
-
 import com.finanalyzer.util.CalculatorUtil;
 
 import junit.framework.TestCase;

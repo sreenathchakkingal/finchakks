@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.domain.Stock;
+import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
@@ -35,6 +37,36 @@ public class InitializeControllerEndPoint {
 		JdoDbOperations<StopLossDbObject> dbOperations = new JdoDbOperations<>(StopLossDbObject.class);
 		final List<StopLossDbObject> dbObjects = dbOperations.getEntries("stockName");
 		return dbObjects;
+	}
+	
+	@ApiMethod(name = "listMissingWatchListStocks", path="listMissingWatchListStocks")
+	public List<StopLossDbObject> listMissingWatchListStocks()
+	{
+		JdoDbOperations<NDaysHistoryFlattenedDbObject> dbOperations = new JdoDbOperations<>(NDaysHistoryFlattenedDbObject.class);
+		final List<NDaysHistoryFlattenedDbObject> dbObjects = dbOperations.getEntries("stockName");
+		
+		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
+		final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = unrealizedDetailDbOperations.getEntries("stockName");
+		final List<StopLossDbObject> stopLossDbObjects = FastList.newList();
+		for(UnrealizedDetailDbObject unrealizedDetailDbObject: unrealizedDetailDbObjects)
+		{
+			String unrealizedStockName = unrealizedDetailDbObject.getStockName();
+			boolean isMatchFound=false;
+			for (NDaysHistoryFlattenedDbObject nDaysHistoryFlattenedDbObject: dbObjects)
+			{
+				if(nDaysHistoryFlattenedDbObject.getStockName().equals(unrealizedStockName))
+				{
+					isMatchFound=true;
+					break;
+				}
+			}
+			if(!isMatchFound)
+			{
+				stopLossDbObjects.add(new StopLossDbObjectBuilder().stockName(unrealizedStockName).build());
+			}
+		}
+		
+		return stopLossDbObjects;
 	}
 	
 	@ApiMethod(name = "listBlackListedStocks", path="listBlackListedStocks")

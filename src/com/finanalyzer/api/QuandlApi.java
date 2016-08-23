@@ -29,27 +29,19 @@ public class QuandlApi
 		return getQdataSet(mq);
 	}
 
-//	public static QDataset getNthDayClosePrice(Set<String> uniqueListOfStockIdentiers, int numOfDays, StockExchange stockExchange)
-//	{
-//		String fromDate = DateUtil.getFromBusinessDate(numOfDays);
-//		MultisetQuery mq = (MultisetQuery) Queries.create(uniqueListOfStockIdentiers).dateRange(fromDate, fromDate).stockExchange(stockExchange);
-//		QDataset qdataset = CONNECTION.getDataset(mq);
-//		return qdataset;
-//	}
-
-	public static QDataset getNYearsClosePrices(String stockName, Integer numberOfYears, StockExchange stockExchange)
-	{
-		SimpleQuery query = Queries.create(stockName.toUpperCase()).collapse(Collapse.ANNUAL).stockExchange(stockExchange);
-		query=query.numRows(numberOfYears);
-		return getQdataSet(query);
-	}
-
 	public static QDataset getNDaysClosePrices(String stockName, int numOfDays, StockExchange stockExchange)
 	{
-		SimpleQuery query = Queries.create(stockName.toUpperCase()).numRows(numOfDays).stockExchange(stockExchange);
+		String modifiedStockNameForQuandl= getModifiedStockName(stockName);
+		SimpleQuery query = Queries.create(modifiedStockNameForQuandl).numRows(numOfDays).stockExchange(stockExchange);
 		return getQdataSet(query);
 	}
 	
+	//for ease of testing
+	public static String getModifiedStockName(String stockName) 
+	{
+		return stockName.replaceAll("-", "_").toUpperCase();
+	}
+
 	private static QDataset getQdataSet(SimpleQuery mq)
 	{
 		QDataset qdataset = CONNECTION.getDataset(mq);

@@ -27,15 +27,7 @@ public class StockQuandlApiAdapter
 {
 	private static final Logger LOG = Logger.getLogger(StockQuandlApiAdapter.class.getName());
 	
-	public static void stampNYearsClosePrices(Stock stock, Integer numberOfYears)
-	{
-		String stockName = stock.getStockName();
-		QDataset qDataSet = QuandlApi.getNYearsClosePrices(stockName, numberOfYears, stock.getStockExchange());
-		List<DateValueObject> dateValueObjects = transposeSingleQDataSet(qDataSet);
-		Map<String, List<DateValueObject>> transposedQDataSet=UnifiedMap.newMapWith(Tuples.pair(stock.getStockName(), dateValueObjects));
-		enrichNClosePriceDetails(stock,transposedQDataSet);
-	}
-
+	
 	//multi-data set implementation - remove it after the single data set implementation is successful
 //	public static void stampLatestClosePriceAndDate(List<Stock> stocks)
 //	{
@@ -64,16 +56,6 @@ public class StockQuandlApiAdapter
 		QDataset qDataSet = QuandlApi.getNDaysGains(uniqueListOfStockIdentiers,numOfDays, stockExchange);
 		Map<String, List<DateValueObject>> transposedQDataSet = transposeMultiQDataSet(qDataSet, stockExchange);
 		enrichNDaysGains(stocks, transposedQDataSet);
-	}
-
-	private static void enrichSellDetails(List<Stock> stocks, Map<String, List<DateValueObject>> result)
-	{
-		for (Stock stock : stocks)
-		{
-			List<DateValueObject> dateValues = result.get(stock.getStockName());
-			stock.setSellDate(dateValues.get(0).getDate());
-			stock.setSellPrice(dateValues.get(0).getValue());
-		}
 	}
 
 	private static void enrichSimpleMovingAverage(List<Stock> stocks, Map<String, List<DateValueObject>> result, int numberOfDays)
@@ -165,12 +147,6 @@ public class StockQuandlApiAdapter
 		}
 	}
 
-	private static void enrichNClosePriceDetails(Stock stock, Map<String, List<DateValueObject>> transposedQDataSet)
-	{
-		List<DateValueObject> dateValueObjects = transposedQDataSet.get(stock.getStockName());
-		stock.setDateToClosePrice(dateValueObjects);
-	}
-
 	public static void stampLatestClosePriceAndDate(List<Stock> stocks)
 	{
 			stampNDaysClosePrices(stocks, 5);
@@ -204,7 +180,6 @@ public class StockQuandlApiAdapter
 
 	private static void stampNDaysClosePrices(MutableCollection<Stock>  stocks, int numOfDays)
 	{
-//		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stocks.getFirst().getStockExchangeStocknameMap().get(StockExchange.BSE), numOfDays, StockExchange.BSE); 
 		QDataset qDataSet = QuandlApi.getNDaysClosePrices(stocks.getFirst().getStockExchangeStocknameMap().get(StockExchange.NSE), numOfDays, StockExchange.NSE);
 		List<DateValueObject> dateValueObjects = transposeSingleQDataSet(qDataSet);
 		for (Stock stock : stocks)

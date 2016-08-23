@@ -48,9 +48,12 @@ public class Adapter {
 	
 	public static List<NDaysHistoryFlattenedDbObject> stockToNDaysHistoryFlattenedDbObject(List<Stock> stocks)
 	{
+		
 		List<NDaysHistoryFlattenedDbObject> nDaysHistoryFlattenedDbObjects = FastList.newList();
 		for (Stock stock : stocks)
 		{
+			
+			LOG.info("processing stock: "+stock.getStockName());
 			List<Float> values = FastList.newList(stock.getnDaysGains().values());
 			float nDay1Gain = values.get(0);
 			float nDay2Gain = values.get(1);

@@ -33,7 +33,7 @@ public class InsertStopLossController
 				stockName("SYNDIBANK").upperReturnPercentTarget(0.01f).build();
 
 		StopLossDbObject SBIN =new StopLossDbObjectBuilder().
-				stockName("SBIN").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(12.0f).build();
+				stockName("SBIN").lowerReturnPercentTarget(13.0f).upperReturnPercentTarget(16.0f).build();
 
 		StopLossDbObject INDUSINDBK =new StopLossDbObjectBuilder().
 				stockName("INDUSINDBK").lowerReturnPercentTarget(30.0f).upperReturnPercentTarget(40.0f).build();
@@ -60,7 +60,7 @@ public class InsertStopLossController
 				stockName("LUPIN").lowerReturnPercentTarget(5.0f).upperReturnPercentTarget(10.0f).build();
 		
 		StopLossDbObject BERGEPAINT =new StopLossDbObjectBuilder().
-				stockName("BERGEPAINT").lowerReturnPercentTarget(45.0f).upperReturnPercentTarget(50.0f).build();
+				stockName("BERGEPAINT").lowerReturnPercentTarget(48.0f).upperReturnPercentTarget(50.0f).build();
 		
 		StopLossDbObject INFY =new StopLossDbObjectBuilder().
 				stockName("INFY").lowerReturnPercentTarget(5.0f).upperReturnPercentTarget(15.0f).build();	
