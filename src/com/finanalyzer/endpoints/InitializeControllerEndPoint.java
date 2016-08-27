@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
-import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
