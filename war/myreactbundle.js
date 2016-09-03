@@ -21104,6 +21104,7 @@
 	var WrapperContainer = __webpack_require__(239);
 	var InvestmentContainer = __webpack_require__(576);
 	var DeprecatedContainer = __webpack_require__(581);
+	var MaintenanceContainer = __webpack_require__(584);
 
 	var routes = React.createElement(
 	  Router,
@@ -21113,7 +21114,8 @@
 	    { path: '/', component: Main },
 	    React.createElement(IndexRoute, { component: WrapperContainer }),
 	    React.createElement(Route, { path: 'investment', component: InvestmentContainer }),
-	    React.createElement(Route, { path: 'deprecated', component: DeprecatedContainer })
+	    React.createElement(Route, { path: 'deprecated', component: DeprecatedContainer }),
+	    React.createElement(Route, { path: 'maint', component: MaintenanceContainer })
 	  )
 	);
 
@@ -26811,9 +26813,6 @@
 	var WrapperContainer = React.createClass({
 	  displayName: "WrapperContainer",
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
 	  render: function () {
 	    return React.createElement(
 	      Main,
@@ -26875,8 +26874,18 @@
 
 	var axios = __webpack_require__(242);
 
-	function getApiResult(methodName) {
+	var maintEndPoint = 'https://finchakks.appspot.com/_ah/api/maintainanceControllerEndPoint/v1/';
+
+	function getInitializeApiResult(methodName) {
 	  return axios.get('https://finchakks.appspot.com/_ah/api/initalizeControllerEndPoint/v1/' + methodName);
+	}
+
+	function getMaintApiResult(methodName) {
+	  return axios.get(maintEndPoint + methodName);
+	}
+
+	function putMaintApiResult(isWatchListedTemp, stockNameTemp) {
+	  return axios.post('https://finchakks.appspot.com/_ah/api/maintainanceControllerEndPoint/v1/updateStockAttributes?isWatchListed=isWatchListed&stockName=isWatchListed');
 	}
 
 	function puke(obj) {
@@ -26889,7 +26898,7 @@
 
 	var helpers = {
 	  listprofitAndloss: function () {
-	    return getApiResult('profitandlossdbobject').then(function (response) {
+	    return getInitializeApiResult('profitandlossdbobject').then(function (response) {
 	      var stocksInfo = response.data;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26897,8 +26906,34 @@
 	    });
 	  },
 
+	  updateStockAttributes: function (stockName, isWatchListed) {
+	    return putMaintApiResult('updateStockAttributes?isWatchListed' + isWatchListed + '&stockName=' + stockName).then(function (response) {
+	      return response.data;
+	    }).catch(function (err) {
+	      console.warn('Error in updateStockAttributes ', err);
+	    });
+	  },
+
+	  listStockTargets: function () {
+	    return getInitializeApiResult('listStockTargets').then(function (response) {
+	      var stocksInfo = response.data.items;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listStockTargets ', err);
+	    });
+	  },
+
+	  getModifiableStockAttributes: function (stockName) {
+	    return getMaintApiResult('getModifiableStockAttributes').then(function (response) {
+	      var stocksInfo = response.data;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in getModifiableStockAttributes ', err);
+	    });
+	  },
+
 	  listBlackListedStocks: function () {
-	    return getApiResult('listBlackListedStocks').then(function (response) {
+	    return getInitializeApiResult('listBlackListedStocks').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26907,7 +26942,7 @@
 	  },
 
 	  listTargetReachedStocks: function () {
-	    return getApiResult('listTargetReachedStocks').then(function (response) {
+	    return getInitializeApiResult('listTargetReachedStocks').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26916,7 +26951,7 @@
 	  },
 
 	  listStockExceptions: function () {
-	    return getApiResult('stockexceptiondbobject').then(function (response) {
+	    return getInitializeApiResult('stockexceptiondbobject').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26926,7 +26961,7 @@
 
 	  listNDaysHistoryStocks: function () {
 
-	    return getApiResult('ndayshistoryflatteneddbobject').then(function (response) {
+	    return getInitializeApiResult('ndayshistoryflatteneddbobject').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26975,7 +27010,7 @@
 	  },
 
 	  listUnrealizedDetails: function () {
-	    return getApiResult('unrealizeddetaildbobject').then(function (response) {
+	    return getInitializeApiResult('unrealizeddetaildbobject').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26984,7 +27019,7 @@
 	  },
 
 	  listUnrealizedSummary: function () {
-	    return getApiResult('listUnrealizedSummaryStocks').then(function (response) {
+	    return getInitializeApiResult('listUnrealizedSummaryStocks').then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -26993,7 +27028,7 @@
 	  },
 
 	  listUnrealizedSelectedDetails: function (stockName) {
-	    return getApiResult('unrealizeddetaildbobject/' + stockName).then(function (response) {
+	    return getInitializeApiResult('unrealizeddetaildbobject/' + stockName).then(function (response) {
 	      var stocksInfo = response.data.items;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -43097,6 +43132,7 @@
 	  displayName: 'GriddleWrapper',
 
 	  render: function () {
+	    console.log('GriddleWrapper.results ', this.props.results);
 	    return React.createElement(
 	      'div',
 	      null,
@@ -43472,7 +43508,6 @@
 	var InvestmentContainer = React.createClass({
 	  displayName: "InvestmentContainer",
 
-
 	  render: function () {
 	    return React.createElement(
 	      Main,
@@ -43666,9 +43701,6 @@
 	var DeprecatedContainer = React.createClass({
 	  displayName: "DeprecatedContainer",
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
 	  render: function () {
 	    return React.createElement(
 	      Main,
@@ -43768,6 +43800,1684 @@
 	};
 
 	module.exports = ListBlackListedStocks;
+
+/***/ },
+/* 584 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var MaintStockTargetContainer = __webpack_require__(585);
+	var Main = __webpack_require__(237);
+
+	var MaintenanceContainer = React.createClass({
+	  displayName: "MaintenanceContainer",
+
+	  render: function () {
+	    return React.createElement(
+	      Main,
+	      null,
+	      React.createElement(MaintStockTargetContainer, null)
+	    );
+	  }
+
+	});
+
+	module.exports = MaintenanceContainer;
+
+/***/ },
+/* 585 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var MaintStockTarget = __webpack_require__(586);
+	var finchakksapi = __webpack_require__(241);
+
+	var MaintStockTargetContainer = React.createClass({
+	  displayName: 'MaintStockTargetContainer',
+
+	  getInitialState: function () {
+	    return {
+	      stockName: '',
+	      stocksInfo: [],
+	      isStocksInfoRetrieving: false,
+	      isStocksInfoRetrieved: false
+	    };
+	  },
+
+	  handleChange(e) {
+	    this.setState({ stockName: e.target.value });
+	  },
+
+	  handleSubmit() {
+	    var stockNameTemp = this.state.stockName;
+	    this.setState({
+	      stockName: stockNameTemp,
+	      stocksInfo: [],
+	      isStocksInfoRetrieving: true,
+	      isStocksInfoRetrieved: false
+	    });
+
+	    finchakksapi.getModifiableStockAttributes(stockNameTemp).then(function (stocksInfoResult) {
+	      this.setState({
+	        stockName: stockNameTemp,
+	        stocksInfo: stocksInfoResult,
+	        isStocksInfoRetrieving: false,
+	        isStocksInfoRetrieved: true
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(MaintStockTarget, {
+	      isStocksInfoRetrieving: this.state.isStocksInfoRetrieving,
+	      onStockNameSubmit: this.handleSubmit,
+	      onCaptureChange: this.handleChange,
+	      stocksInfo: this.state.stocksInfo,
+	      isStocksInfoRetrieved: this.state.isStocksInfoRetrieved
+	    });
+	  }
+
+	});
+
+	module.exports = MaintStockTargetContainer;
+
+/***/ },
+/* 586 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Form = __webpack_require__(587);
+	var FormGroup = __webpack_require__(588);
+	var FormControl = __webpack_require__(590);
+	var Button = __webpack_require__(475);
+	var ControlLabel = __webpack_require__(594);
+	var Col = __webpack_require__(595);
+	var Row = __webpack_require__(596);
+	var Grid = __webpack_require__(597);
+	var Label = __webpack_require__(598);
+	var ModifiableAttributes = __webpack_require__(599);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function MaintStockTarget(props) {
+	  var isRetrieving = props.isStocksInfoRetrieving;
+	  var isRetrieved = props.isStocksInfoRetrieved;
+	  return React.createElement(
+	    Form,
+	    { inline: true },
+	    React.createElement(
+	      FormGroup,
+	      { controlId: 'formControlsText' },
+	      React.createElement(
+	        ControlLabel,
+	        null,
+	        'Stock Name'
+	      ),
+	      ' ',
+	      React.createElement(FormControl, { type: 'text', onChange: props.onCaptureChange })
+	    ),
+	    ' ',
+	    React.createElement(
+	      Button,
+	      { bsStyle: 'primary', bsSize: 'small', disabled: isRetrieving, type: 'submit', onClick: !isRetrieving ? props.onStockNameSubmit : null },
+	      isRetrieving ? 'Retrieving...' : 'Retrieve All Details'
+	    ),
+	    React.createElement(ModifiableAttributes, { isRetrieved: isRetrieved, stocksInfo: props.stocksInfo, refreshRequest: 'true' })
+	  );
+	}
+
+	module.exports = MaintStockTarget;
+
+/***/ },
+/* 587 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPropTypesLibElementType = __webpack_require__(510);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  horizontal: _react2['default'].PropTypes.bool,
+	  inline: _react2['default'].PropTypes.bool,
+	  componentClass: _reactPropTypesLibElementType2['default']
+	};
+
+	var defaultProps = {
+	  horizontal: false,
+	  inline: false,
+	  componentClass: 'form'
+	};
+
+	var Form = (function (_React$Component) {
+	  _inherits(Form, _React$Component);
+
+	  function Form() {
+	    _classCallCheck(this, Form);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Form.prototype.render = function render() {
+	    var _props = this.props;
+	    var horizontal = _props.horizontal;
+	    var inline = _props.inline;
+	    var Component = _props.componentClass;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['horizontal', 'inline', 'componentClass', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = [];
+	    if (horizontal) {
+	      classes.push(_utilsBootstrapUtils.prefix(bsProps, 'horizontal'));
+	    }
+	    if (inline) {
+	      classes.push(_utilsBootstrapUtils.prefix(bsProps, 'inline'));
+	    }
+
+	    return _react2['default'].createElement(Component, _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return Form;
+	})(_react2['default'].Component);
+
+	Form.propTypes = propTypes;
+	Form.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('form', Form);
+	module.exports = exports['default'];
+
+/***/ },
+/* 588 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var _utilsStyleConfig = __webpack_require__(517);
+
+	var _utilsValidComponentChildren = __webpack_require__(589);
+
+	var _utilsValidComponentChildren2 = _interopRequireDefault(_utilsValidComponentChildren);
+
+	var propTypes = {
+	  /**
+	   * Sets `id` on `<FormControl>` and `htmlFor` on `<FormGroup.Label>`.
+	   */
+	  controlId: _react2['default'].PropTypes.string,
+	  validationState: _react2['default'].PropTypes.oneOf(['success', 'warning', 'error'])
+	};
+
+	var childContextTypes = {
+	  $bs_formGroup: _react2['default'].PropTypes.object.isRequired
+	};
+
+	var FormGroup = (function (_React$Component) {
+	  _inherits(FormGroup, _React$Component);
+
+	  function FormGroup() {
+	    _classCallCheck(this, FormGroup);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  FormGroup.prototype.getChildContext = function getChildContext() {
+	    var _props = this.props;
+	    var controlId = _props.controlId;
+	    var validationState = _props.validationState;
+
+	    return {
+	      $bs_formGroup: {
+	        controlId: controlId,
+	        validationState: validationState
+	      }
+	    };
+	  };
+
+	  FormGroup.prototype.hasFeedback = function hasFeedback(children) {
+	    var _this = this;
+
+	    return _utilsValidComponentChildren2['default'].some(children, function (child) {
+	      return child.props.bsRole === 'feedback' || child.props.children && _this.hasFeedback(child.props.children);
+	    });
+	  };
+
+	  FormGroup.prototype.render = function render() {
+	    var _props2 = this.props;
+	    var validationState = _props2.validationState;
+	    var className = _props2.className;
+	    var children = _props2.children;
+
+	    var props = _objectWithoutProperties(_props2, ['validationState', 'className', 'children']);
+
+	    var _splitBsPropsAndOmit = _utilsBootstrapUtils.splitBsPropsAndOmit(props, ['controlId']);
+
+	    var bsProps = _splitBsPropsAndOmit[0];
+	    var elementProps = _splitBsPropsAndOmit[1];
+
+	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), {
+	      'has-feedback': this.hasFeedback(children)
+	    });
+	    if (validationState) {
+	      classes['has-' + validationState] = true;
+	    }
+
+	    return _react2['default'].createElement(
+	      'div',
+	      _extends({}, elementProps, {
+	        className: _classnames2['default'](className, classes)
+	      }),
+	      children
+	    );
+	  };
+
+	  return FormGroup;
+	})(_react2['default'].Component);
+
+	FormGroup.propTypes = propTypes;
+	FormGroup.childContextTypes = childContextTypes;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('form-group', _utilsBootstrapUtils.bsSizes([_utilsStyleConfig.Size.LARGE, _utilsStyleConfig.Size.SMALL], FormGroup));
+	module.exports = exports['default'];
+
+/***/ },
+/* 589 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// TODO: This module should be ElementChildren, and should use named exports.
+
+	'use strict';
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	/**
+	 * Iterates through children that are typically specified as `props.children`,
+	 * but only maps over children that are "valid components".
+	 *
+	 * The mapFunction provided index will be normalised to the components mapped,
+	 * so an invalid component would not increase the index.
+	 *
+	 * @param {?*} children Children tree container.
+	 * @param {function(*, int)} func.
+	 * @param {*} context Context for func.
+	 * @return {object} Object containing the ordered map of results.
+	 */
+	function map(children, func, context) {
+	  var index = 0;
+
+	  return _react2['default'].Children.map(children, function (child) {
+	    if (!_react2['default'].isValidElement(child)) {
+	      return child;
+	    }
+
+	    return func.call(context, child, index++);
+	  });
+	}
+
+	/**
+	 * Iterates through children that are "valid components".
+	 *
+	 * The provided forEachFunc(child, index) will be called for each
+	 * leaf child with the index reflecting the position relative to "valid components".
+	 *
+	 * @param {?*} children Children tree container.
+	 * @param {function(*, int)} func.
+	 * @param {*} context Context for context.
+	 */
+	function forEach(children, func, context) {
+	  var index = 0;
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    func.call(context, child, index++);
+	  });
+	}
+
+	/**
+	 * Count the number of "valid components" in the Children container.
+	 *
+	 * @param {?*} children Children tree container.
+	 * @returns {number}
+	 */
+	function count(children) {
+	  var result = 0;
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    ++result;
+	  });
+
+	  return result;
+	}
+
+	/**
+	 * Finds children that are typically specified as `props.children`,
+	 * but only iterates over children that are "valid components".
+	 *
+	 * The provided forEachFunc(child, index) will be called for each
+	 * leaf child with the index reflecting the position relative to "valid components".
+	 *
+	 * @param {?*} children Children tree container.
+	 * @param {function(*, int)} func.
+	 * @param {*} context Context for func.
+	 * @returns {array} of children that meet the func return statement
+	 */
+	function filter(children, func, context) {
+	  var index = 0;
+	  var result = [];
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    if (func.call(context, child, index++)) {
+	      result.push(child);
+	    }
+	  });
+
+	  return result;
+	}
+
+	function find(children, func, context) {
+	  var index = 0;
+	  var result = undefined;
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (result) {
+	      return;
+	    }
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    if (func.call(context, child, index++)) {
+	      result = child;
+	    }
+	  });
+
+	  return result;
+	}
+
+	function every(children, func, context) {
+	  var index = 0;
+	  var result = true;
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (!result) {
+	      return;
+	    }
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    if (!func.call(context, child, index++)) {
+	      result = false;
+	    }
+	  });
+
+	  return result;
+	}
+
+	function some(children, func, context) {
+	  var index = 0;
+	  var result = false;
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (result) {
+	      return;
+	    }
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    if (func.call(context, child, index++)) {
+	      result = true;
+	    }
+	  });
+
+	  return result;
+	}
+
+	function toArray(children) {
+	  var result = [];
+
+	  _react2['default'].Children.forEach(children, function (child) {
+	    if (!_react2['default'].isValidElement(child)) {
+	      return;
+	    }
+
+	    result.push(child);
+	  });
+
+	  return result;
+	}
+
+	exports['default'] = {
+	  map: map,
+	  forEach: forEach,
+	  count: count,
+	  find: find,
+	  filter: filter,
+	  every: every,
+	  some: some,
+	  toArray: toArray
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 590 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPropTypesLibElementType = __webpack_require__(510);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _warning = __webpack_require__(530);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	var _FormControlFeedback = __webpack_require__(591);
+
+	var _FormControlFeedback2 = _interopRequireDefault(_FormControlFeedback);
+
+	var _FormControlStatic = __webpack_require__(593);
+
+	var _FormControlStatic2 = _interopRequireDefault(_FormControlStatic);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  componentClass: _reactPropTypesLibElementType2['default'],
+	  /**
+	   * Only relevant if `componentClass` is `'input'`.
+	   */
+	  type: _react2['default'].PropTypes.string,
+	  /**
+	   * Uses `controlId` from `<FormGroup>` if not explicitly specified.
+	   */
+	  id: _react2['default'].PropTypes.string
+	};
+
+	var defaultProps = {
+	  componentClass: 'input'
+	};
+
+	var contextTypes = {
+	  $bs_formGroup: _react2['default'].PropTypes.object
+	};
+
+	var FormControl = (function (_React$Component) {
+	  _inherits(FormControl, _React$Component);
+
+	  function FormControl() {
+	    _classCallCheck(this, FormControl);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  FormControl.prototype.render = function render() {
+	    var formGroup = this.context.$bs_formGroup;
+	    var controlId = formGroup && formGroup.controlId;
+
+	    var _props = this.props;
+	    var Component = _props.componentClass;
+	    var type = _props.type;
+	    var _props$id = _props.id;
+	    var id = _props$id === undefined ? controlId : _props$id;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['componentClass', 'type', 'id', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    process.env.NODE_ENV !== 'production' ? _warning2['default'](controlId == null || id === controlId, '`controlId` is ignored on `<FormControl>` when `id` is specified.') : undefined;
+
+	    // input[type="file"] should not have .form-control.
+	    var classes = undefined;
+	    if (type !== 'file') {
+	      classes = _utilsBootstrapUtils.getClassSet(bsProps);
+	    }
+
+	    return _react2['default'].createElement(Component, _extends({}, elementProps, {
+	      type: type,
+	      id: id,
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return FormControl;
+	})(_react2['default'].Component);
+
+	FormControl.propTypes = propTypes;
+	FormControl.defaultProps = defaultProps;
+	FormControl.contextTypes = contextTypes;
+
+	FormControl.Feedback = _FormControlFeedback2['default'];
+	FormControl.Static = _FormControlStatic2['default'];
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('form-control', FormControl);
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+/* 591 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Glyphicon = __webpack_require__(592);
+
+	var _Glyphicon2 = _interopRequireDefault(_Glyphicon);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var defaultProps = {
+	  bsRole: 'feedback'
+	};
+
+	var contextTypes = {
+	  $bs_formGroup: _react2['default'].PropTypes.object
+	};
+
+	var FormControlFeedback = (function (_React$Component) {
+	  _inherits(FormControlFeedback, _React$Component);
+
+	  function FormControlFeedback() {
+	    _classCallCheck(this, FormControlFeedback);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  FormControlFeedback.prototype.getGlyph = function getGlyph(validationState) {
+	    switch (validationState) {
+	      case 'success':
+	        return 'ok';
+	      case 'warning':
+	        return 'warning-sign';
+	      case 'error':
+	        return 'remove';
+	      default:
+	        return null;
+	    }
+	  };
+
+	  FormControlFeedback.prototype.renderDefaultFeedback = function renderDefaultFeedback(formGroup, className, classes, elementProps) {
+	    var glyph = this.getGlyph(formGroup && formGroup.validationState);
+	    if (!glyph) {
+	      return null;
+	    }
+
+	    return _react2['default'].createElement(_Glyphicon2['default'], _extends({}, elementProps, {
+	      glyph: glyph,
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  FormControlFeedback.prototype.render = function render() {
+	    var _props = this.props;
+	    var className = _props.className;
+	    var children = _props.children;
+
+	    var props = _objectWithoutProperties(_props, ['className', 'children']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _utilsBootstrapUtils.getClassSet(bsProps);
+
+	    if (!children) {
+	      return this.renderDefaultFeedback(this.context.$bs_formGroup, className, classes, elementProps);
+	    }
+
+	    var child = _react2['default'].Children.only(children);
+	    return _react2['default'].cloneElement(child, _extends({}, elementProps, {
+	      className: _classnames2['default'](child.props.className, className, classes)
+	    }));
+	  };
+
+	  return FormControlFeedback;
+	})(_react2['default'].Component);
+
+	FormControlFeedback.defaultProps = defaultProps;
+	FormControlFeedback.contextTypes = contextTypes;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('form-control-feedback', FormControlFeedback);
+	module.exports = exports['default'];
+
+/***/ },
+/* 592 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  /**
+	   * An icon name. See e.g. http://getbootstrap.com/components/#glyphicons
+	   */
+	  glyph: _react2['default'].PropTypes.string.isRequired
+	};
+
+	var Glyphicon = (function (_React$Component) {
+	  _inherits(Glyphicon, _React$Component);
+
+	  function Glyphicon() {
+	    _classCallCheck(this, Glyphicon);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Glyphicon.prototype.render = function render() {
+	    var _extends2;
+
+	    var _props = this.props;
+	    var glyph = _props.glyph;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['glyph', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), (_extends2 = {}, _extends2[_utilsBootstrapUtils.prefix(bsProps, glyph)] = true, _extends2));
+
+	    return _react2['default'].createElement('span', _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return Glyphicon;
+	})(_react2['default'].Component);
+
+	Glyphicon.propTypes = propTypes;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('glyphicon', Glyphicon);
+	module.exports = exports['default'];
+
+/***/ },
+/* 593 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPropTypesLibElementType = __webpack_require__(510);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  componentClass: _reactPropTypesLibElementType2['default']
+	};
+
+	var defaultProps = {
+	  componentClass: 'p'
+	};
+
+	var FormControlStatic = (function (_React$Component) {
+	  _inherits(FormControlStatic, _React$Component);
+
+	  function FormControlStatic() {
+	    _classCallCheck(this, FormControlStatic);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  FormControlStatic.prototype.render = function render() {
+	    var _props = this.props;
+	    var Component = _props.componentClass;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['componentClass', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _utilsBootstrapUtils.getClassSet(bsProps);
+
+	    return _react2['default'].createElement(Component, _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return FormControlStatic;
+	})(_react2['default'].Component);
+
+	FormControlStatic.propTypes = propTypes;
+	FormControlStatic.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('form-control-static', FormControlStatic);
+	module.exports = exports['default'];
+
+/***/ },
+/* 594 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _warning = __webpack_require__(530);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  /**
+	   * Uses `controlId` from `<FormGroup>` if not explicitly specified.
+	   */
+	  htmlFor: _react2['default'].PropTypes.string,
+	  srOnly: _react2['default'].PropTypes.bool
+	};
+
+	var defaultProps = {
+	  srOnly: false
+	};
+
+	var contextTypes = {
+	  $bs_formGroup: _react2['default'].PropTypes.object
+	};
+
+	var ControlLabel = (function (_React$Component) {
+	  _inherits(ControlLabel, _React$Component);
+
+	  function ControlLabel() {
+	    _classCallCheck(this, ControlLabel);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  ControlLabel.prototype.render = function render() {
+	    var formGroup = this.context.$bs_formGroup;
+	    var controlId = formGroup && formGroup.controlId;
+
+	    var _props = this.props;
+	    var _props$htmlFor = _props.htmlFor;
+	    var htmlFor = _props$htmlFor === undefined ? controlId : _props$htmlFor;
+	    var srOnly = _props.srOnly;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['htmlFor', 'srOnly', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    process.env.NODE_ENV !== 'production' ? _warning2['default'](controlId == null || htmlFor === controlId, '`controlId` is ignored on `<ControlLabel>` when `htmlFor` is specified.') : undefined;
+
+	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), {
+	      'sr-only': srOnly
+	    });
+
+	    return _react2['default'].createElement('label', _extends({}, elementProps, {
+	      htmlFor: htmlFor,
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return ControlLabel;
+	})(_react2['default'].Component);
+
+	ControlLabel.propTypes = propTypes;
+	ControlLabel.defaultProps = defaultProps;
+	ControlLabel.contextTypes = contextTypes;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('control-label', ControlLabel);
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+/* 595 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPropTypesLibElementType = __webpack_require__(510);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var _utilsStyleConfig = __webpack_require__(517);
+
+	var propTypes = {
+	  componentClass: _reactPropTypesLibElementType2['default'],
+
+	  /**
+	   * The number of columns you wish to span
+	   *
+	   * for Extra small devices Phones (<768px)
+	   *
+	   * class-prefix `col-xs-`
+	   */
+	  xs: _react2['default'].PropTypes.number,
+	  /**
+	   * The number of columns you wish to span
+	   *
+	   * for Small devices Tablets (≥768px)
+	   *
+	   * class-prefix `col-sm-`
+	   */
+	  sm: _react2['default'].PropTypes.number,
+	  /**
+	   * The number of columns you wish to span
+	   *
+	   * for Medium devices Desktops (≥992px)
+	   *
+	   * class-prefix `col-md-`
+	   */
+	  md: _react2['default'].PropTypes.number,
+	  /**
+	   * The number of columns you wish to span
+	   *
+	   * for Large devices Desktops (≥1200px)
+	   *
+	   * class-prefix `col-lg-`
+	   */
+	  lg: _react2['default'].PropTypes.number,
+	  /**
+	   * Hide column
+	   *
+	   * on Extra small devices Phones
+	   *
+	   * adds class `hidden-xs`
+	   */
+	  xsHidden: _react2['default'].PropTypes.bool,
+	  /**
+	   * Hide column
+	   *
+	   * on Small devices Tablets
+	   *
+	   * adds class `hidden-sm`
+	   */
+	  smHidden: _react2['default'].PropTypes.bool,
+	  /**
+	   * Hide column
+	   *
+	   * on Medium devices Desktops
+	   *
+	   * adds class `hidden-md`
+	   */
+	  mdHidden: _react2['default'].PropTypes.bool,
+	  /**
+	   * Hide column
+	   *
+	   * on Large devices Desktops
+	   *
+	   * adds class `hidden-lg`
+	   */
+	  lgHidden: _react2['default'].PropTypes.bool,
+	  /**
+	   * Move columns to the right
+	   *
+	   * for Extra small devices Phones
+	   *
+	   * class-prefix `col-xs-offset-`
+	   */
+	  xsOffset: _react2['default'].PropTypes.number,
+	  /**
+	   * Move columns to the right
+	   *
+	   * for Small devices Tablets
+	   *
+	   * class-prefix `col-sm-offset-`
+	   */
+	  smOffset: _react2['default'].PropTypes.number,
+	  /**
+	   * Move columns to the right
+	   *
+	   * for Medium devices Desktops
+	   *
+	   * class-prefix `col-md-offset-`
+	   */
+	  mdOffset: _react2['default'].PropTypes.number,
+	  /**
+	   * Move columns to the right
+	   *
+	   * for Large devices Desktops
+	   *
+	   * class-prefix `col-lg-offset-`
+	   */
+	  lgOffset: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the right
+	   *
+	   * for Extra small devices Phones
+	   *
+	   * class-prefix `col-xs-push-`
+	   */
+	  xsPush: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the right
+	   *
+	   * for Small devices Tablets
+	   *
+	   * class-prefix `col-sm-push-`
+	   */
+	  smPush: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the right
+	   *
+	   * for Medium devices Desktops
+	   *
+	   * class-prefix `col-md-push-`
+	   */
+	  mdPush: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the right
+	   *
+	   * for Large devices Desktops
+	   *
+	   * class-prefix `col-lg-push-`
+	   */
+	  lgPush: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the left
+	   *
+	   * for Extra small devices Phones
+	   *
+	   * class-prefix `col-xs-pull-`
+	   */
+	  xsPull: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the left
+	   *
+	   * for Small devices Tablets
+	   *
+	   * class-prefix `col-sm-pull-`
+	   */
+	  smPull: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the left
+	   *
+	   * for Medium devices Desktops
+	   *
+	   * class-prefix `col-md-pull-`
+	   */
+	  mdPull: _react2['default'].PropTypes.number,
+	  /**
+	   * Change the order of grid columns to the left
+	   *
+	   * for Large devices Desktops
+	   *
+	   * class-prefix `col-lg-pull-`
+	   */
+	  lgPull: _react2['default'].PropTypes.number
+	};
+
+	var defaultProps = {
+	  componentClass: 'div'
+	};
+
+	var Col = (function (_React$Component) {
+	  _inherits(Col, _React$Component);
+
+	  function Col() {
+	    _classCallCheck(this, Col);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Col.prototype.render = function render() {
+	    var _props = this.props;
+	    var Component = _props.componentClass;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['componentClass', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = [];
+
+	    _utilsStyleConfig.DEVICE_SIZES.forEach(function (size) {
+	      function popProp(propSuffix, modifier) {
+	        var propName = '' + size + propSuffix;
+	        var propValue = elementProps[propName];
+
+	        if (propValue != null) {
+	          classes.push(_utilsBootstrapUtils.prefix(bsProps, '' + size + modifier + '-' + propValue));
+	        }
+
+	        delete elementProps[propName];
+	      }
+
+	      popProp('', '');
+	      popProp('Offset', '-offset');
+	      popProp('Push', '-push');
+	      popProp('Pull', '-pull');
+
+	      var hiddenPropName = size + 'Hidden';
+	      if (elementProps[hiddenPropName]) {
+	        classes.push('hidden-' + size);
+	      }
+	      delete elementProps[hiddenPropName];
+	    });
+
+	    return _react2['default'].createElement(Component, _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return Col;
+	})(_react2['default'].Component);
+
+	Col.propTypes = propTypes;
+	Col.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('col', Col);
+	module.exports = exports['default'];
+
+/***/ },
+/* 596 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPropTypesLibElementType = __webpack_require__(510);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  componentClass: _reactPropTypesLibElementType2['default']
+	};
+
+	var defaultProps = {
+	  componentClass: 'div'
+	};
+
+	var Row = (function (_React$Component) {
+	  _inherits(Row, _React$Component);
+
+	  function Row() {
+	    _classCallCheck(this, Row);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Row.prototype.render = function render() {
+	    var _props = this.props;
+	    var Component = _props.componentClass;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['componentClass', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _utilsBootstrapUtils.getClassSet(bsProps);
+
+	    return _react2['default'].createElement(Component, _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return Row;
+	})(_react2['default'].Component);
+
+	Row.propTypes = propTypes;
+	Row.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('row', Row);
+	module.exports = exports['default'];
+
+/***/ },
+/* 597 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPropTypesLibElementType = __webpack_require__(510);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var propTypes = {
+	  /**
+	   * Turn any fixed-width grid layout into a full-width layout by this property.
+	   *
+	   * Adds `container-fluid` class.
+	   */
+	  fluid: _react2['default'].PropTypes.bool,
+	  /**
+	   * You can use a custom element for this component
+	   */
+	  componentClass: _reactPropTypesLibElementType2['default']
+	};
+
+	var defaultProps = {
+	  componentClass: 'div',
+	  fluid: false
+	};
+
+	var Grid = (function (_React$Component) {
+	  _inherits(Grid, _React$Component);
+
+	  function Grid() {
+	    _classCallCheck(this, Grid);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Grid.prototype.render = function render() {
+	    var _props = this.props;
+	    var fluid = _props.fluid;
+	    var Component = _props.componentClass;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['fluid', 'componentClass', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _utilsBootstrapUtils.prefix(bsProps, fluid && 'fluid');
+
+	    return _react2['default'].createElement(Component, _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+	  };
+
+	  return Grid;
+	})(_react2['default'].Component);
+
+	Grid.propTypes = propTypes;
+	Grid.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('container', Grid);
+	module.exports = exports['default'];
+
+/***/ },
+/* 598 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _Object$values = __webpack_require__(503)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var _utilsStyleConfig = __webpack_require__(517);
+
+	var Label = (function (_React$Component) {
+	  _inherits(Label, _React$Component);
+
+	  function Label() {
+	    _classCallCheck(this, Label);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Label.prototype.hasContent = function hasContent(children) {
+	    var result = false;
+
+	    _react2['default'].Children.forEach(children, function (child) {
+	      if (result) {
+	        return;
+	      }
+
+	      if (child || child === 0) {
+	        result = true;
+	      }
+	    });
+
+	    return result;
+	  };
+
+	  Label.prototype.render = function render() {
+	    var _props = this.props;
+	    var className = _props.className;
+	    var children = _props.children;
+
+	    var props = _objectWithoutProperties(_props, ['className', 'children']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), {
+
+	      // Hack for collapsing on IE8.
+	      hidden: !this.hasContent(children)
+	    });
+
+	    return _react2['default'].createElement(
+	      'span',
+	      _extends({}, elementProps, {
+	        className: _classnames2['default'](className, classes)
+	      }),
+	      children
+	    );
+	  };
+
+	  return Label;
+	})(_react2['default'].Component);
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('label', _utilsBootstrapUtils.bsStyles([].concat(_Object$values(_utilsStyleConfig.State), [_utilsStyleConfig.Style.DEFAULT, _utilsStyleConfig.Style.PRIMARY]), _utilsStyleConfig.Style.DEFAULT, Label));
+	module.exports = exports['default'];
+
+/***/ },
+/* 599 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Form = __webpack_require__(587);
+	var FormGroup = __webpack_require__(588);
+	var FormControl = __webpack_require__(590);
+	var Button = __webpack_require__(475);
+	var ControlLabel = __webpack_require__(594);
+	var Table = __webpack_require__(573);
+	var finchakksapi = __webpack_require__(241);
+
+	var ModifiableAttributes = React.createClass({
+	  displayName: 'ModifiableAttributes',
+
+	  getInitialState: function () {
+	    return {
+	      buttonSytle: '',
+	      buttonText: '',
+	      buttonDisabled: false
+	    };
+	  },
+
+	  handleStockNameChange(e) {
+	    this.setState({ stockName: e.target.value });
+	  },
+
+	  handleIsWatchlistedChange(e) {
+	    this.setState({ isWatchListed: e.target.value });
+	  },
+
+	  handleSubmit(e) {
+	    this.setState({
+	      buttonSytle: 'info',
+	      buttonText: 'Updating Changes',
+	      buttonDisabled: true
+	    });
+
+	    finchakksapi.updateStockAttributes(this.state.stockName, this.state.isWatchListed).then(function (updatedResponse) {
+	      var bStyle = updatedResponse.success ? 'success' : 'error';
+	      var bText = updatedResponse.success ? 'Updated Attributes' : updatedResponse.statusMessage;
+	      this.setState({
+	        buttonSytle: bStyle,
+	        buttonText: bText,
+	        buttonDisabled: true
+	      });
+	    }.bind(this));
+	  },
+
+	  componentWillReceiveProps: function () {
+	    this.setState({
+	      buttonSytle: 'primary',
+	      buttonText: 'Update Changes',
+	      buttonDisabled: false
+	    });
+	  },
+
+	  render: function () {
+	    var refreshRequestTemp = this.props.refreshRequest;
+	    console.log('in render ', refreshRequestTemp);
+	    if (this.props.isRetrieved === true) {
+	      var info = this.props.stocksInfo.items[0];
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          Table,
+	          { striped: true, bordered: true, condensed: true, hover: true },
+	          React.createElement(
+	            'thead',
+	            null,
+	            React.createElement(
+	              'tr',
+	              null,
+	              React.createElement(
+	                'th',
+	                null,
+	                'Attribute Name'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Current Value'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'New Value'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'tbody',
+	            null,
+	            React.createElement(
+	              'tr',
+	              null,
+	              React.createElement(
+	                'td',
+	                null,
+	                'Stock Name'
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                info.stockName
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                React.createElement(FormControl, { type: 'text', onChange: this.handleStockNameChange }),
+	                ' '
+	              )
+	            ),
+	            React.createElement(
+	              'tr',
+	              null,
+	              React.createElement(
+	                'td',
+	                null,
+	                'Is Watch Listed '
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                info.isWatchListed
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                React.createElement(FormControl, { type: 'text', onChange: this.handleIsWatchlistedChange })
+	              )
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          Button,
+	          { bsStyle: this.state.buttonSytle, disabled: this.state.buttonDisabled, bsSize: 'small', type: 'submit', onClick: this.handleSubmit },
+	          this.state.buttonText
+	        )
+	      );
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  }
+	});
+
+	function ModifiableAttributes(props) {}
+
+	module.exports = ModifiableAttributes;
 
 /***/ }
 /******/ ]);

@@ -28,8 +28,6 @@ public class MaintainStockRatingsProcessor implements Processor<AllScripsDbObjec
 
 	private final String stockId;
 	private final ActionEnum action;
-	private static final StockRatingsDb DB = new StockRatingsDb();
-	private static final RatingDb RATINGS_DB = new RatingDb();
 	Map<String, Integer> stockRatings = UnifiedMap.newMap();
 	private Map<String, String[]> inputMap;
 

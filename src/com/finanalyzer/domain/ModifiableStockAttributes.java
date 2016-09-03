@@ -1,46 +1,49 @@
 package com.finanalyzer.domain;
 
+import java.util.List;
+
 public class ModifiableStockAttributes {
 	
 	private String stockName;
-	private String isWatchListed;
-	private String stockRatingGraph;
-	private String stockRatingDebtToEquity;
+	private boolean isWatchListed;
+	private List<RatingObjectForUi> ratings;
 	
 	
-	public ModifiableStockAttributes(String stockName, String isWatchListed,
-			String stockRatingGraph, String stockRatingDebtToEquity) {
+	public ModifiableStockAttributes(String stockName, boolean isWatchListed,
+			List<RatingObjectForUi> ratings) {
 		this.stockName = stockName;
 		this.isWatchListed = isWatchListed;
-		this.stockRatingGraph = stockRatingGraph;
-		this.stockRatingDebtToEquity = stockRatingDebtToEquity;
+		this.ratings= ratings;
 	}
-	
+
+
 	public String getStockName() {
 		return stockName;
 	}
+
+
 	public void setStockName(String stockName) {
 		this.stockName = stockName;
 	}
-	public String getIsWatchListed() {
+
+
+	public boolean isWatchListed() {
 		return isWatchListed;
 	}
-	public void setIsWatchListed(String isWatchListed) {
+
+
+	public void setWatchListed(boolean isWatchListed) {
 		this.isWatchListed = isWatchListed;
 	}
-	public String getStockRatingGraph() {
-		return stockRatingGraph;
+
+
+	public List<RatingObjectForUi> getRatings() {
+		return ratings;
 	}
-	public void setStockRatingGraph(String stockRatingGraph) {
-		this.stockRatingGraph = stockRatingGraph;
+
+
+	public void setRatings(List<RatingObjectForUi> ratings) {
+		this.ratings = ratings;
 	}
-	public String getStockRatingDebtToEquity() {
-		return stockRatingDebtToEquity;
-	}
-	public void setStockRatingDebtToEquity(String stockRatingDebtToEquity) {
-		this.stockRatingDebtToEquity = stockRatingDebtToEquity;
-	}
-	
-	
 
 }

@@ -2,17 +2,26 @@ package com.finanalyzer.util;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import org.apache.tools.ant.taskdefs.PathConvert.MapEntry;
 
 import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.StockIdConverstionUtil;
+import com.finanalyzer.domain.ModifiableStockAttributes;
+import com.finanalyzer.domain.RatingObjectForUi;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
+import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.builder.NDaysHistoryFlattenedDbObjectBuilder;
 import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.builder.UnrealizedDetailDbObjectBuilder;
 import com.finanalyzer.domain.builder.UnrealizedSummaryDbObjectBuilder;
+import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
@@ -20,6 +29,7 @@ import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 
 public class Adapter {
 	
@@ -178,6 +188,35 @@ public class Adapter {
 		}
 		
 		return unrealizedDetailDbObjects;
+	}
+
+	public static ModifiableStockAttributes getModifiableStockAttributes(
+			AllScripsDbObject allScripsDbObject,
+			StopLossDbObject stopLossDbObject) 
+	{
+		final String moneycontrolName = allScripsDbObject.getMoneycontrolName();
+		
+		final Map<String, StockRatingValuesEnum> ratingNameToValue = allScripsDbObject.getRatingNameToValue();
+		
+		List<RatingObjectForUi> ratingObjects = Adapter.ratingNameToValueToRatingObject(ratingNameToValue);
+		
+		final boolean isWatchListed = allScripsDbObject.isWatchListed();
+		
+		return new ModifiableStockAttributes(allScripsDbObject.getStockName(), isWatchListed, ratingObjects);
+	}
+
+	public static List<RatingObjectForUi> ratingNameToValueToRatingObject(Map<String, StockRatingValuesEnum> ratingNameToValue)
+	{
+		List<RatingObjectForUi> ratingObjects = FastList.newList();
+		RatingObjectForUi ratingObjectForUi;
+		
+		for(Map.Entry<String, StockRatingValuesEnum> eachEntry : ratingNameToValue.entrySet())
+		{
+			ratingObjectForUi = new RatingObjectForUi(eachEntry.getKey(), eachEntry.getValue().getDescription());
+			ratingObjects.add(ratingObjectForUi);
+		}
+		
+		return ratingObjects;
 	}
 
 
