@@ -36,8 +36,11 @@ public class MaintainanceControllerEndPoint {
 	
 	@ApiMethod(name = "updateStockAttributes", path="updateStockAttributes", httpMethod = ApiMethod.HttpMethod.POST)
 	public EndPointResponse updateStockAttributes(
-			@Named("stockName") String stockName, 
+			@Named("stockName") String stockName,
+			@Named("moneycontrolName") String moneycontrolName, 
 			@Nullable @Named("isWatchListed") String isWatchListed,
+			@Nullable @Named("lowerReturnPercentTarget") float lowerReturnPercentTarget,
+			@Nullable @Named("upperReturnPercentTarget") float upperReturnPercentTarget,
 			@Nullable @Named("stockRatings") List<String> stockRatings
 			)
 	
