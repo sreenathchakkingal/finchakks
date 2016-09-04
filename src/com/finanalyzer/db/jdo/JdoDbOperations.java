@@ -66,6 +66,21 @@ public class JdoDbOperations<T> {
 		throw new RuntimeException("fetched zero or more than one record "+entries.size());
 	}
 	
+	public T getNullOrOneEntry(String field, List<String> values)
+	{
+		final List<T> entries = getEntries(field, values);
+		if (entries.size()==0)
+		{
+			return null;
+		}
+		if(entries.size()==1)
+		{
+			return entries.get(0);
+		}
+		
+		throw new RuntimeException("fetched more than one record "+entries.size());
+	}
+	
 	public List<T> getEntries(String field, List<String> values, String sortBy)
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();

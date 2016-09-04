@@ -251,6 +251,8 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						
 						boolean isValueCloseToTarget=false;
 						
+						//replace with !=0.0f in the next checkin else we -ve targets will be missed
+						
 						if(lowerReturnPercentTarget > 0.0f)
 						{
 							isValueCloseToTarget = CalculatorUtil.isValueLessThanTarget(stockReturnTillDate, lowerReturnPercentTarget,StopLossDbObject.RETURN_DIFF_TOLERANCE);

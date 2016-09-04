@@ -194,15 +194,17 @@ public class Adapter {
 			AllScripsDbObject allScripsDbObject,
 			StopLossDbObject stopLossDbObject) 
 	{
-		final String moneycontrolName = allScripsDbObject.getMoneycontrolName();
-		
 		final Map<String, StockRatingValuesEnum> ratingNameToValue = allScripsDbObject.getRatingNameToValue();
 		
 		List<RatingObjectForUi> ratingObjects = Adapter.ratingNameToValueToRatingObject(ratingNameToValue);
 		
-		final boolean isWatchListed = allScripsDbObject.isWatchListed();
+		final float lowerReturnPercentTarget = stopLossDbObject==null ? 0.0f : stopLossDbObject.getLowerReturnPercentTarget();
 		
-		return new ModifiableStockAttributes(allScripsDbObject.getStockName(), isWatchListed, ratingObjects);
+		final float upperReturnPercentTarget = stopLossDbObject==null ? 0.0f : stopLossDbObject.getUpperReturnPercentTarget();
+		
+		return new ModifiableStockAttributes(allScripsDbObject.getNseId(),allScripsDbObject.getMoneycontrolName(),
+				allScripsDbObject.isWatchListed(), lowerReturnPercentTarget, 
+				upperReturnPercentTarget, ratingObjects);
 	}
 
 	public static List<RatingObjectForUi> ratingNameToValueToRatingObject(Map<String, StockRatingValuesEnum> ratingNameToValue)

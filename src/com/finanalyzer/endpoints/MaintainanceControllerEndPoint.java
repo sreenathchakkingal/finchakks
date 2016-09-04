@@ -27,17 +27,10 @@ public class MaintainanceControllerEndPoint {
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<>(AllScripsDbObject.class);
 		final AllScripsDbObject allScripsDbObject = allScripsDbOperations.getOneEntry("nseId", FastList.newListWith(stockName));
 		
-//		JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
-//		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getOneEntry("stockName", FastList.newListWith(stockName));
-//		
-		ModifiableStockAttributes modifiableStockAttributes = Adapter.getModifiableStockAttributes(allScripsDbObject, null);
-		//get Allscript Db Object for the stockName
-			//get Mapping
-			//get Ratings Db Object for the
-			//get WatchList
-		//get Target Db Object for the stockName
-		
-//		final ModifiableStockAttributes modifiableStockAttributes = new ModifiableStockAttributes("dummy","true", "good", "bad");
+		JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
+		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getNullOrOneEntry("stockName", FastList.newListWith(stockName));
+		ModifiableStockAttributes modifiableStockAttributes = Adapter.getModifiableStockAttributes(allScripsDbObject, stopLossDbObject);
+
 		return FastList.newListWith(modifiableStockAttributes);
 	}
 	
@@ -46,18 +39,6 @@ public class MaintainanceControllerEndPoint {
 			@Named("stockName") String stockName, 
 			@Nullable @Named("isWatchListed") String isWatchListed,
 			@Nullable @Named("stockRatings") List<String> stockRatings
-			)
-	
-	{
-		return new EndPointResponse(true, "all is well");
-
-	}
-	
-	@ApiMethod(name = "updateStockAttributes1", path="updateStockAttributes1", httpMethod = ApiMethod.HttpMethod.POST)
-	public EndPointResponse updateStockAttributes1(
-			@Named("stockName") String stockName, 
-			@Nullable @Named("isWatchListed") String isWatchListed,
-			@Nullable @Named("stockRatings") String[] stockRatings
 			)
 	
 	{
