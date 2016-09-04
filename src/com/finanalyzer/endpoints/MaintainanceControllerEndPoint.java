@@ -44,7 +44,20 @@ public class MaintainanceControllerEndPoint {
 	@ApiMethod(name = "updateStockAttributes", path="updateStockAttributes", httpMethod = ApiMethod.HttpMethod.POST)
 	public EndPointResponse updateStockAttributes(
 			@Named("stockName") String stockName, 
-			@Nullable @Named("isWatchListed") String isWatchListed
+			@Nullable @Named("isWatchListed") String isWatchListed,
+			@Nullable @Named("stockRatings") List<String> stockRatings
+			)
+	
+	{
+		return new EndPointResponse(true, "all is well");
+
+	}
+	
+	@ApiMethod(name = "updateStockAttributes1", path="updateStockAttributes1", httpMethod = ApiMethod.HttpMethod.POST)
+	public EndPointResponse updateStockAttributes1(
+			@Named("stockName") String stockName, 
+			@Nullable @Named("isWatchListed") String isWatchListed,
+			@Nullable @Named("stockRatings") String[] stockRatings
 			)
 	
 	{

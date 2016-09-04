@@ -26884,7 +26884,7 @@
 	  return axios.get(maintEndPoint + methodName);
 	}
 
-	function putMaintApiResult(isWatchListedTemp, stockNameTemp) {
+	function postMaintApiResult(isWatchListedTemp, stockNameTemp) {
 	  return axios.post('https://finchakks.appspot.com/_ah/api/maintainanceControllerEndPoint/v1/updateStockAttributes?isWatchListed=isWatchListed&stockName=isWatchListed');
 	}
 
@@ -26906,8 +26906,11 @@
 	    });
 	  },
 
-	  updateStockAttributes: function (stockName, isWatchListed) {
-	    return putMaintApiResult('updateStockAttributes?isWatchListed' + isWatchListed + '&stockName=' + stockName).then(function (response) {
+	  updateStockAttributes: function (stockName, isWatchListed, stockRatings) {
+	    for (var i = 0; i < stockRatings.length; i++) {
+	      console.log('updateStockAttributes.stockRatings[i] ', stockRatings[i]);
+	    }
+	    return postMaintApiResult('updateStockAttributes?isWatchListed' + isWatchListed + '&stockName=' + stockName).then(function (response) {
 	      return response.data;
 	    }).catch(function (err) {
 	      console.warn('Error in updateStockAttributes ', err);
@@ -26924,7 +26927,7 @@
 	  },
 
 	  getModifiableStockAttributes: function (stockName) {
-	    return getMaintApiResult('getModifiableStockAttributes').then(function (response) {
+	    return getMaintApiResult('getModifiableStockAttributes?stockName=' + 'BPCL').then(function (response) {
 	      var stocksInfo = response.data;
 	      return stocksInfo;
 	    }).catch(function (err) {
@@ -43928,7 +43931,7 @@
 	      { bsStyle: 'primary', bsSize: 'small', disabled: isRetrieving, type: 'submit', onClick: !isRetrieving ? props.onStockNameSubmit : null },
 	      isRetrieving ? 'Retrieving...' : 'Retrieve All Details'
 	    ),
-	    React.createElement(ModifiableAttributes, { isRetrieved: isRetrieved, stocksInfo: props.stocksInfo, refreshRequest: 'true' })
+	    React.createElement(ModifiableAttributes, { isRetrieved: isRetrieved, stocksInfo: props.stocksInfo })
 	  );
 	}
 
@@ -45339,6 +45342,8 @@
 	var ControlLabel = __webpack_require__(594);
 	var Table = __webpack_require__(573);
 	var finchakksapi = __webpack_require__(241);
+	var SelectorWrapper = __webpack_require__(600);
+	var StockRatingsWrapper = __webpack_require__(601);
 
 	var ModifiableAttributes = React.createClass({
 	  displayName: 'ModifiableAttributes',
@@ -45347,7 +45352,8 @@
 	    return {
 	      buttonSytle: '',
 	      buttonText: '',
-	      buttonDisabled: false
+	      buttonDisabled: false,
+	      stockRatings: []
 	    };
 	  },
 
@@ -45366,7 +45372,7 @@
 	      buttonDisabled: true
 	    });
 
-	    finchakksapi.updateStockAttributes(this.state.stockName, this.state.isWatchListed).then(function (updatedResponse) {
+	    finchakksapi.updateStockAttributes(this.state.stockName, this.state.isWatchListed, this.state.stockRatings).then(function (updatedResponse) {
 	      var bStyle = updatedResponse.success ? 'success' : 'error';
 	      var bText = updatedResponse.success ? 'Updated Attributes' : updatedResponse.statusMessage;
 	      this.setState({
@@ -45385,11 +45391,39 @@
 	    });
 	  },
 
+	  handleRatingsChange(index, e) {
+	    var stockRatings = this.state.stockRatings.slice();
+	    stockRatings[index] = e.target.name;
+	    stockRatings[index + 1] = e.target.value;
+	    this.setState({
+	      stockRatings: stockRatings
+	    });
+	  },
+
 	  render: function () {
 	    var refreshRequestTemp = this.props.refreshRequest;
-	    console.log('in render ', refreshRequestTemp);
+	    var yes = 'Yes';
+	    var no = 'No';
 	    if (this.props.isRetrieved === true) {
 	      var info = this.props.stocksInfo.items[0];
+	      var defaultWatchListed = info.watchListed ? yes : no;
+	      var wathListOptions = ['Yes', 'No'];
+	      var ratingValues = ['Good', 'Average', 'Bad', 'Not Rated'];
+
+	      var stockRatingRows = [];
+	      for (var i = 0; i < info.ratings.length; i++) {
+	        var ratingName = info.ratings[i].ratingName;
+	        var ratingValue = info.ratings[i].ratingValue;
+	        var index = i * 2;
+	        stockRatingRows.push(React.createElement(StockRatingsWrapper, { key: ratingName, name: ratingName, ratingName: ratingName,
+	          ratingValue: ratingValue,
+	          onChange: this.handleRatingsChange.bind(this, index),
+	          defaultValue: ratingValue,
+	          options: ratingValues
+
+	        }));
+	      }
+
 	      return React.createElement(
 	        'div',
 	        null,
@@ -45458,9 +45492,12 @@
 	              React.createElement(
 	                'td',
 	                null,
-	                React.createElement(FormControl, { type: 'text', onChange: this.handleIsWatchlistedChange })
+	                React.createElement(SelectorWrapper, { onChange: this.handleIsWatchlistedChange,
+	                  defaultValue: defaultWatchListed,
+	                  options: wathListOptions })
 	              )
-	            )
+	            ),
+	            stockRatingRows
 	          )
 	        ),
 	        React.createElement(
@@ -45478,6 +45515,99 @@
 	function ModifiableAttributes(props) {}
 
 	module.exports = ModifiableAttributes;
+
+/***/ },
+/* 600 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
+	var FormGroup = __webpack_require__(588);
+	var FormControl = __webpack_require__(590);
+
+	var SelectorWrapper = React.createClass({
+	  displayName: 'SelectorWrapper',
+
+	  render: function () {
+	    var options = this.props.options.map(function (value, i) {
+	      return React.createElement(
+	        'option',
+	        { key: value, value: value },
+	        value
+	      );
+	    });
+
+	    return React.createElement(
+	      FormGroup,
+	      { controlId: 'formControlsSelectMultiple' },
+	      React.createElement(
+	        FormControl,
+	        { componentClass: 'select', name: this.props.name, onChange: this.props.onChange, defaultValue: this.props.defaultValue },
+	        options
+	      )
+	    );
+	  }
+	});
+
+	SelectorWrapper.propTypes = {
+	  onChange: PropTypes.func.isRequired,
+	  options: PropTypes.array.isRequired,
+	  defaultValue: PropTypes.string,
+	  name: PropTypes.string
+	};
+
+	module.exports = SelectorWrapper;
+
+/***/ },
+/* 601 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
+	var FormGroup = __webpack_require__(588);
+	var FormControl = __webpack_require__(590);
+	var SelectorWrapper = __webpack_require__(600);
+
+	var StockRatingsWrapper = React.createClass({
+	  displayName: 'StockRatingsWrapper',
+
+	  render: function () {
+	    return React.createElement(
+	      'tr',
+	      null,
+	      React.createElement(
+	        'td',
+	        null,
+	        this.props.ratingName,
+	        ' '
+	      ),
+	      React.createElement(
+	        'td',
+	        null,
+	        this.props.ratingValue
+	      ),
+	      React.createElement(
+	        'td',
+	        null,
+	        React.createElement(SelectorWrapper, { onChange: this.props.onChange,
+	          defaultValue: this.props.ratingValue,
+	          options: this.props.options,
+	          name: this.props.name })
+	      )
+	    );
+	  }
+	});
+
+	StockRatingsWrapper.propTypes = {
+	  onChange: PropTypes.func.isRequired,
+	  options: PropTypes.array.isRequired,
+	  defaultValue: PropTypes.string,
+	  ratingName: PropTypes.string.isRequired,
+	  ratingValue: PropTypes.string.isRequired,
+	  name: PropTypes.string.isRequired
+	};
+
+	module.exports = StockRatingsWrapper;
 
 /***/ }
 /******/ ]);
