@@ -87,7 +87,7 @@ public class InsertStopLossController
 				stockName("KAJARIACER").lowerReturnPercentTarget(45.0f).upperReturnPercentTarget(52.0f).build();
 		
 		StopLossDbObject AMARAJABAT =new StopLossDbObjectBuilder().
-				stockName("AMARAJABAT").lowerReturnPercentTarget(20.0f).upperReturnPercentTarget(25.0f).build();	
+				stockName("AMARAJABAT").lowerReturnPercentTarget(25.0f).upperReturnPercentTarget(30.0f).build();	
 		
 		StopLossDbObject FINCABLES =new StopLossDbObjectBuilder().
 				stockName("FINCABLES").lowerReturnPercentTarget(40.0f).upperReturnPercentTarget(45.0f).build();		
@@ -114,13 +114,13 @@ public class InsertStopLossController
 				stockName("ICICIBANK").upperReturnPercentTarget(0.1f).build();
 		
 		StopLossDbObject TITAN =new StopLossDbObjectBuilder().
-				stockName("TITAN").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(20.0f).build();
+				stockName("TITAN").lowerReturnPercentTarget(15.0f).upperReturnPercentTarget(25.0f).build();
 		
 		StopLossDbObject NAUKRI =new StopLossDbObjectBuilder().
 				stockName("NAUKRI").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(15.0f).build();
 		
 		StopLossDbObject CASTROLIND =new StopLossDbObjectBuilder().
-				stockName("CASTROLIND").upperReturnPercentTarget(0.1f).build();
+				stockName("CASTROLIND").lowerReturnPercentTarget(3.0f).upperReturnPercentTarget(10.0f).build();
 		
 		List<StopLossDbObject> stopLossDbObjects = FastList.newList();
 		stopLossDbObjects.add(BATAINDIA);
