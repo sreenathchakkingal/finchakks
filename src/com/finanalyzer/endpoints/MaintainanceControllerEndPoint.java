@@ -2,7 +2,9 @@ package com.finanalyzer.endpoints;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.EndPointResponse;
 import com.finanalyzer.domain.ModifiableStockAttributes;
@@ -21,6 +23,8 @@ import com.gs.collections.impl.utility.Iterate;
 @Api(name = "maintainanceControllerEndPoint", version = "v1")
 public class MaintainanceControllerEndPoint {
 	
+	private static final Logger LOG = Logger.getLogger(MaintainanceControllerEndPoint.class.getName());
+
 	@ApiMethod(name = "getModifiableStockAttributes", path="getModifiableStockAttributes")
 	public List<ModifiableStockAttributes> getModifiableStockAttributes(@Named("stockName") String stockName)
 	{
@@ -45,6 +49,11 @@ public class MaintainanceControllerEndPoint {
 			)
 	
 	{
+		LOG.info("MaintainanceControllerEndPoint.updateStockAttributes arguments: moneycontrolName: "+moneycontrolName
+				+" isWatchListed: "+isWatchListed+" lowerReturnPercentTarget: "+lowerReturnPercentTarget+
+				" upperReturnPercentTarget: "+ upperReturnPercentTarget+
+				" stockRatings: "+stockRatings);
+		
 		return new EndPointResponse(true, "all is well");
 
 	}
