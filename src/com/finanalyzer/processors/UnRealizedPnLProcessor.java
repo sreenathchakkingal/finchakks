@@ -253,19 +253,19 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 						
 						//replace with !=0.0f in the next checkin else we -ve targets will be missed
 						
-						if(lowerReturnPercentTarget > 0.0f)
+						if(StopLossDbObject.isValidTarget(lowerReturnPercentTarget))
 						{
 							isValueCloseToTarget = CalculatorUtil.isValueLessThanTarget(stockReturnTillDate, lowerReturnPercentTarget,StopLossDbObject.RETURN_DIFF_TOLERANCE);
 						}
-						if(upperReturnPercentTarget > 0.0f)
+						if(StopLossDbObject.isValidTarget(upperReturnPercentTarget))
 						{
 							isValueCloseToTarget = isValueCloseToTarget || CalculatorUtil.isValueMoreThanTarget(stockReturnTillDate, upperReturnPercentTarget,StopLossDbObject.RETURN_DIFF_TOLERANCE);
 						}					
-						if(lowerSellPriceTarget > 0.0f)
+						if(StopLossDbObject.isValidTarget(lowerSellPriceTarget))
 						{
 							isValueCloseToTarget = isValueCloseToTarget || CalculatorUtil.isValueLessThanTarget(stockSellPrice, lowerSellPriceTarget,StopLossDbObject.PRICE_DIFF_TOLERANCE);
 						}
-						if(upperSellPriceTarget > 0.0f)
+						if(StopLossDbObject.isValidTarget(upperSellPriceTarget))
 						{
 							isValueCloseToTarget = isValueCloseToTarget || CalculatorUtil.isValueMoreThanTarget(stockSellPrice, upperSellPriceTarget,StopLossDbObject.PRICE_DIFF_TOLERANCE);
 						}

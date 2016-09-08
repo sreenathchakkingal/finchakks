@@ -7,7 +7,7 @@ import com.gs.collections.impl.list.mutable.FastList;
 public class StringUtil {
 
 	public static boolean isInvalidValue(String response) {
-		return response == null || "".equals(response) || "null".equalsIgnoreCase(response);
+		return response == null || "".equals(response.trim()) || "null".equalsIgnoreCase(response);
 	}
 
 	public static boolean isInvalidValue(String[] ratingsToBeRemoved) {

@@ -4,15 +4,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
 import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.EndPointResponse;
 import com.finanalyzer.domain.ModifiableStockAttributes;
 import com.finanalyzer.domain.StockRatingValuesEnum;
+import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.StringUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
@@ -53,6 +59,46 @@ public class MaintainanceControllerEndPoint {
 				+" isWatchListed: "+isWatchListed+" lowerReturnPercentTarget: "+lowerReturnPercentTarget+
 				" upperReturnPercentTarget: "+ upperReturnPercentTarget+
 				" stockRatings: "+stockRatings);
+		boolean isValidMoneyControlName = StringUtil.isValidValue(moneycontrolName);
+		boolean isValidWatchListEntry = StringUtil.isValidValue(isWatchListed);
+		final boolean isValidLowerReturnPercentTarget = StopLossDbObject.isValidTarget(lowerReturnPercentTarget);
+		final boolean isValidUpperReturnPercentTarget = StopLossDbObject.isValidTarget(upperReturnPercentTarget);
+		
+		if (isValidMoneyControlName ||  isValidWatchListEntry)
+		{
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
+			List<AllScripsDbObject> allScripsDbObjects  = (List<AllScripsDbObject>)q.execute(stockName);
+			if(isValidMoneyControlName)
+			{
+				allScripsDbObjects.get(0).setMoneycontrolName(moneycontrolName);	
+			}
+			
+			if(isValidWatchListEntry)
+			{
+				allScripsDbObjects.get(0).setWatchListed(isWatchListed.equalsIgnoreCase("yes"));	
+			}
+			
+			pm.close();
+		}
+		
+		if(isValidLowerReturnPercentTarget ||  isValidUpperReturnPercentTarget)
+		{
+			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
+			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
+			
+			StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName(stockName);
+			if(isValidLowerReturnPercentTarget)
+			{
+				builder.lowerReturnPercentTarget(lowerReturnPercentTarget);
+			}
+			if(isValidUpperReturnPercentTarget)
+			{
+				builder.upperReturnPercentTarget(upperReturnPercentTarget);
+			}
+			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
+		}
+		
 		
 		return new EndPointResponse(true, "all is well");
 

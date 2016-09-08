@@ -111,6 +111,11 @@ public class StopLossDbObject {
 	public void setAchieveByDate(String achieveByDate) {
 		this.achieveByDate = achieveByDate;
 	}
+	
+	public static boolean isValidTarget(float balance)
+	{
+		return balance != 0.0f;
+	}
 
 	@Override
 	public String toString()
