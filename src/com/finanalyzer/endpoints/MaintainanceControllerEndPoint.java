@@ -12,9 +12,11 @@ import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.EndPointResponse;
 import com.finanalyzer.domain.ModifiableStockAttributes;
+import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
+import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.Adapter;
@@ -24,6 +26,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "maintainanceControllerEndPoint", version = "v1")
@@ -63,20 +66,40 @@ public class MaintainanceControllerEndPoint {
 		boolean isValidWatchListEntry = StringUtil.isValidValue(isWatchListed);
 		final boolean isValidLowerReturnPercentTarget = StopLossDbObject.isValidTarget(lowerReturnPercentTarget);
 		final boolean isValidUpperReturnPercentTarget = StopLossDbObject.isValidTarget(upperReturnPercentTarget);
+		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
 		
 		if (isValidMoneyControlName ||  isValidWatchListEntry)
 		{
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
 			List<AllScripsDbObject> allScripsDbObjects  = (List<AllScripsDbObject>)q.execute(stockName);
+			final AllScripsDbObject matchingScrip = allScripsDbObjects.get(0);
 			if(isValidMoneyControlName)
 			{
-				allScripsDbObjects.get(0).setMoneycontrolName(moneycontrolName);	
+				matchingScrip.setMoneycontrolName(moneycontrolName);	
 			}
 			
 			if(isValidWatchListEntry)
 			{
-				allScripsDbObjects.get(0).setWatchListed(isWatchListed.equalsIgnoreCase("yes"));	
+				matchingScrip.setWatchListed(isWatchListed.equalsIgnoreCase("yes"));	
+			}
+			
+			for (int i=0; i<stockRatings.size()-1; i=+2)
+			{
+				final String ratingName = stockRatings.get(i);
+				final String ratingValueAsString = stockRatings.get(i+1);
+				
+				if(StringUtil.isValidValue(ratingName) && StringUtil.isValidValue(ratingValueAsString))
+				{
+					int ratingValue = Integer.parseInt (ratingValueAsString);
+					final StockRatingValuesEnum enumForRatingValue = StockRatingValuesEnum.getEnumForRatingValue(ratingValue);
+					ratingsToValue.put(ratingName, enumForRatingValue);
+				}
+			}
+			
+			if(!ratingsToValue.isEmpty())
+			{
+				matchingScrip.setRatingNameToValue(ratingsToValue);	
 			}
 			
 			pm.close();
