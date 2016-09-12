@@ -68,4 +68,10 @@ public enum StockRatingValuesEnum
 //		}
 //		return NOT_RATED;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.description+" : "+ this.rating; 
+	}
 }

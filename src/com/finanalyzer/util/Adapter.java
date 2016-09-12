@@ -11,6 +11,7 @@ import org.apache.tools.ant.taskdefs.PathConvert.MapEntry;
 
 import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.StockIdConverstionUtil;
+import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.ModifiableStockAttributes;
 import com.finanalyzer.domain.RatingObjectForUi;
 import com.finanalyzer.domain.Stock;
@@ -25,6 +26,7 @@ import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
+import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
@@ -154,9 +156,6 @@ public class Adapter {
 		for (Stock stock : stocks)
 		{
 			
-//			final StopLossDbObject stopLossDbObject = stock.getStopLossDbObject();
-//			LOG.info("converting stock: "+stock.getStockName()+"to  UnrealizedDetailDbObject. stopLossDbObject: "+stopLossDbObject);
-			
 			final UnrealizedDetailDbObjectBuilder builder = new UnrealizedDetailDbObjectBuilder();
 			final UnrealizedDetailDbObject unrealizedDetailDbObject = builder
 			.sellableQuantity(stock.getSellableQuantity())
@@ -174,16 +173,8 @@ public class Adapter {
 			.totalReturn(stock.getTotalReturn())
 			.totalReturnIfBank(stock.getTotalReturnIfBank())
 			.diff(stock.getDiff())
-//			.lowerReturnPercentTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getLowerReturnPercentTarget())
-//			.upperReturnPercentTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getUpperReturnPercentTarget())
-//			.lowerSellPriceTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getLowerReturnPercentTarget())
-//			.upperSellPriceTarget(stopLossDbObject==null ? ZERO : stopLossDbObject.getUpperSellPriceTarget())
-//			.achieveAfterDate(stopLossDbObject==null ? null : stopLossDbObject.getAchieveAfterDate())
-//			.achieveByDate(stopLossDbObject==null ? null : stopLossDbObject.getAchieveByDate())
-//			.isTargetReached(stock.isReachedStopLossTarget())
 			.build();
 			
-//			LOG.info("conversion complete for stock: "+stock.getStockName()+"to  UnrealizedDetailDbObject");
 			unrealizedDetailDbObjects.add(unrealizedDetailDbObject);
 		}
 		
@@ -207,17 +198,41 @@ public class Adapter {
 				upperReturnPercentTarget, ratingObjects);
 	}
 
-	public static List<RatingObjectForUi> ratingNameToValueToRatingObject(Map<String, StockRatingValuesEnum> ratingNameToValue)
+	public static List<RatingObjectForUi> ratingNameToValueToRatingObject(
+													Map<String, StockRatingValuesEnum>	ratingNameToValue)
 	{
+		LOG.info("ratingNameToValue: "+ratingNameToValue);
 		List<RatingObjectForUi> ratingObjects = FastList.newList();
 		RatingObjectForUi ratingObjectForUi;
 		
-		for(Map.Entry<String, StockRatingValuesEnum> eachEntry : ratingNameToValue.entrySet())
+		JdoDbOperations<RatingDbObject> operations = new JdoDbOperations<RatingDbObject>(RatingDbObject.class);
+		final List<RatingDbObject> ratings = operations.getEntries();
+		for (RatingDbObject rating : ratings)
 		{
-			ratingObjectForUi = new RatingObjectForUi(eachEntry.getKey(), eachEntry.getValue().getDescription());
+			LOG.info("rating: "+rating.getRatingName());
+			final StockRatingValuesEnum persitedRating = ratingNameToValue.get(rating.getRatingName());
+			LOG.info("persitedRating: "+persitedRating);
+			if(persitedRating!=null)
+			{
+				LOG.info("persitedRating!=null");
+				ratingObjectForUi = new RatingObjectForUi(rating.getRatingName(), persitedRating.getDescription());
+			}
+			else
+			{
+				LOG.info("persitedRating==null");
+				ratingObjectForUi = new RatingObjectForUi(rating.getRatingName(), StockRatingValuesEnum.NOT_RATED.getDescription());
+			}
+			
 			ratingObjects.add(ratingObjectForUi);
 		}
-		
+//		
+//		
+//		for(Map.Entry<String, StockRatingValuesEnum> eachEntry : ratingNameToValue.entrySet())
+//		{
+//			ratingObjectForUi = new RatingObjectForUi(eachEntry.getKey(), eachEntry.getValue().getDescription());
+//			ratingObjects.add(ratingObjectForUi);
+//		}
+//		
 		return ratingObjects;
 	}
 

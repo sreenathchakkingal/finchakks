@@ -211,7 +211,6 @@ public class AllScripsDbObject {
 		this.isWatchListed = String.valueOf(isWatchListed);
 	}
 	
-	
 	public boolean isBlackListed() {
 		return Boolean.valueOf(this.isBlackListed);
 	}
@@ -223,11 +222,55 @@ public class AllScripsDbObject {
 	public Map<String, StockRatingValuesEnum> getRatingNameToValue() {
 		return transforListToMap(this.ratingNameToValue);
 	}
-
-	public void setRatingNameToValue(Map<String, StockRatingValuesEnum> ratingNameToValue) {
+	
+	public List<String> getRatingNameToValueAsList() {
+		return this.ratingNameToValue;
+	}
+	
+	public void setRatingNameToValue(Map<String, StockRatingValuesEnum> ratingNameToValue) 
+	{
 		this.ratingNameToValue = transformMapToList(ratingNameToValue);
 	}
+	
+	public void setRatingNameToValue(List<String> ratingNameToValue) 
+	{
+		this.ratingNameToValue = ratingNameToValue;
+	}
+	
+	public void mergeRatings(List<String> newRatings) {
+		for(int i=0;i<newRatings.size();i+=2)
+		{
+			final int indexOfMatchingEntry = this.ratingNameToValue.indexOf(newRatings.get(i));
+			if(indexOfMatchingEntry ==-1)//if not match is found append to the list
+			{
+				ratingNameToValue.add(newRatings.get(i)); //name
+				ratingNameToValue.add(newRatings.get(i+1)); //value
+			}
+			else
+			{
+				ratingNameToValue.set(indexOfMatchingEntry+1, newRatings.get(i+1));
+			}
+		}
+	}
 
+	private List<String> transformMapToList(Map<String, StockRatingValuesEnum> ratingNameToValue) {
+		final List<String> flattenedList = FastList.newList();
+		final UnifiedMap<String, StockRatingValuesEnum> ratingNameValue = UnifiedMap.newMap(ratingNameToValue);
+		
+		final Procedure2<String, StockRatingValuesEnum> flattenRatingMap = new Procedure2<String, StockRatingValuesEnum>() {
+
+			@Override
+			public void value(String ratingName, StockRatingValuesEnum ratingValue) {
+				flattenedList.add(ratingName);
+				flattenedList.add(ratingValue.getDescription());
+			}
+		};
+		
+		ratingNameValue.forEachKeyValue(flattenRatingMap);
+		
+		return flattenedList;
+	}
+	
 	private Map<String, StockRatingValuesEnum> transforListToMap(List<String> ratings) {
 		final Map<String, StockRatingValuesEnum> ratingNameToValue = UnifiedMap.newMap();
 		for (int i = 0; i < ratings.size()-1; i=i+2) 
@@ -254,24 +297,6 @@ public class AllScripsDbObject {
 			ratingObjectsForUi.add(new RatingObjectForUi(ratingName, ratingValue));
 		}
 		return ratingObjectsForUi;
-	}
-	
-	private List<String> transformMapToList(Map<String, StockRatingValuesEnum> ratingNameToValue) {
-		final List<String> flattenedList = FastList.newList();
-		final UnifiedMap<String, StockRatingValuesEnum> ratingNameValue = UnifiedMap.newMap(ratingNameToValue);
-		
-		final Procedure2<String, StockRatingValuesEnum> flattenRatingMap = new Procedure2<String, StockRatingValuesEnum>() {
-
-			@Override
-			public void value(String ratingName, StockRatingValuesEnum ratingValue) {
-				flattenedList.add(ratingName);
-				flattenedList.add(ratingValue.getDescription());
-			}
-		};
-		
-		ratingNameValue.forEachKeyValue(flattenRatingMap);
-		
-		return flattenedList;
 	}
 	
 	public List<String> getRatingInferences()

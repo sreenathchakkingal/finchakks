@@ -2,6 +2,8 @@ package com.finanalyzer.endpoints;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -58,17 +60,23 @@ public class MaintainanceControllerEndPoint {
 			)
 	
 	{
-		LOG.info("MaintainanceControllerEndPoint.updateStockAttributes arguments: moneycontrolName: "+moneycontrolName
+		LOG.info("arguments: moneycontrolName: "+moneycontrolName
 				+" isWatchListed: "+isWatchListed+" lowerReturnPercentTarget: "+lowerReturnPercentTarget+
 				" upperReturnPercentTarget: "+ upperReturnPercentTarget+
 				" stockRatings: "+stockRatings);
-		boolean isValidMoneyControlName = StringUtil.isValidValue(moneycontrolName);
-		boolean isValidWatchListEntry = StringUtil.isValidValue(isWatchListed);
+		final boolean isValidMoneyControlName = StringUtil.isValidValue(moneycontrolName);
+		final boolean isValidWatchListEntry = StringUtil.isValidValue(isWatchListed);
 		final boolean isValidLowerReturnPercentTarget = StopLossDbObject.isValidTarget(lowerReturnPercentTarget);
 		final boolean isValidUpperReturnPercentTarget = StopLossDbObject.isValidTarget(upperReturnPercentTarget);
+		final boolean isValidStockRatings= stockRatings!=null && !stockRatings.isEmpty();
+		
+		LOG.info("isValidMoneyControlName: "+isValidMoneyControlName+" isValidWatchListEntry: "+
+		" isValidLowerReturnPercentTarget: "+isValidLowerReturnPercentTarget +
+				" isValidUpperReturnPercentTarget: "+isValidUpperReturnPercentTarget+" isValidStockRatings: "+isValidStockRatings);
+		
 		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
 		
-		if (isValidMoneyControlName ||  isValidWatchListEntry)
+		if (isValidMoneyControlName ||  isValidWatchListEntry || isValidStockRatings)
 		{
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
@@ -76,38 +84,59 @@ public class MaintainanceControllerEndPoint {
 			final AllScripsDbObject matchingScrip = allScripsDbObjects.get(0);
 			if(isValidMoneyControlName)
 			{
+				LOG.info("setting new MoneyControlname: "+moneycontrolName);
 				matchingScrip.setMoneycontrolName(moneycontrolName);	
 			}
 			
 			if(isValidWatchListEntry)
 			{
+				LOG.info("setting new isWatchListed: "+isWatchListed.equalsIgnoreCase("yes"));
 				matchingScrip.setWatchListed(isWatchListed.equalsIgnoreCase("yes"));	
 			}
 			
-			for (int i=0; i<stockRatings.size()-1; i=+2)
+			if(isValidStockRatings)
 			{
-				final String ratingName = stockRatings.get(i);
-				final String ratingValueAsString = stockRatings.get(i+1);
+				LOG.info("isValidStockRatings");
+				matchingScrip.mergeRatings(stockRatings);
 				
-				if(StringUtil.isValidValue(ratingName) && StringUtil.isValidValue(ratingValueAsString))
-				{
-					int ratingValue = Integer.parseInt (ratingValueAsString);
-					final StockRatingValuesEnum enumForRatingValue = StockRatingValuesEnum.getEnumForRatingValue(ratingValue);
-					ratingsToValue.put(ratingName, enumForRatingValue);
-				}
+				
+//				for (int i=0; i<stockRatings.size()-1; i=+2)
+//				{
+//					final String ratingName = stockRatings.get(i);
+//					final String ratingValue = stockRatings.get(i+1);
+//					
+//					if(StringUtil.isValidValue(ratingName) && StringUtil.isValidValue(ratingValue))
+//					{
+//						LOG.info("ratingName: "+ratingName+" ratingValue: "+ratingValue);
+//						final StockRatingValuesEnum enumForRatingValue = StockRatingValuesEnum.getEnumForRatingDescription(ratingValue);
+//						ratingsToValue.put(ratingName, enumForRatingValue);
+//					}
+//				}
 			}
 			
-			if(!ratingsToValue.isEmpty())
-			{
-				matchingScrip.setRatingNameToValue(ratingsToValue);	
-			}
+//			LOG.info("!ratingsToValue.isEmpty() "+!ratingsToValue.isEmpty());
+//			
+//			if(!ratingsToValue.isEmpty())
+//			{
+//				final Map<String, StockRatingValuesEnum> ratingNameToValueBeforeUpdate = matchingScrip.getRatingNameToValue();
+//				final Map<String, StockRatingValuesEnum> ratingNameToValueToBeUpdated = UnifiedMap.newMap();
+//				for (Map.Entry<String, StockRatingValuesEnum> eachMapEntry : ratingsToValue.entrySet())
+//				{
+//					ratingNameToValueBeforeUpdate.get(eachMapEntry.getKey());
+//				}
+//				
+//				LOG.info("updating matchingScrip rating");
+//				matchingScrip.setRatingNameToValue(ratingsToValue);	
+//			}
 			
+			LOG.info("pm.close");
 			pm.close();
 		}
 		
 		if(isValidLowerReturnPercentTarget ||  isValidUpperReturnPercentTarget)
 		{
 			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
+			LOG.info("stopLossOperations.deleteEntries");
 			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
 			
 			StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName(stockName);
@@ -119,10 +148,11 @@ public class MaintainanceControllerEndPoint {
 			{
 				builder.upperReturnPercentTarget(upperReturnPercentTarget);
 			}
+			LOG.info("stopLossOperations.deleteEntries");
 			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
 		}
 		
-		
+		LOG.info("return success message");
 		return new EndPointResponse(true, "all is well");
 
 	}
