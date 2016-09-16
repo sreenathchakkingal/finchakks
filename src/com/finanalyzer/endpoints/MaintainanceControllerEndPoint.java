@@ -39,11 +39,12 @@ public class MaintainanceControllerEndPoint {
 	@ApiMethod(name = "getModifiableStockAttributes", path="getModifiableStockAttributes")
 	public List<ModifiableStockAttributes> getModifiableStockAttributes(@Named("stockName") String stockName)
 	{
+		String stockNameUpperCase= stockName.toUpperCase();
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<>(AllScripsDbObject.class);
-		final AllScripsDbObject allScripsDbObject = allScripsDbOperations.getOneEntry("nseId", FastList.newListWith(stockName));
+		final AllScripsDbObject allScripsDbObject = allScripsDbOperations.getOneEntry("nseId", FastList.newListWith(stockNameUpperCase));
 		
 		JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
-		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getNullOrOneEntry("stockName", FastList.newListWith(stockName));
+		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getNullOrOneEntry("stockName", FastList.newListWith(stockNameUpperCase));
 		ModifiableStockAttributes modifiableStockAttributes = Adapter.getModifiableStockAttributes(allScripsDbObject, stopLossDbObject);
 
 		return FastList.newListWith(modifiableStockAttributes);
