@@ -1,5 +1,3 @@
-*.class
-*.jar
-
-/test
+/META-INF
 /com
+/test

@@ -15,7 +15,7 @@ public class AllScripsDbObjectTest extends TestCase{
 		List<String> ratings = FastList.newListWith("Dummy Rating Name1", "Good",
 				"Dummy Rating Name2", "Average", "Dummy Rating Name3", "Bad");
 		final AllScripsDbObject allScripsDbObject = new AllScripsDbObject();
-		allScripsDbObject.setRatingNameToValue(ratings);
+		allScripsDbObject.setRatingNameToValueFromList(ratings);
 
 		List<String> ratingsToBeMerged = FastList.newListWith("Dummy Rating Name3", "Average", "Dummy Rating Name4", "Not Rated");
 		allScripsDbObject.mergeRatings(ratingsToBeMerged);

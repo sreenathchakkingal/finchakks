@@ -232,7 +232,7 @@ public class AllScripsDbObject {
 		this.ratingNameToValue = transformMapToList(ratingNameToValue);
 	}
 	
-	public void setRatingNameToValue(List<String> ratingNameToValue) 
+	public void setRatingNameToValueFromList(List<String> ratingNameToValue) //if we keep the name as setRatingNameToValue gae deployment fails
 	{
 		this.ratingNameToValue = ratingNameToValue;
 	}

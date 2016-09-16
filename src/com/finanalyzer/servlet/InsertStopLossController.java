@@ -99,7 +99,7 @@ public class InsertStopLossController
 				stockName("MOTHERSUMI").lowerReturnPercentTarget(10.0f).upperReturnPercentTarget(18.0f).build();
 		
 		StopLossDbObject NESTLEIND =new StopLossDbObjectBuilder().
-				stockName("NESTLEIND").lowerReturnPercentTarget(15.0f).upperReturnPercentTarget(20.0f).build();
+				stockName("NESTLEIND").lowerReturnPercentTarget(7.0f).upperReturnPercentTarget(15.0f).build();
 		
 		StopLossDbObject PIDILITIND =new StopLossDbObjectBuilder().
 				stockName("PIDILITIND").lowerReturnPercentTarget(25.0f).upperReturnPercentTarget(35.0f).build();

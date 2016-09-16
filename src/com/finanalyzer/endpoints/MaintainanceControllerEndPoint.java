@@ -118,16 +118,88 @@ public class MaintainanceControllerEndPoint {
 //			
 //			if(!ratingsToValue.isEmpty())
 //			{
-//				final Map<String, StockRatingValuesEnum> ratingNameToValueBeforeUpdate = matchingScrip.getRatingNameToValue();
-//				final Map<String, StockRatingValuesEnum> ratingNameToValueToBeUpdated = UnifiedMap.newMap();
-//				for (Map.Entry<String, StockRatingValuesEnum> eachMapEntry : ratingsToValue.entrySet())
-//				{
-//					ratingNameToValueBeforeUpdate.get(eachMapEntry.getKey());
-//				}
-//				
 //				LOG.info("updating matchingScrip rating");
 //				matchingScrip.setRatingNameToValue(ratingsToValue);	
 //			}
+			
+			LOG.info("pm.close");
+			pm.close();
+		}
+		
+		if(isValidLowerReturnPercentTarget ||  isValidUpperReturnPercentTarget)
+		{
+			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
+			LOG.info("stopLossOperations.deleteEntries");
+			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
+			
+			StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName(stockName);
+			if(isValidLowerReturnPercentTarget)
+			{
+				builder.lowerReturnPercentTarget(lowerReturnPercentTarget);
+			}
+			if(isValidUpperReturnPercentTarget)
+			{
+				builder.upperReturnPercentTarget(upperReturnPercentTarget);
+			}
+			LOG.info("stopLossOperations.deleteEntries");
+			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
+		}
+		
+		LOG.info("return success message");
+		return new EndPointResponse(true, "all is well");
+
+	}
+	
+	@ApiMethod(name = "updateStockAttributes1", path="updateStockAttributes1", httpMethod = ApiMethod.HttpMethod.POST)
+	public EndPointResponse updateStockAttributes1(
+			@Named("stockName") String stockName,
+			@Nullable @Named("moneycontrolName") String moneycontrolName, 
+			@Nullable @Named("isWatchListed") String isWatchListed,
+			@Nullable @Named("lowerReturnPercentTarget") float lowerReturnPercentTarget,
+			@Nullable @Named("upperReturnPercentTarget") float upperReturnPercentTarget,
+			@Nullable @Named("stockRatings") List<String> stockRatings
+			)
+	
+	{
+		LOG.info("arguments: moneycontrolName: "+moneycontrolName
+				+" isWatchListed: "+isWatchListed+" lowerReturnPercentTarget: "+lowerReturnPercentTarget+
+				" upperReturnPercentTarget: "+ upperReturnPercentTarget+
+				" stockRatings: "+stockRatings);
+		final boolean isValidMoneyControlName = StringUtil.isValidValue(moneycontrolName);
+		final boolean isValidWatchListEntry = StringUtil.isValidValue(isWatchListed);
+		final boolean isValidLowerReturnPercentTarget = StopLossDbObject.isValidTarget(lowerReturnPercentTarget);
+		final boolean isValidUpperReturnPercentTarget = StopLossDbObject.isValidTarget(upperReturnPercentTarget);
+		final boolean isValidStockRatings= stockRatings!=null && !stockRatings.isEmpty();
+		
+		LOG.info("isValidMoneyControlName: "+isValidMoneyControlName+" isValidWatchListEntry: "+
+		" isValidLowerReturnPercentTarget: "+isValidLowerReturnPercentTarget +
+				" isValidUpperReturnPercentTarget: "+isValidUpperReturnPercentTarget+" isValidStockRatings: "+isValidStockRatings);
+		
+		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
+		
+		if (isValidMoneyControlName ||  isValidWatchListEntry || isValidStockRatings)
+		{
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
+			List<AllScripsDbObject> allScripsDbObjects  = (List<AllScripsDbObject>)q.execute(stockName);
+			final AllScripsDbObject matchingScrip = allScripsDbObjects.get(0);
+			if(isValidMoneyControlName)
+			{
+				LOG.info("setting new MoneyControlname: "+moneycontrolName);
+				matchingScrip.setMoneycontrolName(moneycontrolName);	
+			}
+			
+			if(isValidWatchListEntry)
+			{
+				LOG.info("setting new isWatchListed: "+isWatchListed.equalsIgnoreCase("yes"));
+				matchingScrip.setWatchListed(isWatchListed.equalsIgnoreCase("yes"));	
+			}
+			
+			if(isValidStockRatings)
+			{
+				LOG.info("isValidStockRatings");
+				matchingScrip.mergeRatings(stockRatings);
+			}
 			
 			LOG.info("pm.close");
 			pm.close();
