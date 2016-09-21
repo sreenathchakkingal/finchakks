@@ -42530,7 +42530,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetailsSelectedOne = __webpack_require__(565);
+	var UnrealizedDetailsSelected = __webpack_require__(565);
 	var finchakksapi = __webpack_require__(240);
 
 	var UnrealizedDetailsSelectedContainer = React.createClass({
@@ -42558,7 +42558,7 @@
 	  },
 
 	  render: function () {
-	    return React.createElement(UnrealizedDetailsSelectedOne, { isLoading: this.state.isLoading,
+	    return React.createElement(UnrealizedDetailsSelected, { isLoading: this.state.isLoading,
 	      stocksInfo: this.state.stocksInfo });
 	  }
 
@@ -42632,11 +42632,12 @@
 	      "customComponent": MoneyFormat
 	    }];
 
+	    var headerName = 'Unrealized Details: ' + props.stocksInfo[0].stockName;
 	    return React.createElement(
 	      PanelWrapper,
-	      { header: 'Unrealized Details' },
+	      { header: headerName },
 	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
+	        columns: ["returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
 	        columnMetadata: metaData
 	      })
 	    );
@@ -45598,7 +45599,6 @@
 	var Button = __webpack_require__(475);
 	var ControlLabel = __webpack_require__(596);
 	var Table = __webpack_require__(575);
-	var finchakksapi = __webpack_require__(240);
 	var SelectorWrapper = __webpack_require__(603);
 	var StockRatingsWrapper = __webpack_require__(604);
 

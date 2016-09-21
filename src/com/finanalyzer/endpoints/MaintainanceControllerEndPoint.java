@@ -20,6 +20,7 @@ import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.Adapter;
 import com.finanalyzer.util.StringUtil;
@@ -59,7 +60,6 @@ public class MaintainanceControllerEndPoint {
 			@Nullable @Named("upperReturnPercentTarget") float upperReturnPercentTarget,
 			@Nullable @Named("stockRatings") List<String> stockRatings
 			)
-	
 	{
 		LOG.info("arguments: moneycontrolName: "+moneycontrolName
 				+" isWatchListed: "+isWatchListed+" lowerReturnPercentTarget: "+lowerReturnPercentTarget+
@@ -74,8 +74,6 @@ public class MaintainanceControllerEndPoint {
 		LOG.info("isValidMoneyControlName: "+isValidMoneyControlName+" isValidWatchListEntry: "+
 		" isValidLowerReturnPercentTarget: "+isValidLowerReturnPercentTarget +
 				" isValidUpperReturnPercentTarget: "+isValidUpperReturnPercentTarget+" isValidStockRatings: "+isValidStockRatings);
-		
-		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
 		
 		if (isValidMoneyControlName ||  isValidWatchListEntry || isValidStockRatings)
 		{
@@ -99,30 +97,8 @@ public class MaintainanceControllerEndPoint {
 			{
 				LOG.info("isValidStockRatings");
 				matchingScrip.mergeRatings(stockRatings);
-				
-				
-//				for (int i=0; i<stockRatings.size()-1; i=+2)
-//				{
-//					final String ratingName = stockRatings.get(i);
-//					final String ratingValue = stockRatings.get(i+1);
-//					
-//					if(StringUtil.isValidValue(ratingName) && StringUtil.isValidValue(ratingValue))
-//					{
-//						LOG.info("ratingName: "+ratingName+" ratingValue: "+ratingValue);
-//						final StockRatingValuesEnum enumForRatingValue = StockRatingValuesEnum.getEnumForRatingDescription(ratingValue);
-//						ratingsToValue.put(ratingName, enumForRatingValue);
-//					}
-//				}
 			}
-			
-//			LOG.info("!ratingsToValue.isEmpty() "+!ratingsToValue.isEmpty());
-//			
-//			if(!ratingsToValue.isEmpty())
-//			{
-//				LOG.info("updating matchingScrip rating");
-//				matchingScrip.setRatingNameToValue(ratingsToValue);	
-//			}
-			
+
 			LOG.info("pm.close");
 			pm.close();
 		}
@@ -147,87 +123,21 @@ public class MaintainanceControllerEndPoint {
 		}
 		
 		LOG.info("return success message");
-		return new EndPointResponse(true, "all is well");
+		return new EndPointResponse(true, "success!!");
 
 	}
-	
-	@ApiMethod(name = "updateStockAttributes1", path="updateStockAttributes1", httpMethod = ApiMethod.HttpMethod.POST)
-	public EndPointResponse updateStockAttributes1(
-			@Named("stockName") String stockName,
-			@Nullable @Named("moneycontrolName") String moneycontrolName, 
-			@Nullable @Named("isWatchListed") String isWatchListed,
-			@Nullable @Named("lowerReturnPercentTarget") float lowerReturnPercentTarget,
-			@Nullable @Named("upperReturnPercentTarget") float upperReturnPercentTarget,
-			@Nullable @Named("stockRatings") List<String> stockRatings
-			)
-	
-	{
-		LOG.info("arguments: moneycontrolName: "+moneycontrolName
-				+" isWatchListed: "+isWatchListed+" lowerReturnPercentTarget: "+lowerReturnPercentTarget+
-				" upperReturnPercentTarget: "+ upperReturnPercentTarget+
-				" stockRatings: "+stockRatings);
-		final boolean isValidMoneyControlName = StringUtil.isValidValue(moneycontrolName);
-		final boolean isValidWatchListEntry = StringUtil.isValidValue(isWatchListed);
-		final boolean isValidLowerReturnPercentTarget = StopLossDbObject.isValidTarget(lowerReturnPercentTarget);
-		final boolean isValidUpperReturnPercentTarget = StopLossDbObject.isValidTarget(upperReturnPercentTarget);
-		final boolean isValidStockRatings= stockRatings!=null && !stockRatings.isEmpty();
-		
-		LOG.info("isValidMoneyControlName: "+isValidMoneyControlName+" isValidWatchListEntry: "+
-		" isValidLowerReturnPercentTarget: "+isValidLowerReturnPercentTarget +
-				" isValidUpperReturnPercentTarget: "+isValidUpperReturnPercentTarget+" isValidStockRatings: "+isValidStockRatings);
-		
-		Map<String, StockRatingValuesEnum> ratingsToValue = UnifiedMap.newMap();
-		
-		if (isValidMoneyControlName ||  isValidWatchListEntry || isValidStockRatings)
-		{
-			PersistenceManager pm = PMF.get().getPersistenceManager();
-			Query q = pm.newQuery(AllScripsDbObject.class, ":p.contains("+AllScripsDbObject.NSE_ID+")");
-			List<AllScripsDbObject> allScripsDbObjects  = (List<AllScripsDbObject>)q.execute(stockName);
-			final AllScripsDbObject matchingScrip = allScripsDbObjects.get(0);
-			if(isValidMoneyControlName)
-			{
-				LOG.info("setting new MoneyControlname: "+moneycontrolName);
-				matchingScrip.setMoneycontrolName(moneycontrolName);	
-			}
-			
-			if(isValidWatchListEntry)
-			{
-				LOG.info("setting new isWatchListed: "+isWatchListed.equalsIgnoreCase("yes"));
-				matchingScrip.setWatchListed(isWatchListed.equalsIgnoreCase("yes"));	
-			}
-			
-			if(isValidStockRatings)
-			{
-				LOG.info("isValidStockRatings");
-				matchingScrip.mergeRatings(stockRatings);
-			}
-			
-			LOG.info("pm.close");
-			pm.close();
-		}
-		
-		if(isValidLowerReturnPercentTarget ||  isValidUpperReturnPercentTarget)
-		{
-			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
-			LOG.info("stopLossOperations.deleteEntries");
-			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
-			
-			StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName(stockName);
-			if(isValidLowerReturnPercentTarget)
-			{
-				builder.lowerReturnPercentTarget(lowerReturnPercentTarget);
-			}
-			if(isValidUpperReturnPercentTarget)
-			{
-				builder.upperReturnPercentTarget(upperReturnPercentTarget);
-			}
-			LOG.info("stopLossOperations.deleteEntries");
-			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
-		}
-		
-		LOG.info("return success message");
-		return new EndPointResponse(true, "all is well");
 
+	@ApiMethod(name = "uploadUnrealized", path="uploadUnrealized", httpMethod = ApiMethod.HttpMethod.POST)
+	public EndPointResponse uploadUnrealized(@Named("unrealized") String unrealized)
+	{
+		LOG.info("unrealized: "+unrealized);
+		String mockString="";
+//		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = 
+//										new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
+//		unrealizeddbOperations.deleteEntries();
+//		List<UnrealizedDbObject> entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailerFromContent, true);
+
+		return new EndPointResponse(true, "success!!");
 	}
 
 }
