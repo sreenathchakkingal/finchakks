@@ -55,7 +55,7 @@ public class UnrealizedDbObject {
 	@Override
 	public String toString()
 	{
-		return this.getMoneycontrolName();
+		return this.getMoneycontrolName()+":"+this.getBuyDate()+":"+this.getBuyPrice()+":"+this.getBuyQuantity();
 	}
 
 }

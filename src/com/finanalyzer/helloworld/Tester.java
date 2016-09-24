@@ -8,23 +8,14 @@ import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.util.DateUtil;
+import com.gs.collections.impl.list.mutable.FastList;
 
 public class Tester {
 	private static Logger LOG =  Logger.getLogger(Tester.class.getName());
 
 	public static void main(String[] args) throws Exception{
-		StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName("dd");
-		if(true)
-		{
-			builder.lowerReturnPercentTarget(0.1f);
-		}
-		if(false)
-		{
-			builder.upperReturnPercentTarget(0.2f);
-		}
-		final StopLossDbObject object = builder.build();
-		System.out.println("lower "+object.getLowerReturnPercentTarget());
-		System.out.println("upper "+object.getUpperReturnPercentTarget());
+		List<String> rows = FastList.newListWith("one", "two", "three", "total");
+		System.out.println(rows.subList(0, rows.size()-2));
 		
 	}
 

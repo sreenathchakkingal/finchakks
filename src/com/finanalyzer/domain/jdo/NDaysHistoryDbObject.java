@@ -193,13 +193,13 @@ public class NDaysHistoryDbObject {
 		}
 		return this.values;
 	}
+
 	
 	@Override
 	public String toString()
 	{
 		return this.stockName;
 	}
-
-
+	
 }
 

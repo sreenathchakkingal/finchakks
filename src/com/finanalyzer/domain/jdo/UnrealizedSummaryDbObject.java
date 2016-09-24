@@ -10,9 +10,9 @@ import com.gs.collections.api.block.predicate.Predicate;
 @PersistenceCapable
 public class UnrealizedSummaryDbObject {
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+//	@PrimaryKey
+//	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+//	private Long id;
 	
 	@Persistent
 	private String stockName; //moneycontrol name
@@ -239,13 +239,13 @@ public class UnrealizedSummaryDbObject {
 		this.isTargetReached = isTargetReached;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+//	public Long getId() {
+//		return id;
+//	}
+//
+//	public void setId(Long id) {
+//		this.id = id;
+//	}
 	
 }
 

@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.junit.internal.runners.model.EachTestNotifier;
+
 import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
@@ -23,6 +25,7 @@ import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -131,13 +134,40 @@ public class MaintainanceControllerEndPoint {
 	public EndPointResponse uploadUnrealized(@Named("unrealized") String unrealized)
 	{
 		LOG.info("unrealized: "+unrealized);
-		String mockString="";
+		List<String> rowsWithoutHeader = ReaderUtil.convertToList(unrealized, true, 0);
+		final String trailer = rowsWithoutHeader.get(rowsWithoutHeader.size()-1);
+		int index=0;
+		final String[] split = trailer.split(Adapter.DELIMITER_IN_UNREALIZED_UPLOAD);
+		for(String eachTrailerContent : split)
+		{
+			LOG.info(index++ + "eachTrailerContent: "+eachTrailerContent);
+		}
+		
+		final List<String> rowsWithoutHeaderAndTrailer = rowsWithoutHeader.subList(0, rowsWithoutHeader.size()-1);
+		final List<UnrealizedDbObject> unrealizedDbObjects = Adapter.
+				convertMoneyControlDownloadToUnrealizedDbObjects(rowsWithoutHeaderAndTrailer);
+		
+		double totalInvoiceAmountComputed = 0.0d;
+		for (UnrealizedDbObject unrealizedDbObject : unrealizedDbObjects)
+		{
+			LOG.info("unrealizedDbObject: "+unrealizedDbObject);
+			totalInvoiceAmountComputed=totalInvoiceAmountComputed+unrealizedDbObject.getBuyQuantity()*unrealizedDbObject.getBuyPrice();
+		}
+
+		
+		
 //		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = 
 //										new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
 //		unrealizeddbOperations.deleteEntries();
 //		List<UnrealizedDbObject> entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailerFromContent, true);
-
-		return new EndPointResponse(true, "success!!");
+		final double totalValueAsPerInput = Double.valueOf(split[8]);
+		
+		final double differenceBetweenInputAndInserted = Math.abs(totalInvoiceAmountComputed-totalValueAsPerInput);
+		if(differenceBetweenInputAndInserted<=10)
+		{
+			return new EndPointResponse(true, "");
+		}
+		return new EndPointResponse(false, "Mismatch: "+differenceBetweenInputAndInserted);
 	}
 
 }

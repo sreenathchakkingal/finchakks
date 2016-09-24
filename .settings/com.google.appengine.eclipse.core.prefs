@@ -5,4 +5,4 @@ gaeDeployDialogSettings=
 gaeLaunchAppInBrowser=true
 googleCloudSqlEnabled=false
 localDevMySqlEnabled=true
-ormEnhancementInclusions=src/
+ormEnhancementInclusions=src/com/finanalyzer/domain/jdo/

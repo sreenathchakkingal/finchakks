@@ -1,16 +1,9 @@
 package com.finanalyzer.util;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.tools.ant.taskdefs.PathConvert.MapEntry;
-
-import com.finanalyzer.api.QuandlConnection;
-import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.ModifiableStockAttributes;
 import com.finanalyzer.domain.RatingObjectForUi;
@@ -19,7 +12,6 @@ import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.builder.NDaysHistoryFlattenedDbObjectBuilder;
-import com.finanalyzer.domain.builder.StockBuilder;
 import com.finanalyzer.domain.builder.UnrealizedDetailDbObjectBuilder;
 import com.finanalyzer.domain.builder.UnrealizedSummaryDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
@@ -28,15 +20,16 @@ import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
 
 public class Adapter {
 	
 	private static final Logger LOG = Logger.getLogger(Adapter.class.getName());
 	private static final float ZERO  = 0.0f;
+	public static final String DELIMITER_IN_UNREALIZED_UPLOAD = ",";
 	
 	public static List<NDaysHistoryDbObject> stockToNdaysHistoryDbObject(List<Stock> stocks)
 	{
@@ -234,6 +227,41 @@ public class Adapter {
 //		}
 //		
 		return ratingObjects;
+	}
+
+	public static List<UnrealizedDbObject> convertMoneyControlDownloadToUnrealizedDbObjects(
+			List<String> rawDataDFromMoneyControl) {
+		
+		List<UnrealizedDbObject> unrealizedDbObjects = FastList.newList(); 
+
+		for (String row : rawDataDFromMoneyControl)
+		{
+			String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(DELIMITER_IN_UNREALIZED_UPLOAD);
+
+			String name = ReaderUtil.parseStockName(stockAttributes[0]);
+			
+			int quantityColumnPosition = 5;
+			int buyQuantity =  Integer.valueOf(stockAttributes[quantityColumnPosition]).intValue();
+
+			int invoicePriceColumnPosition =  6;
+			float buyPrice = Float.valueOf(stockAttributes[invoicePriceColumnPosition]);
+
+			int invoiceDateColumnPosition = 7;
+			String invoiceDate=stockAttributes[invoiceDateColumnPosition];
+
+			String buyDate;
+			if(invoiceDate.contains("/"))
+			{
+				buyDate = DateUtil.convertToStandardFormat("d/M/yyyy",invoiceDate);
+			}
+			else
+			{
+				buyDate = DateUtil.convertToStandardFormat("dd-MM-yyyy",invoiceDate);
+			}
+			unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
+//			LOG.info("collecting stock: "+name+" for insertion");
+		}
+		return unrealizedDbObjects;
 	}
 
 

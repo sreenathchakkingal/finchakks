@@ -21,6 +21,7 @@ import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.processors.UnRealizedPnLProcessor;
+import com.finanalyzer.util.Adapter;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
@@ -175,35 +176,7 @@ public class JdoDbOperations<T> {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
-			List<UnrealizedDbObject> unrealizedDbObjects = FastList.newList(); 
-
-			for (String row : rawDataDFromMoneyControl)
-			{
-				String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(splitBy);
-
-				String name = ReaderUtil.parseStockName(stockAttributes[0]);
-				
-				int quantityColumnPosition = 5;
-				int buyQuantity =  Integer.valueOf(stockAttributes[quantityColumnPosition]).intValue();
-
-				int invoicePriceColumnPosition =  6;
-				float buyPrice = Float.valueOf(stockAttributes[invoicePriceColumnPosition]);
-
-				int invoiceDateColumnPosition = 7;
-				String invoiceDate=stockAttributes[invoiceDateColumnPosition];
-
-				String buyDate;
-				if(invoiceDate.contains("/"))
-				{
-					buyDate = DateUtil.convertToStandardFormat("d/M/yyyy",invoiceDate);
-				}
-				else
-				{
-					buyDate = DateUtil.convertToStandardFormat("dd-MM-yyyy",invoiceDate);
-				}
-				unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
-				LOG.info("collecting stock: "+name+" for insertion");
-			}
+			List<UnrealizedDbObject> unrealizedDbObjects = Adapter.convertMoneyControlDownloadToUnrealizedDbObjects(rawDataDFromMoneyControl);
 			
 			return (List<UnrealizedDbObject>) pm.makePersistentAll(unrealizedDbObjects);	
 		}
@@ -211,6 +184,40 @@ public class JdoDbOperations<T> {
 		{
 			pm.close();
 		}
+	}
+
+	protected List<UnrealizedDbObject> convertMoneyControlDownloadToUnrealizedDbObjects(
+			List<String> rawDataDFromMoneyControl, String splitBy) {
+		List<UnrealizedDbObject> unrealizedDbObjects = FastList.newList(); 
+
+		for (String row : rawDataDFromMoneyControl)
+		{
+			String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(splitBy);
+
+			String name = ReaderUtil.parseStockName(stockAttributes[0]);
+			
+			int quantityColumnPosition = 5;
+			int buyQuantity =  Integer.valueOf(stockAttributes[quantityColumnPosition]).intValue();
+
+			int invoicePriceColumnPosition =  6;
+			float buyPrice = Float.valueOf(stockAttributes[invoicePriceColumnPosition]);
+
+			int invoiceDateColumnPosition = 7;
+			String invoiceDate=stockAttributes[invoiceDateColumnPosition];
+
+			String buyDate;
+			if(invoiceDate.contains("/"))
+			{
+				buyDate = DateUtil.convertToStandardFormat("d/M/yyyy",invoiceDate);
+			}
+			else
+			{
+				buyDate = DateUtil.convertToStandardFormat("dd-MM-yyyy",invoiceDate);
+			}
+			unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
+			LOG.info("collecting stock: "+name+" for insertion");
+		}
+		return unrealizedDbObjects;
 	}
 	
 	
