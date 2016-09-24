@@ -26856,6 +26856,14 @@
 	// ]
 
 
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
 	function getInitializeApiResult(methodName) {
 	  return axios.get(host + 'initalizeControllerEndPoint/v1/' + methodName);
 	}
@@ -26864,7 +26872,7 @@
 	  return axios.get(maintEndPoint + methodName);
 	}
 
-	function postMaintApiResult(stockName, moneycontrolName, isWatchListed, lowerReturnPercentTarget, upperReturnPercentTarget, stockRatings) {
+	function updateStockAttributesApi(stockName, moneycontrolName, isWatchListed, lowerReturnPercentTarget, upperReturnPercentTarget, stockRatings) {
 	  return axios.post(host + 'maintainanceControllerEndPoint/v1/updateStockAttributes', querystring.stringify({
 	    stockName: stockName,
 	    moneycontrolName: moneycontrolName,
@@ -26879,12 +26887,14 @@
 	  });
 	}
 
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
+	function uploadUnrealizedApi(unrealized) {
+	  return axios.post(host + 'maintainanceControllerEndPoint/v1/uploadUnrealized', querystring.stringify({
+	    unrealized: unrealized
+	  }), {
+	    headers: {
+	      "Content-Type": "application/x-www-form-urlencoded"
+	    }
+	  });
 	}
 
 	var helpers = {
@@ -26908,14 +26918,22 @@
 
 	  getModifiableStockAttributes: function (stockName) {
 	    if (stockName === null || stockName === '') {
-	      stockName = 'BPCL';
-	      console.log('getModifiableStockAttributes.DEFUALTING');
+	      stockName = 'SYNDIBANK';
 	    }
 	    return getMaintApiResult('getModifiableStockAttributes?stockName=' + stockName).then(function (response) {
 	      var stocksInfo = response.data;
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in getModifiableStockAttributes ', err);
+	    });
+	  },
+
+	  uploadUnrealized: function (commaSeperatedUnrealized) {
+	    console.log('commaSeperatedUnrealized:', commaSeperatedUnrealized);
+	    return uploadUnrealizedApi(commaSeperatedUnrealized).then(function (response) {
+	      return response.data;
+	    }).catch(function (err) {
+	      console.warn('Error in updateStockAttributes ', err);
 	    });
 	  },
 
@@ -26930,7 +26948,7 @@
 	      console.log('updateStockAttributes.stockRatings ', stockRatings[i]);
 	    }
 
-	    return postMaintApiResult(stockName, moneycontrolName, isWatchListed, lowerReturnPercentTarget, upperReturnPercentTarget, stockRatings).then(function (response) {
+	    return updateStockAttributesApi(stockName, moneycontrolName, isWatchListed, lowerReturnPercentTarget, upperReturnPercentTarget, stockRatings).then(function (response) {
 	      return response.data;
 	    }).catch(function (err) {
 	      console.warn('Error in updateStockAttributes ', err);
@@ -43276,10 +43294,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
 	var finchakksapi = __webpack_require__(240);
 	var Loading = __webpack_require__(264);
 	var columnMetadata = __webpack_require__(466);
-	var PropTypes = React.PropTypes;
 	var PanelWrapper = __webpack_require__(566);
 	var GriddleWrapper = __webpack_require__(570);
 
@@ -43972,7 +43990,11 @@
 
 	var React = __webpack_require__(2);
 	var RetrieveModifiableStockAttributesContainer = __webpack_require__(587);
+	var UnrealizedFileUploadContainer = __webpack_require__(605);
 	var Main = __webpack_require__(237);
+	var Panel = __webpack_require__(567);
+	var Accordion = __webpack_require__(607);
+	var PanelWrapper = __webpack_require__(566);
 
 	var MaintenanceContainer = React.createClass({
 	  displayName: "MaintenanceContainer",
@@ -43981,10 +44003,18 @@
 	    return React.createElement(
 	      Main,
 	      null,
-	      React.createElement(RetrieveModifiableStockAttributesContainer, null)
+	      React.createElement(
+	        PanelWrapper,
+	        { header: "Retrieve Modifiable Stock Attributes", eventKey: "1" },
+	        React.createElement(RetrieveModifiableStockAttributesContainer, null)
+	      ),
+	      React.createElement(
+	        PanelWrapper,
+	        { header: "Unrealized File Upload", eventKey: "2" },
+	        React.createElement(UnrealizedFileUploadContainer, null)
+	      )
 	    );
 	  }
-
 	});
 
 	module.exports = MaintenanceContainer;
@@ -45499,6 +45529,7 @@
 
 	var React = __webpack_require__(2);
 	var ModifiableAttributes = __webpack_require__(602);
+	var UnrealizedFileUploadContainer = __webpack_require__(605);
 	var finchakksapi = __webpack_require__(240);
 
 	var ModifiableAttributesContainer = React.createClass({
@@ -45550,8 +45581,8 @@
 	    });
 
 	    finchakksapi.updateStockAttributes(this.props.stocksInfo.items[0].stockName, this.state.moneycontrolStockName, this.state.isWatchListed, this.state.lowerReturnPercentTarget, this.state.upperReturnPercentTarget, this.state.stockRatings).then(function (updatedResponse) {
-	      var bStyle = updatedResponse.success ? 'success' : 'error';
-	      var bText = updatedResponse.success ? 'Updated Attributes' : updatedResponse.statusMessage;
+	      var bStyle = updatedResponse.success ? 'success' : 'danger';
+	      var bText = updatedResponse.statusMessage;
 	      this.setState({
 	        buttonSytle: bStyle,
 	        buttonText: bText,
@@ -45569,19 +45600,23 @@
 	  },
 
 	  render: function () {
-	    return React.createElement(ModifiableAttributes, {
-	      isRetrieved: this.props.isRetrieved,
-	      stocksInfo: this.props.stocksInfo,
-	      onRatingsChange: this.handleRatingsChange,
-	      onMoneyControlStockNameChange: this.handleMoneyControlStockNameChange,
-	      onIsWatchlistedChange: this.handleIsWatchlistedChange,
-	      onLowerReturnPercentTargetChange: this.handleLowerReturnPercentTargetChange,
-	      onUpperReturnPercentTargetChange: this.handleUpperReturnPercentTargetChange,
-	      onSubmit: this.handleSubmit,
-	      buttonSytle: this.state.buttonSytle,
-	      buttonDisabled: this.state.buttonDisabled,
-	      buttonText: this.state.buttonText
-	    });
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(ModifiableAttributes, {
+	        isRetrieved: this.props.isRetrieved,
+	        stocksInfo: this.props.stocksInfo,
+	        onRatingsChange: this.handleRatingsChange,
+	        onMoneyControlStockNameChange: this.handleMoneyControlStockNameChange,
+	        onIsWatchlistedChange: this.handleIsWatchlistedChange,
+	        onLowerReturnPercentTargetChange: this.handleLowerReturnPercentTargetChange,
+	        onUpperReturnPercentTargetChange: this.handleUpperReturnPercentTargetChange,
+	        onSubmit: this.handleSubmit,
+	        buttonSytle: this.state.buttonSytle,
+	        buttonDisabled: this.state.buttonDisabled,
+	        buttonText: this.state.buttonText
+	      })
+	    );
 	  }
 
 	});
@@ -45593,6 +45628,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
 	var Form = __webpack_require__(589);
 	var FormGroup = __webpack_require__(590);
 	var FormControl = __webpack_require__(592);
@@ -45764,7 +45800,18 @@
 	  }
 	});
 
-	function ModifiableAttributes(props) {}
+	ModifiableAttributes.propTypes = {
+	  isRetrieved: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired,
+	  onRatingsChange: PropTypes.func.isRequired,
+	  onMoneyControlStockNameChange: PropTypes.func.isRequired,
+	  onIsWatchlistedChange: PropTypes.func.isRequired,
+	  onLowerReturnPercentTargetChange: PropTypes.func.isRequired,
+	  onUpperReturnPercentTargetChange: PropTypes.func.isRequired,
+	  onSubmit: PropTypes.func.isRequired,
+	  buttonSytle: PropTypes.string.isRequired,
+	  buttonText: PropTypes.string.isRequired
+	};
 
 	module.exports = ModifiableAttributes;
 
@@ -45860,6 +45907,308 @@
 	};
 
 	module.exports = StockRatingsWrapper;
+
+/***/ },
+/* 605 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Button = __webpack_require__(475);
+	var finchakksapi = __webpack_require__(240);
+	var UnrealizedFileUpload = __webpack_require__(606);
+
+	var UnrealizedFileUploadContainer = React.createClass({
+	  displayName: 'UnrealizedFileUploadContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      fileContent: null,
+	      buttonSytle: 'primary',
+	      buttonText: 'Upload Changes',
+	      buttonDisabled: false
+	    };
+	  },
+
+	  handleFile: function (e) {
+	    var self = this;
+	    var reader = new FileReader();
+	    var file = e.target.files[0];
+	    reader.onload = function (upload) {
+	      this.setState({
+	        fileContent: upload.target.result
+	      });
+	    }.bind(this);
+	    reader.readAsText(file);
+	  },
+
+	  handleSubmit(e) {
+	    console.log('in handleSubmit');
+	    this.setState({
+	      buttonSytle: 'info',
+	      buttonText: 'Uploading Changes',
+	      buttonDisabled: true
+	    });
+
+	    finchakksapi.uploadUnrealized(this.state.fileContent).then(function (updatedResponse) {
+	      console.log('handleSubmit.updatedResponse ', updatedResponse);
+	      var bStyle = updatedResponse.success ? 'success' : 'danger';
+	      var bText = updatedResponse.statusMessage;
+
+	      this.setState({
+	        buttonSytle: bStyle,
+	        buttonText: bText,
+	        buttonDisabled: true
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(UnrealizedFileUpload, {
+	      buttonSytle: this.state.buttonSytle,
+	      buttonDisabled: this.state.buttonDisabled,
+	      buttonText: this.state.buttonText,
+	      onChange: this.handleFile,
+	      onSubmit: this.handleSubmit
+	    });
+	  }
+
+	});
+
+	module.exports = UnrealizedFileUploadContainer;
+
+/***/ },
+/* 606 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
+	var Form = __webpack_require__(589);
+	var FormGroup = __webpack_require__(590);
+	var FormControl = __webpack_require__(592);
+	var Button = __webpack_require__(475);
+	var ControlLabel = __webpack_require__(596);
+
+	var UnrealizedFileUpload = React.createClass({
+	  displayName: 'UnrealizedFileUpload',
+
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'form',
+	        null,
+	        React.createElement(
+	          FormGroup,
+	          { controlId: 'formControlsFile' },
+	          React.createElement('input', { type: 'file', onChange: this.props.onChange })
+	        ),
+	        ' ',
+	        React.createElement(
+	          Button,
+	          { bsStyle: this.props.buttonSytle, disabled: this.props.buttonDisabled, bsSize: 'small', type: 'submit',
+	            onClick: this.props.onSubmit },
+	          this.props.buttonText
+	        )
+	      )
+	    );
+	  }
+	});
+
+	UnrealizedFileUpload.propTypes = {};
+
+	module.exports = UnrealizedFileUpload;
+
+/***/ },
+/* 607 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _PanelGroup = __webpack_require__(608);
+
+	var _PanelGroup2 = _interopRequireDefault(_PanelGroup);
+
+	var Accordion = (function (_React$Component) {
+	  _inherits(Accordion, _React$Component);
+
+	  function Accordion() {
+	    _classCallCheck(this, Accordion);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Accordion.prototype.render = function render() {
+	    return _react2['default'].createElement(
+	      _PanelGroup2['default'],
+	      _extends({}, this.props, { accordion: true }),
+	      this.props.children
+	    );
+	  };
+
+	  return Accordion;
+	})(_react2['default'].Component);
+
+	exports['default'] = Accordion;
+	module.exports = exports['default'];
+
+/***/ },
+/* 608 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(476)['default'];
+
+	var _classCallCheck = __webpack_require__(491)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _extends = __webpack_require__(492)['default'];
+
+	var _Object$assign = __webpack_require__(493)['default'];
+
+	var _interopRequireDefault = __webpack_require__(508)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(509);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(512);
+
+	var _utilsCreateChainedFunction = __webpack_require__(561);
+
+	var _utilsCreateChainedFunction2 = _interopRequireDefault(_utilsCreateChainedFunction);
+
+	var _utilsValidComponentChildren = __webpack_require__(591);
+
+	var _utilsValidComponentChildren2 = _interopRequireDefault(_utilsValidComponentChildren);
+
+	var propTypes = {
+	  accordion: _react2['default'].PropTypes.bool,
+	  activeKey: _react2['default'].PropTypes.any,
+	  defaultActiveKey: _react2['default'].PropTypes.any,
+	  onSelect: _react2['default'].PropTypes.func,
+	  role: _react2['default'].PropTypes.string
+	};
+
+	var defaultProps = {
+	  accordion: false
+	};
+
+	// TODO: Use uncontrollable.
+
+	var PanelGroup = (function (_React$Component) {
+	  _inherits(PanelGroup, _React$Component);
+
+	  function PanelGroup(props, context) {
+	    _classCallCheck(this, PanelGroup);
+
+	    _React$Component.call(this, props, context);
+
+	    this.handleSelect = this.handleSelect.bind(this);
+
+	    this.state = {
+	      activeKey: props.defaultActiveKey
+	    };
+	  }
+
+	  PanelGroup.prototype.handleSelect = function handleSelect(key, e) {
+	    e.preventDefault();
+
+	    if (this.props.onSelect) {
+	      this.props.onSelect(key, e);
+	    }
+
+	    if (this.state.activeKey === key) {
+	      key = null;
+	    }
+
+	    this.setState({ activeKey: key });
+	  };
+
+	  PanelGroup.prototype.render = function render() {
+	    var _this = this;
+
+	    var _props = this.props;
+	    var accordion = _props.accordion;
+	    var propsActiveKey = _props.activeKey;
+	    var className = _props.className;
+	    var children = _props.children;
+
+	    var props = _objectWithoutProperties(_props, ['accordion', 'activeKey', 'className', 'children']);
+
+	    var _splitBsPropsAndOmit = _utilsBootstrapUtils.splitBsPropsAndOmit(props, ['defaultActiveKey', 'onSelect']);
+
+	    var bsProps = _splitBsPropsAndOmit[0];
+	    var elementProps = _splitBsPropsAndOmit[1];
+
+	    var activeKey = undefined;
+	    if (accordion) {
+	      activeKey = propsActiveKey != null ? propsActiveKey : this.state.activeKey;
+	      elementProps.role = elementProps.role || 'tablist';
+	    }
+
+	    var classes = _utilsBootstrapUtils.getClassSet(bsProps);
+
+	    return _react2['default'].createElement(
+	      'div',
+	      _extends({}, elementProps, {
+	        className: _classnames2['default'](className, classes)
+	      }),
+	      _utilsValidComponentChildren2['default'].map(children, function (child) {
+	        var childProps = {
+	          bsStyle: child.props.bsStyle || bsProps.bsStyle
+	        };
+
+	        if (accordion) {
+	          _Object$assign(childProps, {
+	            headerRole: 'tab',
+	            panelRole: 'tabpanel',
+	            collapsible: true,
+	            expanded: child.props.eventKey === activeKey,
+	            onSelect: _utilsCreateChainedFunction2['default'](_this.handleSelect, child.props.onSelect)
+	          });
+	        }
+
+	        return _react.cloneElement(child, childProps);
+	      })
+	    );
+	  };
+
+	  return PanelGroup;
+	})(_react2['default'].Component);
+
+	PanelGroup.propTypes = propTypes;
+	PanelGroup.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('panel-group', PanelGroup);
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

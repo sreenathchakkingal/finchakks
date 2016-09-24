@@ -1,5 +1,6 @@
 package com.finanalyzer.endpoints;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -126,7 +127,7 @@ public class MaintainanceControllerEndPoint {
 		}
 		
 		LOG.info("return success message");
-		return new EndPointResponse(true, "success!!");
+		return new EndPointResponse(true, "Updated Attributes!!!");
 
 	}
 
@@ -135,39 +136,50 @@ public class MaintainanceControllerEndPoint {
 	{
 		LOG.info("unrealized: "+unrealized);
 		List<String> rowsWithoutHeader = ReaderUtil.convertToList(unrealized, true, 0);
-		final String trailer = rowsWithoutHeader.get(rowsWithoutHeader.size()-1);
-		int index=0;
-		final String[] split = trailer.split(Adapter.DELIMITER_IN_UNREALIZED_UPLOAD);
-		for(String eachTrailerContent : split)
-		{
-			LOG.info(index++ + "eachTrailerContent: "+eachTrailerContent);
-		}
+		
+		final double inputTotalInvestment = getInputTotalnvestment(rowsWithoutHeader);
 		
 		final List<String> rowsWithoutHeaderAndTrailer = rowsWithoutHeader.subList(0, rowsWithoutHeader.size()-1);
 		final List<UnrealizedDbObject> unrealizedDbObjects = Adapter.
 				convertMoneyControlDownloadToUnrealizedDbObjects(rowsWithoutHeaderAndTrailer);
 		
-		double totalInvoiceAmountComputed = 0.0d;
-		for (UnrealizedDbObject unrealizedDbObject : unrealizedDbObjects)
-		{
-			LOG.info("unrealizedDbObject: "+unrealizedDbObject);
-			totalInvoiceAmountComputed=totalInvoiceAmountComputed+unrealizedDbObject.getBuyQuantity()*unrealizedDbObject.getBuyPrice();
-		}
+		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = 
+				new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
+		unrealizeddbOperations.deleteEntries();
+		
+		final Collection<UnrealizedDbObject> insertedEntries = unrealizeddbOperations.insertEntries(unrealizedDbObjects);
+		final double insertedTotalInvestment = getInsertedTotalInvestment(insertedEntries);
+		
+		return getResponse(inputTotalInvestment, insertedTotalInvestment);
+	}
 
-		
-		
-//		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = 
-//										new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
-//		unrealizeddbOperations.deleteEntries();
-//		List<UnrealizedDbObject> entries = unrealizeddbOperations.insertUnrealizedDataFromMoneycontrol(rowsWithoutHeaderAndTrailerFromContent, true);
-		final double totalValueAsPerInput = Double.valueOf(split[8]);
-		
-		final double differenceBetweenInputAndInserted = Math.abs(totalInvoiceAmountComputed-totalValueAsPerInput);
+	//helper methods
+	private EndPointResponse getResponse(final double inputTotalInvestment,
+			final double insertedTotalInvestment) {
+		final double differenceBetweenInputAndInserted = Math.abs(insertedTotalInvestment-inputTotalInvestment);
 		if(differenceBetweenInputAndInserted<=10)
 		{
-			return new EndPointResponse(true, "");
+			return new EndPointResponse(true, "Uploaded!!!");
 		}
 		return new EndPointResponse(false, "Mismatch: "+differenceBetweenInputAndInserted);
+	}
+
+	private double getInputTotalnvestment(List<String> rowsWithoutHeader) {
+		final String trailer = rowsWithoutHeader.get(rowsWithoutHeader.size()-1);
+		final String[] trailerSplit = trailer.split(Adapter.DELIMITER_IN_UNREALIZED_UPLOAD);
+		final double totalValueAsPerInput = Double.valueOf(trailerSplit[8]);
+		return totalValueAsPerInput;
+	}
+	
+	private double getInsertedTotalInvestment(Collection<UnrealizedDbObject> insertedEntries)
+	{
+		double totalInvestment = 0.0d;
+		for (UnrealizedDbObject unrealizedDbObject : insertedEntries)
+		{
+			LOG.info("unrealizedDbObject: "+unrealizedDbObject);
+			totalInvestment=totalInvestment+unrealizedDbObject.getBuyQuantity()*unrealizedDbObject.getBuyPrice();
+		}
+		return totalInvestment;
 	}
 
 }
