@@ -22,8 +22,8 @@ public class NDaysHistoryController {
 	
 	@RequestMapping("/nDaysHistory")  
     public ModelAndView nDaysHistory(HttpServletRequest request,HttpServletResponse res) {  
-		String numOfDays = request.getParameter("numOfDays");
-		String simpleMovingAverage = request.getParameter("simpleMovingAverage");
+		String numOfDays = request==null ? "" :  request.getParameter("numOfDays");
+		String simpleMovingAverage = request==null ? "": request.getParameter("simpleMovingAverage");
 		
 		Processor<List<Stock>> processor = new QuandlNDaysPricesProcessor(numOfDays, simpleMovingAverage);
 		List<Stock> stocks = processor.execute();

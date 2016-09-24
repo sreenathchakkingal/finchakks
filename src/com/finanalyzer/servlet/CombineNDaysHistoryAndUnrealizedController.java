@@ -77,14 +77,4 @@ public class CombineNDaysHistoryAndUnrealizedController{
 
 		return new ModelAndView("test");
 	}
-	
-	@RequestMapping("/refreshAll")  
-	public ModelAndView refreshAll(HttpServletRequest arg0, HttpServletResponse arg1) throws Exception 
-	{
-		new UnrealizedDetailsControllerEndPoint().refreshUnrealizedDetails("");
-		new NDaysHistoryControllerEndPoint().refreshNDaysHistoryStocks(null, null);
-		
-		return null;
-	}
-	
 }

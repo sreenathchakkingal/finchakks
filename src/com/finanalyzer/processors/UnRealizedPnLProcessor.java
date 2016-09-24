@@ -74,11 +74,10 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 	private final JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
 
 
-	public UnRealizedPnLProcessor(FileItemIterator fileItemIterator, String stockName)
+	public UnRealizedPnLProcessor(FileItemIterator fileItemIterator)
 	{
 		super(null);//hack remove refactor later;
 		this.fileItemIterator=fileItemIterator;
-		this.stockName = stockName==null ? null : stockName.toUpperCase();
 	}
 	
 	public UnRealizedPnLProcessor(String unrealizedDetailsContent)
