@@ -161,7 +161,7 @@ public class MaintainanceControllerEndPoint {
 	public EndPointResponse refresh()
 	{
 		
-		String message = "";
+		String message = "Refreshed ";
 		try
 		{
 			final UnRealizedPnLController unRealizedPnLController = new UnRealizedPnLController();
@@ -170,11 +170,11 @@ public class MaintainanceControllerEndPoint {
 			
 			final NDaysHistoryController nDaysHistoryController = new NDaysHistoryController();
 			nDaysHistoryController.nDaysHistory(null, null);
-			message = message+"nDaysHistory";
+			message = message+" nDaysHistory";
 
 			final CombineNDaysHistoryAndUnrealizedController combineController = new CombineNDaysHistoryAndUnrealizedController();
 			combineController.combineNDaysHistoryAndUnrealized(null, null);
-			message = message+"combineController";
+			message = message+" combineController";
 		}
 		catch (Throwable t)
 		{

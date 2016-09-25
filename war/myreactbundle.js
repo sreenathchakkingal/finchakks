@@ -28463,7 +28463,7 @@
 	    var metaData = [columnMetadata.stockNameWithoutOptions(), columnMetadata.exceptionComment()];
 
 	    return React.createElement(Griddle, { customNoDataComponent: NoDataComponent,
-	      results: props.stocksInfo, columnMetadata: metaData });
+	      results: props.stocksInfo, columnMetadata: metaData, bodyHeight: 100 });
 	  }
 	}
 
@@ -43239,12 +43239,13 @@
 	  displayName: 'GriddleWrapper',
 
 	  render: function () {
+	    var bodyHeight = typeof this.props.bodyHeight === 'undefined' ? 400 : this.props.bodyHeight;
 	    return React.createElement(
 	      'div',
 	      null,
 	      React.createElement(Griddle, { results: this.props.results, columns: this.props.columns, columnMetadata: this.props.columnMetadata,
 	        tableClassName: 'table', showFilter: true, resultsPerPage: '10',
-	        enableInfiniteScroll: true, bodyHeight: 400, showSettings: true, useFixedHeader: true
+	        enableInfiniteScroll: true, bodyHeight: bodyHeight, showSettings: true, useFixedHeader: true
 	      })
 	    );
 	  }
@@ -43253,8 +43254,8 @@
 	GriddleWrapper.propTypes = {
 	  results: PropTypes.array.isRequired,
 	  columns: PropTypes.array.isRequired,
-	  columnMetadata: PropTypes.array.isRequired
-
+	  columnMetadata: PropTypes.array.isRequired,
+	  bodyHeight: PropTypes.number
 	};
 
 	module.exports = GriddleWrapper;
@@ -43334,7 +43335,7 @@
 	        { header: 'Watch List' },
 	        React.createElement(GriddleWrapper, { results: props.stocksInfo,
 	          columns: ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"],
-	          columnMetadata: metaData })
+	          columnMetadata: metaData, bodyHeight: 800 })
 	      )
 	    );
 	  }
@@ -46258,7 +46259,7 @@
 	      this.setState({
 	        buttonSytle: bStyle,
 	        buttonText: bText,
-	        buttonDisabled: true
+	        buttonDisabled: false
 	      });
 	    }.bind(this));
 	  },
