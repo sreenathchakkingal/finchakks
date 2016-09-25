@@ -25,6 +25,9 @@ import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.servlet.CombineNDaysHistoryAndUnrealizedController;
+import com.finanalyzer.servlet.NDaysHistoryController;
+import com.finanalyzer.servlet.UnRealizedPnLController;
 import com.finanalyzer.util.Adapter;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
@@ -152,6 +155,36 @@ public class MaintainanceControllerEndPoint {
 		
 		return getResponse(inputTotalInvestment, insertedTotalInvestment);
 	}
+	
+
+	@ApiMethod(name = "refresh", path="refresh", httpMethod = ApiMethod.HttpMethod.POST)
+	public EndPointResponse refresh()
+	{
+		
+		String message = "";
+		try
+		{
+			final UnRealizedPnLController unRealizedPnLController = new UnRealizedPnLController();
+			unRealizedPnLController.unRealizedPnL(null, null);
+			message = message+"unRealizedPnL";
+			
+			final NDaysHistoryController nDaysHistoryController = new NDaysHistoryController();
+			nDaysHistoryController.nDaysHistory(null, null);
+			message = message+"nDaysHistory";
+
+			final CombineNDaysHistoryAndUnrealizedController combineController = new CombineNDaysHistoryAndUnrealizedController();
+			combineController.combineNDaysHistoryAndUnrealized(null, null);
+			message = message+"combineController";
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace();
+			return new EndPointResponse(false, message);
+		}
+		
+		return new EndPointResponse(true, message);
+	}
+	
 
 	//helper methods
 	private EndPointResponse getResponse(final double inputTotalInvestment,
