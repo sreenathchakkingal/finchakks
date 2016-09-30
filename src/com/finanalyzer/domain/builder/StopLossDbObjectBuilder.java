@@ -1,6 +1,7 @@
 package com.finanalyzer.domain.builder;
 
 import com.finanalyzer.domain.jdo.StopLossDbObject;
+import com.finanalyzer.util.DateUtil;
 
 public class StopLossDbObjectBuilder {
 	
@@ -43,7 +44,8 @@ public class StopLossDbObjectBuilder {
 	
 	public StopLossDbObject build()
 	{
-	    return this.dbObject;
+		this.dbObject.setBusinessDate(DateUtil.todaysDate());
+		return this.dbObject;
 	}
 	
 	

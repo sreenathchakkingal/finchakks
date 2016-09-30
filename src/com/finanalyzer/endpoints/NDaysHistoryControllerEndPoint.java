@@ -16,7 +16,7 @@ import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.processors.Processor;
 import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.processors.UnRealizedPnLProcessor;
-import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.ConverterUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
@@ -39,7 +39,7 @@ public class NDaysHistoryControllerEndPoint {
 
 	protected List<NDaysHistoryDbObject> stampDetailsFromUnrealized(List<Stock> stocks) 
 	{
-		List<NDaysHistoryDbObject> ndaysHistoryDbObjects = Adapter.stockToNdaysHistoryDbObject(stocks);
+		List<NDaysHistoryDbObject> ndaysHistoryDbObjects = ConverterUtil.stockToNdaysHistoryDbObject(stocks);
 
 		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
 		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);

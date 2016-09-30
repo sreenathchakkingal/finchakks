@@ -21,7 +21,7 @@ import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.processors.UnRealizedPnLProcessor;
-import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.ConverterUtil;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
@@ -176,7 +176,7 @@ public class JdoDbOperations<T> {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
-			List<UnrealizedDbObject> unrealizedDbObjects = Adapter.convertMoneyControlDownloadToUnrealizedDbObjects(rawDataDFromMoneyControl);
+			List<UnrealizedDbObject> unrealizedDbObjects = ConverterUtil.convertMoneyControlDownloadToUnrealizedDbObjects(rawDataDFromMoneyControl);
 			
 			return (List<UnrealizedDbObject>) pm.makePersistentAll(unrealizedDbObjects);	
 		}

@@ -1,4 +1,8 @@
 <!-- Indices written at Sun, 25 Sep 2016 06:50:47 UTC -->
 
-<datastore-indexes/>
-
+<datastore-indexes>
+    <datastore-index kind="StopLossDbObject" ancestor="false" source="manual">
+        <property name="stockName" direction="asc"/>
+        <property name="businessDate" direction="desc"/>
+    </datastore-index>
+</datastore-indexes>

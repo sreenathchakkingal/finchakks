@@ -15,6 +15,9 @@ public class StopLossDbObject {
 	private String stockName;
 	
 	@Persistent
+	private String businessDate;
+	
+	@Persistent
 	private float lowerReturnPercentTarget;
 
 	@Persistent
@@ -34,27 +37,20 @@ public class StopLossDbObject {
 
 	public StopLossDbObject(){}
 	
-	/*
-	public StopLossDbObject(String stockName, float lowerReturnPercentTarget,
-			float upperReturnPercentTarget, float lowerSellPriceTarget,
-			float upperSellPriceTarget, String achieveAfterDate,
-			String achieveByDate) 
-	{
-		this.stockName = stockName;
-		this.lowerReturnPercentTarget = lowerReturnPercentTarget;
-		this.upperReturnPercentTarget = upperReturnPercentTarget;
-		this.lowerSellPriceTarget = lowerSellPriceTarget;
-		this.upperSellPriceTarget = upperSellPriceTarget;
-		this.achieveAfterDate = achieveAfterDate;
-		this.achieveByDate = achieveByDate;
-	}
-*/
 	public String getStockName() {
 		return stockName;
 	}
 
 	public void setStockName(String stockName) {
 		this.stockName = stockName;
+	}
+
+	public String getBusinessDate() {
+		return businessDate;
+	}
+
+	public void setBusinessDate(String businessDate) {
+		this.businessDate = businessDate;
 	}
 
 	public float getLowerReturnPercentTarget() {
@@ -122,6 +118,7 @@ public class StopLossDbObject {
 	{
 		return this.stockName;
 	}
-	
+
+
 }
 

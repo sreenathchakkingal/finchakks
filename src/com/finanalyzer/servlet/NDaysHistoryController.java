@@ -15,7 +15,7 @@ import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 import com.finanalyzer.processors.Processor;
 import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
-import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.ConverterUtil;
 
 @Controller  
 public class NDaysHistoryController {
@@ -36,7 +36,7 @@ public class NDaysHistoryController {
     }
 
 	private void persistFlattnedResult(List<Stock> stocks) {
-		List<NDaysHistoryFlattenedDbObject> nDaysHistoryFlattenedDbObject = Adapter.stockToNDaysHistoryFlattenedDbObject(stocks);
+		List<NDaysHistoryFlattenedDbObject> nDaysHistoryFlattenedDbObject = ConverterUtil.stockToNDaysHistoryFlattenedDbObject(stocks);
 		JdoDbOperations<NDaysHistoryFlattenedDbObject>  dbOperations = new JdoDbOperations<>(NDaysHistoryFlattenedDbObject.class);
 		dbOperations.deleteEntries();
 		dbOperations.insertEntries(nDaysHistoryFlattenedDbObject);
@@ -44,7 +44,7 @@ public class NDaysHistoryController {
 
 	private void persistResult(List<Stock> stocks) 
 	{
-		List<NDaysHistoryDbObject> ndaysHistoryDbObjects = Adapter.stockToNdaysHistoryDbObject(stocks);
+		List<NDaysHistoryDbObject> ndaysHistoryDbObjects = ConverterUtil.stockToNdaysHistoryDbObject(stocks);
 		JdoDbOperations<NDaysHistoryDbObject>  dbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
 		dbOperations.deleteEntries();
 		dbOperations.insertEntries(ndaysHistoryDbObjects);

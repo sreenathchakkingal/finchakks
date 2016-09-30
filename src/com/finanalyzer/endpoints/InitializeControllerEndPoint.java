@@ -37,36 +37,6 @@ public class InitializeControllerEndPoint {
 		return dbObjects;
 	}
 	
-	@ApiMethod(name = "listMissingWatchListStocks", path="listMissingWatchListStocks")
-	public List<StopLossDbObject> listMissingWatchListStocks()
-	{
-		JdoDbOperations<NDaysHistoryFlattenedDbObject> dbOperations = new JdoDbOperations<>(NDaysHistoryFlattenedDbObject.class);
-		final List<NDaysHistoryFlattenedDbObject> dbObjects = dbOperations.getEntries("stockName");
-		
-		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
-		final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = unrealizedDetailDbOperations.getEntries("stockName");
-		final List<StopLossDbObject> stopLossDbObjects = FastList.newList();
-		for(UnrealizedDetailDbObject unrealizedDetailDbObject: unrealizedDetailDbObjects)
-		{
-			String unrealizedStockName = unrealizedDetailDbObject.getStockName();
-			boolean isMatchFound=false;
-			for (NDaysHistoryFlattenedDbObject nDaysHistoryFlattenedDbObject: dbObjects)
-			{
-				if(nDaysHistoryFlattenedDbObject.getStockName().equals(unrealizedStockName))
-				{
-					isMatchFound=true;
-					break;
-				}
-			}
-			if(!isMatchFound)
-			{
-				stopLossDbObjects.add(new StopLossDbObjectBuilder().stockName(unrealizedStockName).build());
-			}
-		}
-		
-		return stopLossDbObjects;
-	}
-	
 	@ApiMethod(name = "listBlackListedStocks", path="listBlackListedStocks")
 	public List<UnrealizedSummaryDbObject> listBlackListedStocks()
 	{

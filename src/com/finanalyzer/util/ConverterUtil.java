@@ -25,9 +25,9 @@ import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.gs.collections.impl.list.mutable.FastList;
 
-public class Adapter {
+public class ConverterUtil {
 	
-	private static final Logger LOG = Logger.getLogger(Adapter.class.getName());
+	private static final Logger LOG = Logger.getLogger(ConverterUtil.class.getName());
 	private static final float ZERO  = 0.0f;
 	public static final String DELIMITER_IN_UNREALIZED_UPLOAD = ",";
 	
@@ -39,7 +39,7 @@ public class Adapter {
 			
 			NDaysHistoryDbObject daysHistoryDbObject = new NDaysHistoryDbObject(
 					stock.getStockName(), stock.getStockExchangeStocknameMap().get(StockExchange.MONEY_CONTROL),
-					Adapter.stockRatingValueToDummyStockRatingValue(stock.getStockRatingValue()),
+					ConverterUtil.stockRatingValueToDummyStockRatingValue(stock.getStockRatingValue()),
 					stock.getInvestmentRatio(), stock.getIndustryInvestmentRatio(), 
 					stock.getSellPrice(), stock.getSimpleMovingAverage(), stock.getSimpleMovingAverageAndSellDeltaNormalized(),
 					stock.getNetNDaysGain(), stock.getIndustry(), 
@@ -180,7 +180,7 @@ public class Adapter {
 	{
 		final Map<String, StockRatingValuesEnum> ratingNameToValue = allScripsDbObject.getRatingNameToValue();
 		
-		List<RatingObjectForUi> ratingObjects = Adapter.ratingNameToValueToRatingObject(ratingNameToValue);
+		List<RatingObjectForUi> ratingObjects = ConverterUtil.ratingNameToValueToRatingObject(ratingNameToValue);
 		
 		final float lowerReturnPercentTarget = stopLossDbObject==null ? 0.0f : stopLossDbObject.getLowerReturnPercentTarget();
 		

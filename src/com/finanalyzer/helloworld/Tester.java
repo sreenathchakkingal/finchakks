@@ -15,7 +15,7 @@ public class Tester {
 
 	public static void main(String[] args) throws Exception{
 		List<String> rows = FastList.newListWith("one", "two", "three", "total");
-		System.out.println(rows.subList(0, rows.size()-2));
+		
 		
 	}
 

@@ -18,7 +18,7 @@ import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
-import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.ConverterUtil;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
@@ -282,17 +282,17 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			//for testing	
 			protected List<StopLossDbObject> getMatchingStopLossDbObject(Stock eachStock) {
 				return stopLossDbOperations.getEntries(AllScripsDbObject.STOCK_NAME,
-																		FastList.newListWith(eachStock.getStockName()));
+																		FastList.newListWith(eachStock.getStockName()),"businessDate desc");
 			}
 			
 			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss, List<StockExceptionDbObject> exceptionStocks) 
 			{
-				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = Adapter.stockToUnrealizedDetailDbObject(stocksDetail);
+				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = ConverterUtil.stockToUnrealizedDetailDbObject(stocksDetail);
 				final JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
 				dbDetailOperations.deleteEntries();
 				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
 
-				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = Adapter.stockToUnrealizedSummaryDbObject(stocksSummary);
+				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = ConverterUtil.stockToUnrealizedSummaryDbObject(stocksSummary);
 				final JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
 				dbSummaryOperations.deleteEntries();
 				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);

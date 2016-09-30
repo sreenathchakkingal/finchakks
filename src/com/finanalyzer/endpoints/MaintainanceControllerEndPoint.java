@@ -2,42 +2,36 @@ package com.finanalyzer.endpoints;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import org.junit.internal.runners.model.EachTestNotifier;
-
-import com.finanalyzer.api.QuandlConnection;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.EndPointResponse;
 import com.finanalyzer.domain.ModifiableStockAttributes;
-import com.finanalyzer.domain.StockRatingValue;
-import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.builder.StopLossDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
-import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
-import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.servlet.CombineNDaysHistoryAndUnrealizedController;
 import com.finanalyzer.servlet.NDaysHistoryController;
 import com.finanalyzer.servlet.UnRealizedPnLController;
-import com.finanalyzer.util.Adapter;
+import com.finanalyzer.util.ConverterUtil;
+import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "maintainanceControllerEndPoint", version = "v1")
 public class MaintainanceControllerEndPoint {
@@ -52,8 +46,8 @@ public class MaintainanceControllerEndPoint {
 		final AllScripsDbObject allScripsDbObject = allScripsDbOperations.getOneEntry("nseId", FastList.newListWith(stockNameUpperCase));
 		
 		JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
-		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getNullOrOneEntry("stockName", FastList.newListWith(stockNameUpperCase));
-		ModifiableStockAttributes modifiableStockAttributes = Adapter.getModifiableStockAttributes(allScripsDbObject, stopLossDbObject);
+		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getEntries("stockName", FastList.newListWith(stockNameUpperCase), "businessDate desc").get(0);
+		ModifiableStockAttributes modifiableStockAttributes = ConverterUtil.getModifiableStockAttributes(allScripsDbObject, stopLossDbObject);
 
 		return FastList.newListWith(modifiableStockAttributes);
 	}
@@ -112,10 +106,24 @@ public class MaintainanceControllerEndPoint {
 		
 		if(isValidLowerReturnPercentTarget ||  isValidUpperReturnPercentTarget)
 		{
-			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
-			LOG.info("stopLossOperations.deleteEntries");
-			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
-			
+			//if it finds the entry for the same bd 
+				//see if the same has entry for that bd
+				//delete that entry
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			Query q = pm.newQuery(StopLossDbObject.class, ":p.contains(businessDate)");
+			List<StopLossDbObject> stopLossObjects  = (List<StopLossDbObject>)q.execute(stockName);
+			for(StopLossDbObject eachDbOject : stopLossObjects)
+			{
+				if(eachDbOject.getStockName().equalsIgnoreCase(stockName))
+				{
+					LOG.info("StopLossDbObject with same BD and stockName found. Deleting Entry");
+					pm.deletePersistent(eachDbOject);
+				}
+			}
+				
+//			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
+//			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
+
 			StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName(stockName);
 			if(isValidLowerReturnPercentTarget)
 			{
@@ -125,13 +133,14 @@ public class MaintainanceControllerEndPoint {
 			{
 				builder.upperReturnPercentTarget(upperReturnPercentTarget);
 			}
-			LOG.info("stopLossOperations.deleteEntries");
-			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
+			LOG.info("inserting StopLossDbObject");
+			pm.makePersistent(builder.build());
+			pm.close();
+//			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
 		}
 		
 		LOG.info("return success message");
 		return new EndPointResponse(true, "Updated Attributes!!!");
-
 	}
 
 	@ApiMethod(name = "uploadUnrealized", path="uploadUnrealized", httpMethod = ApiMethod.HttpMethod.POST)
@@ -143,7 +152,7 @@ public class MaintainanceControllerEndPoint {
 		final double inputTotalInvestment = getInputTotalnvestment(rowsWithoutHeader);
 		
 		final List<String> rowsWithoutHeaderAndTrailer = rowsWithoutHeader.subList(0, rowsWithoutHeader.size()-1);
-		final List<UnrealizedDbObject> unrealizedDbObjects = Adapter.
+		final List<UnrealizedDbObject> unrealizedDbObjects = ConverterUtil.
 				convertMoneyControlDownloadToUnrealizedDbObjects(rowsWithoutHeaderAndTrailer);
 		
 		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = 
@@ -185,6 +194,28 @@ public class MaintainanceControllerEndPoint {
 		return new EndPointResponse(true, message);
 	}
 	
+	@ApiMethod(name = "refreshTargets", path="refreshTargets", httpMethod = ApiMethod.HttpMethod.POST)
+	public EndPointResponse refreshTargets()
+	{
+		try
+		{
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			Query q = pm.newQuery(StopLossDbObject.class);
+			final List<StopLossDbObject> entries =  (List<StopLossDbObject>)q.execute();
+			for(StopLossDbObject eachEntry : entries)
+			{
+				eachEntry.setBusinessDate("2016-09-09");
+			}
+			pm.close();
+		}catch(Throwable t)
+		{
+			t.printStackTrace();
+			return new EndPointResponse(false, "error");
+		}
+
+		return new EndPointResponse(true, "done");
+	}
+	
 
 	//helper methods
 	private EndPointResponse getResponse(final double inputTotalInvestment,
@@ -199,7 +230,7 @@ public class MaintainanceControllerEndPoint {
 
 	private double getInputTotalnvestment(List<String> rowsWithoutHeader) {
 		final String trailer = rowsWithoutHeader.get(rowsWithoutHeader.size()-1);
-		final String[] trailerSplit = trailer.split(Adapter.DELIMITER_IN_UNREALIZED_UPLOAD);
+		final String[] trailerSplit = trailer.split(ConverterUtil.DELIMITER_IN_UNREALIZED_UPLOAD);
 		final double totalValueAsPerInput = Double.valueOf(trailerSplit[8]);
 		return totalValueAsPerInput;
 	}
