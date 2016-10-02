@@ -44,15 +44,7 @@ public class InitializeControllerEndPoint {
 		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
 		return blackListedStocks;
 	}
-	
-	@ApiMethod(name = "listTargetReachedStocks", path="listTargetReachedStocks")
-	public List<UnrealizedSummaryDbObject> listTargetReachedStocks()
-	{
-		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = listUnrealizedSummaryStocks();
-		final List<UnrealizedSummaryDbObject> stopLossStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_TARGET_REACHED);
-		return stopLossStocks;
-	}
-	
+
 	@ApiMethod(name = "listUnrealizedSummaryStocks", path="listUnrealizedSummaryStocks")
 	public List<UnrealizedSummaryDbObject> listUnrealizedSummaryStocks()
 	{
@@ -100,6 +92,21 @@ public class InitializeControllerEndPoint {
 		return profitAndLossDbObject;
 	}
 	
+	@ApiMethod(name = "listTargetReachedStocks", path="listTargetReachedStocks")
+	public List<UnrealizedSummaryDbObject> listTargetReachedStocks()
+	{
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = listUnrealizedSummaryStocks();
+		final List<UnrealizedSummaryDbObject> stopLossStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_TARGET_REACHED);
+		return stopLossStocks;
+	}
+	
+	@ApiMethod(name = "listSelectedTargetHistory", path="listSelectedTargetHistory")
+	public List<StopLossDbObject> listSelectedTargetHistory(@Named("stockName") String stockName)
+	{
+		JdoDbOperations<StopLossDbObject> targetHistoryDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
+		final List<StopLossDbObject> stopLossDbObjects = targetHistoryDbOperations.getEntries("stockName", FastList.newListWith(stockName.toUpperCase()), "businessDate desc");
+		return stopLossDbObjects;
+	}
 
 //helper methods
 	

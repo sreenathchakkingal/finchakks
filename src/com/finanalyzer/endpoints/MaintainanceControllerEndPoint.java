@@ -111,7 +111,7 @@ public class MaintainanceControllerEndPoint {
 				//delete that entry
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			Query q = pm.newQuery(StopLossDbObject.class, ":p.contains(businessDate)");
-			List<StopLossDbObject> stopLossObjects  = (List<StopLossDbObject>)q.execute(stockName);
+			List<StopLossDbObject> stopLossObjects  = (List<StopLossDbObject>)q.execute(DateUtil.todaysDate());
 			for(StopLossDbObject eachDbOject : stopLossObjects)
 			{
 				if(eachDbOject.getStockName().equalsIgnoreCase(stockName))
