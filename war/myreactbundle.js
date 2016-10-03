@@ -21101,9 +21101,9 @@
 	var IndexRoute = ReactRouter.IndexRoute;
 	var Main = __webpack_require__(237);
 	var WrapperContainer = __webpack_require__(238);
-	var InvestmentContainer = __webpack_require__(620);
-	var DeprecatedContainer = __webpack_require__(625);
-	var MaintenanceContainer = __webpack_require__(628);
+	var InvestmentContainer = __webpack_require__(641);
+	var DeprecatedContainer = __webpack_require__(646);
+	var MaintenanceContainer = __webpack_require__(649);
 	var UnrealizedDetailsSelectedContainer = __webpack_require__(606);
 
 	var routes = React.createElement(
@@ -26768,9 +26768,9 @@
 
 	var React = __webpack_require__(2);
 	var StockExceptionsContainer = __webpack_require__(239);
-	var NDaysHistoryStocksContainer = __webpack_require__(613);
-	var ProfitAndLossContainer = __webpack_require__(615);
-	var TargetReachedStocksContainer = __webpack_require__(618);
+	var NDaysHistoryStocksContainer = __webpack_require__(635);
+	var ProfitAndLossContainer = __webpack_require__(637);
+	var TargetReachedStocksContainer = __webpack_require__(639);
 	var Main = __webpack_require__(237);
 
 	var WrapperContainer = React.createClass({
@@ -38387,7 +38387,9 @@
 	var Button = __webpack_require__(504);
 	var MenuItem = __webpack_require__(605);
 	var UnrealizedDetailsSelectedContainer = __webpack_require__(606);
-	var TargetHistorySelectedContainer = __webpack_require__(653);
+	var TargetHistorySelectedContainer = __webpack_require__(613);
+	var RetrieveModifiableStockAttributesContainer = __webpack_require__(615);
+
 	var Trim = React.createClass({
 	  displayName: 'Trim',
 
@@ -38414,16 +38416,24 @@
 	    this.setState({ showTargetHistoryModal: true });
 	  },
 
+	  closeModifiableAttributesModal() {
+	    this.setState({ showModifiableAttributesModal: false });
+	  },
+
+	  openModifiableAttributesModal() {
+	    this.setState({ showModifiableAttributesModal: true });
+	  },
+
 	  render: function () {
 	    var name = this.props.data;
 	    var result = name.substring(0, 8);
-	    var unrealizedLink = '#selectedUnrealizedsasi/' + name;
+
 	    return React.createElement(
 	      'div',
 	      null,
 	      React.createElement(
 	        SplitButton,
-	        { bsStyle: 'info', bsSize: 'small', title: result, id: 'split-button-basic-${i}' },
+	        { bsStyle: 'info', bsSize: 'xsmall', title: result, id: 'split-button-basic-${i}' },
 	        React.createElement(
 	          MenuItem,
 	          { eventKey: '1', onClick: this.openUnrealizedModal },
@@ -38431,12 +38441,18 @@
 	        ),
 	        React.createElement(
 	          MenuItem,
-	          { eventKey: '1', onClick: this.openTargetHistoryModal },
+	          { eventKey: '2', onClick: this.openTargetHistoryModal },
 	          'Target History'
 	        ),
 	        React.createElement(
+	          MenuItem,
+	          { eventKey: '3', onClick: this.openModifiableAttributesModal },
+	          'Modify'
+	        ),
+	        React.createElement(
 	          Modal,
-	          { bsSize: 'large', 'aria-labelledby': 'contained-modal-title-lg', show: this.state.showUnrealizedModal, onHide: this.closeUnrealizedModal },
+	          { bsSize: 'large', 'aria-labelledby': 'contained-modal-title-lg', show: this.state.showUnrealizedModal,
+	            onHide: this.closeUnrealizedModal },
 	          React.createElement(
 	            Modal.Body,
 	            null,
@@ -38454,7 +38470,8 @@
 	        ),
 	        React.createElement(
 	          Modal,
-	          { bsSize: 'large', 'aria-labelledby': 'contained-modal-title-lg', show: this.state.showTargetHistoryModal, onHide: this.closeTargetHistoryModal },
+	          { bsSize: 'large', 'aria-labelledby': 'contained-modal-title-lg', show: this.state.showTargetHistoryModal,
+	            onHide: this.closeTargetHistoryModal },
 	          React.createElement(
 	            Modal.Body,
 	            null,
@@ -38466,6 +38483,25 @@
 	            React.createElement(
 	              Button,
 	              { onClick: this.closeTargetHistoryModal },
+	              'Close'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          Modal,
+	          { bsSize: 'large', 'aria-labelledby': 'contained-modal-title-lg', show: this.state.showModifiableAttributesModal,
+	            onHide: this.closesModifiableAttributesModal },
+	          React.createElement(
+	            Modal.Body,
+	            null,
+	            React.createElement(RetrieveModifiableStockAttributesContainer, { stockName: name })
+	          ),
+	          React.createElement(
+	            Modal.Footer,
+	            null,
+	            React.createElement(
+	              Button,
+	              { onClick: this.closeModifiableAttributesModal },
 	              'Close'
 	            )
 	          )
@@ -45265,10 +45301,6 @@
 	var UnrealizedDetailsSelectedContainer = React.createClass({
 	  displayName: 'UnrealizedDetailsSelectedContainer',
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
@@ -45971,25 +46003,23 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var NDaysHistoryStocks = __webpack_require__(614);
+	var TargetHistorySelected = __webpack_require__(614);
 	var finchakksapi = __webpack_require__(240);
 
-	var NDaysHistoryStocksContainer = React.createClass({
-	  displayName: 'NDaysHistoryStocksContainer',
+	var TargetHistorySelectedContainer = React.createClass({
+	  displayName: 'TargetHistorySelectedContainer',
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
 
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
-	      stocksInfo: []
+	      stocksInfo: [],
+	      stockName: ''
 	    };
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
+	    finchakksapi.listTargetHistorySelected(this.props.stockName).then(function (stocksInfo) {
 	      this.setState({
 	        isLoading: false,
 	        stocksInfo: stocksInfo
@@ -45998,14 +46028,12 @@
 	  },
 
 	  render: function () {
-	    return React.createElement(NDaysHistoryStocks, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
-	    });
+	    return React.createElement(TargetHistorySelected, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo });
 	  }
-
 	});
 
-	module.exports = NDaysHistoryStocksContainer;
+	module.exports = TargetHistorySelectedContainer;
 
 /***/ },
 /* 614 */
@@ -46013,742 +46041,57 @@
 
 	var React = __webpack_require__(2);
 	var PropTypes = React.PropTypes;
-	var finchakksapi = __webpack_require__(240);
 	var Loading = __webpack_require__(264);
-	var columnMetadata = __webpack_require__(466);
+	var AppendPercent = __webpack_require__(467);
+	var ConvertToPercent = __webpack_require__(471);
 	var PanelWrapper = __webpack_require__(608);
 	var GriddleWrapper = __webpack_require__(612);
 
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
-	}
-
-	function NDaysHistoryStocks(props) {
+	function TargetHistorySelected(props) {
 	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading NDaysHistoryStocks' });
+	    return React.createElement(Loading, { text: 'Loading TargetHistorySelected' });
 	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.smvPercent(), columnMetadata.netNDaysGain(), columnMetadata.score(), columnMetadata.investmentRatio(), columnMetadata.industryInvestmentRatio(), columnMetadata.sellPrice(), columnMetadata.simpleMovingAverage(), columnMetadata.nDay1Gain(), columnMetadata.nDay2Gain(), columnMetadata.nDay3Gain(), columnMetadata.nDay4Gain(), columnMetadata.nDay5Gain(), columnMetadata.nDay6Gain(), columnMetadata.industry()];
+	    var metaData = [{
+	      "columnName": "stockName",
+	      "displayName": "Stock Name"
+	    }, {
+	      "columnName": "businessDate",
+	      "displayName": "Date"
+	    }, {
+	      "columnName": "lowerReturnPercentTarget",
+	      "displayName": "L. Target Return %",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "upperReturnPercentTarget",
+	      "displayName": "U. Target Return %",
+	      "customComponent": AppendPercent
+	    }];
 
+	    var headerName = 'Target History Details: ' + props.stocksInfo[0].stockName;
 	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        PanelWrapper,
-	        { header: 'Watch List' },
-	        React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	          columns: ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"],
-	          columnMetadata: metaData, bodyHeight: 800 })
-	      )
+	      PanelWrapper,
+	      { header: headerName },
+	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	        columns: ["stockName", "businessDate", "lowerReturnPercentTarget", "upperReturnPercentTarget"],
+	        columnMetadata: metaData
+	      })
 	    );
 	  }
 	}
 
-	NDaysHistoryStocks.propTypes = {
+	TargetHistorySelected.propTypes = {
 	  isLoading: PropTypes.bool.isRequired,
 	  stocksInfo: PropTypes.array.isRequired
 	};
 
-	module.exports = NDaysHistoryStocks;
+	module.exports = TargetHistorySelected;
 
 /***/ },
 /* 615 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ProfitAndLoss = __webpack_require__(616);
-	var finchakksapi = __webpack_require__(240);
-
-	var ProfitAndLossContainer = React.createClass({
-	  displayName: 'ProfitAndLossContainer',
-
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
-	  getInitialState: function () {
-	    return {
-	      isLoading: true
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    finchakksapi.listprofitAndloss().then(function (stocksInfo) {
-	      this.setState({
-	        isLoading: false,
-	        stocksInfo: stocksInfo
-	      });
-	    }.bind(this));
-	  },
-
-	  render: function () {
-	    return React.createElement(ProfitAndLoss, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
-	    });
-	  }
-
-	});
-
-	module.exports = ProfitAndLossContainer;
-
-/***/ },
-/* 616 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var finchakksapi = __webpack_require__(240);
-	var Loading = __webpack_require__(264);
-	var PropTypes = React.PropTypes;
-	var Table = __webpack_require__(617);
-	var PanelWrapper = __webpack_require__(608);
-	var formatter = __webpack_require__(469);
-
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
-	}
-
-	function ProfitAndLoss(props) {
-	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading ProfitAndLoss' });
-	  } else {
-	    var stockData = props.stocksInfo;
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        PanelWrapper,
-	        { header: 'Summary' },
-	        React.createElement(
-	          Table,
-	          { striped: true, bordered: true, condensed: true, hover: true },
-	          React.createElement(
-	            'thead',
-	            null,
-	            React.createElement(
-	              'tr',
-	              null,
-	              React.createElement(
-	                'th',
-	                null,
-	                'Return(%)'
-	              ),
-	              React.createElement(
-	                'th',
-	                null,
-	                'Investment'
-	              ),
-	              React.createElement(
-	                'th',
-	                null,
-	                'Return'
-	              ),
-	              React.createElement(
-	                'th',
-	                null,
-	                'Return(Bank)'
-	              ),
-	              React.createElement(
-	                'th',
-	                null,
-	                'Diff'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'tbody',
-	            null,
-	            React.createElement(
-	              'tr',
-	              null,
-	              React.createElement(
-	                'td',
-	                null,
-	                formatter.convertToPercent(stockData.averageReturn)
-	              ),
-	              React.createElement(
-	                'td',
-	                null,
-	                formatter.moneyFormat(stockData.totalInvestment)
-	              ),
-	              React.createElement(
-	                'td',
-	                null,
-	                formatter.moneyFormat(stockData.totalReturn)
-	              ),
-	              React.createElement(
-	                'td',
-	                null,
-	                formatter.moneyFormat(stockData.totalReturnIfBank)
-	              ),
-	              React.createElement(
-	                'td',
-	                null,
-	                formatter.moneyFormat(stockData.totalReturnVsIfBank)
-	              )
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	}
-
-	ProfitAndLoss.propTypes = {
-	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.shape({
-	    averageReturn: PropTypes.number.isRequired,
-	    totalInvestment: PropTypes.number.isRequired,
-	    totalReturn: PropTypes.number.isRequired,
-	    totalInvestment: PropTypes.number.isRequired,
-	    totalReturnIfBank: PropTypes.number.isRequired,
-	    totalReturnVsIfBank: PropTypes.number.isRequired
-	  })
-	};
-
-	module.exports = ProfitAndLoss;
-
-/***/ },
-/* 617 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _inherits = __webpack_require__(492)['default'];
-
-	var _classCallCheck = __webpack_require__(501)['default'];
-
-	var _extends = __webpack_require__(476)['default'];
-
-	var _objectWithoutProperties = __webpack_require__(502)['default'];
-
-	var _interopRequireDefault = __webpack_require__(503)['default'];
-
-	exports.__esModule = true;
-
-	var _classnames = __webpack_require__(510);
-
-	var _classnames2 = _interopRequireDefault(_classnames);
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _utilsBootstrapUtils = __webpack_require__(513);
-
-	var propTypes = {
-	  striped: _react2['default'].PropTypes.bool,
-	  bordered: _react2['default'].PropTypes.bool,
-	  condensed: _react2['default'].PropTypes.bool,
-	  hover: _react2['default'].PropTypes.bool,
-	  responsive: _react2['default'].PropTypes.bool
-	};
-
-	var defaultProps = {
-	  bordered: false,
-	  condensed: false,
-	  hover: false,
-	  responsive: false,
-	  striped: false
-	};
-
-	var Table = (function (_React$Component) {
-	  _inherits(Table, _React$Component);
-
-	  function Table() {
-	    _classCallCheck(this, Table);
-
-	    _React$Component.apply(this, arguments);
-	  }
-
-	  Table.prototype.render = function render() {
-	    var _extends2;
-
-	    var _props = this.props;
-	    var striped = _props.striped;
-	    var bordered = _props.bordered;
-	    var condensed = _props.condensed;
-	    var hover = _props.hover;
-	    var responsive = _props.responsive;
-	    var className = _props.className;
-
-	    var props = _objectWithoutProperties(_props, ['striped', 'bordered', 'condensed', 'hover', 'responsive', 'className']);
-
-	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
-
-	    var bsProps = _splitBsProps[0];
-	    var elementProps = _splitBsProps[1];
-
-	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), (_extends2 = {}, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'striped')] = striped, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'bordered')] = bordered, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'condensed')] = condensed, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'hover')] = hover, _extends2));
-
-	    var table = _react2['default'].createElement('table', _extends({}, elementProps, {
-	      className: _classnames2['default'](className, classes)
-	    }));
-
-	    if (responsive) {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: _utilsBootstrapUtils.prefix(bsProps, 'responsive') },
-	        table
-	      );
-	    }
-
-	    return table;
-	  };
-
-	  return Table;
-	})(_react2['default'].Component);
-
-	Table.propTypes = propTypes;
-	Table.defaultProps = defaultProps;
-
-	exports['default'] = _utilsBootstrapUtils.bsClass('table', Table);
-	module.exports = exports['default'];
-
-/***/ },
-/* 618 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var TargetReachedStocks = __webpack_require__(619);
-	var finchakksapi = __webpack_require__(240);
-
-	var TargetReachedStocksContainer = React.createClass({
-	  displayName: 'TargetReachedStocksContainer',
-
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
-	  getInitialState: function () {
-	    return {
-	      isLoading: true,
-	      stocksInfo: []
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    finchakksapi.listTargetReachedStocks().then(function (stocksInfo) {
-	      this.setState({
-	        isLoading: false,
-	        stocksInfo: stocksInfo
-	      });
-	    }.bind(this));
-	  },
-
-	  render: function () {
-	    return React.createElement(TargetReachedStocks, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
-	    });
-	  }
-
-	});
-
-	module.exports = TargetReachedStocksContainer;
-
-/***/ },
-/* 619 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var finchakksapi = __webpack_require__(240);
-	var Loading = __webpack_require__(264);
-	var columnMetadata = __webpack_require__(466);
-	var PropTypes = React.PropTypes;
-	var GriddleWrapper = __webpack_require__(612);
-	var PanelWrapper = __webpack_require__(608);
-
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
-	}
-
-	function TargetReachedStocks(props) {
-	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading TargetReachedStocks' });
-	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.impact(), columnMetadata.diff(), columnMetadata.lowerReturnPercentTarget(), columnMetadata.upperReturnPercentTarget(), columnMetadata.lowerSellPriceTarget(), columnMetadata.upperSellPriceTarget(), columnMetadata.achieveAfterDate(), columnMetadata.achieveByDate(), columnMetadata.sellPrice()];
-
-	    return React.createElement(
-	      PanelWrapper,
-	      { header: 'Target Reached Stocks' },
-	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "returnTillDate", "lowerReturnPercentTarget", "upperReturnPercentTarget", "sellPrice", "quantity", "totalInvestment", "totalReturn"],
-	        columnMetadata: metaData
-	      })
-	    );
-	  }
-	}
-
-	TargetReachedStocks.propTypes = {
-	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
-	};
-
-	module.exports = TargetReachedStocks;
-
-/***/ },
-/* 620 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var UnrealizedDetailsContainer = __webpack_require__(621);
-	var UnrealizedSummaryContainer = __webpack_require__(623);
-	var ProfitAndLossContainer = __webpack_require__(615);
-	var Main = __webpack_require__(237);
-
-	var InvestmentContainer = React.createClass({
-	  displayName: "InvestmentContainer",
-
-	  render: function () {
-	    return React.createElement(
-	      Main,
-	      null,
-	      React.createElement(ProfitAndLossContainer, null),
-	      React.createElement(UnrealizedSummaryContainer, null),
-	      React.createElement(UnrealizedDetailsContainer, null)
-	    );
-	  }
-
-	});
-
-	module.exports = InvestmentContainer;
-
-/***/ },
-/* 621 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var UnrealizedDetails = __webpack_require__(622);
-	var finchakksapi = __webpack_require__(240);
-
-	var UnrealizedDetailsContainer = React.createClass({
-	  displayName: 'UnrealizedDetailsContainer',
-
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
-	  getInitialState: function () {
-	    return {
-	      isLoading: true,
-	      stocksInfo: []
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    finchakksapi.listUnrealizedDetails().then(function (stocksInfo) {
-	      this.setState({
-	        isLoading: false,
-	        stocksInfo: stocksInfo
-	      });
-	    }.bind(this));
-	  },
-
-	  render: function () {
-	    return React.createElement(UnrealizedDetails, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
-	    });
-	  }
-
-	});
-
-	module.exports = UnrealizedDetailsContainer;
-
-/***/ },
-/* 622 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var Loading = __webpack_require__(264);
-	var columnMetadata = __webpack_require__(466);
-	var PropTypes = React.PropTypes;
-	var GriddleWrapper = __webpack_require__(612);
-	var PanelWrapper = __webpack_require__(608);
-
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
-	}
-
-	function UnrealizedDetails(props) {
-	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading UnrealizedDetails' });
-	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.buyDate(), columnMetadata.buyPrice(), columnMetadata.duration(), columnMetadata.sellPrice(), columnMetadata.bankSellPrice(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.diff()];
-
-	    return React.createElement(
-	      PanelWrapper,
-	      { header: 'Unrealized Details' },
-	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "returnTillDate", "buyDate", "buyPrice", "duration", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
-	        columnMetadata: metaData
-	      })
-	    );
-	  }
-	}
-
-	UnrealizedDetails.propTypes = {
-	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
-	};
-
-	module.exports = UnrealizedDetails;
-
-/***/ },
-/* 623 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var UnrealizedSummary = __webpack_require__(624);
-	var finchakksapi = __webpack_require__(240);
-
-	var UnrealizedSummaryContainer = React.createClass({
-	  displayName: 'UnrealizedSummaryContainer',
-
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
-	  getInitialState: function () {
-	    return {
-	      isLoading: true,
-	      stocksInfo: []
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    finchakksapi.listUnrealizedSummary().then(function (stocksInfo) {
-	      this.setState({
-	        isLoading: false,
-	        stocksInfo: stocksInfo
-	      });
-	    }.bind(this));
-	  },
-
-	  render: function () {
-	    return React.createElement(UnrealizedSummary, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
-	    });
-	  }
-
-	});
-
-	module.exports = UnrealizedSummaryContainer;
-
-/***/ },
-/* 624 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var Loading = __webpack_require__(264);
-	var columnMetadata = __webpack_require__(466);
-	var PropTypes = React.PropTypes;
-	var GriddleWrapper = __webpack_require__(612);
-	var PanelWrapper = __webpack_require__(608);
-
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
-	}
-
-	function UnrealizedSummary(props) {
-	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading UnrealizedSummary' });
-	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.impact(), columnMetadata.lowerReturnPercentTarget(), columnMetadata.upperReturnPercentTarget(), columnMetadata.lowerSellPriceTarget(), columnMetadata.upperSellPriceTarget()];
-
-	    return React.createElement(
-	      PanelWrapper,
-	      { header: 'Unrealized Summary' },
-	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "returnTillDate", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "impactOnAverageReturn"],
-	        columnMetadata: metaData
-	      })
-	    );
-	  }
-	}
-
-	UnrealizedSummary.propTypes = {
-	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
-	};
-
-	module.exports = UnrealizedSummary;
-
-/***/ },
-/* 625 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var ListBlackListedStocksContainer = __webpack_require__(626);
-	var Main = __webpack_require__(237);
-
-	var DeprecatedContainer = React.createClass({
-	  displayName: "DeprecatedContainer",
-
-	  render: function () {
-	    return React.createElement(
-	      Main,
-	      null,
-	      React.createElement(ListBlackListedStocksContainer, null)
-	    );
-	  }
-
-	});
-
-	module.exports = DeprecatedContainer;
-
-/***/ },
-/* 626 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var ListBlackListedStocks = __webpack_require__(627);
-	var finchakksapi = __webpack_require__(240);
-
-	var ListBlackListedStocksContainer = React.createClass({
-	  displayName: 'ListBlackListedStocksContainer',
-
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
-	  getInitialState: function () {
-	    return {
-	      isLoading: true,
-	      stocksInfo: []
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    finchakksapi.listBlackListedStocks().then(function (stocksInfo) {
-	      this.setState({
-	        isLoading: false,
-	        stocksInfo: stocksInfo
-	      });
-	    }.bind(this));
-	  },
-
-	  render: function () {
-	    return React.createElement(ListBlackListedStocks, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
-	    });
-	  }
-
-	});
-
-	module.exports = ListBlackListedStocksContainer;
-
-/***/ },
-/* 627 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var finchakksapi = __webpack_require__(240);
-	var Loading = __webpack_require__(264);
-	var columnMetadata = __webpack_require__(466);
-	var PropTypes = React.PropTypes;
-	var GriddleWrapper = __webpack_require__(612);
-	var PanelWrapper = __webpack_require__(608);
-
-	function puke(obj) {
-	  return React.createElement(
-	    'pre',
-	    null,
-	    JSON.stringify(obj, null, ' ')
-	  );
-	}
-
-	function ListBlackListedStocks(props) {
-	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading ListBlackListedStocks' });
-	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.impact(), columnMetadata.returnPercent(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.quantity()];
-
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        PanelWrapper,
-	        { header: 'Black List' },
-	        React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	          columns: ["stockName", "impactOnAverageReturn", "returnTillDate", "totalInvestment", "totalReturn", "totalReturnIfBank", "quantity"],
-	          columnMetadata: metaData })
-	      )
-	    );
-	  }
-	}
-
-	ListBlackListedStocks.propTypes = {
-	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
-	};
-
-	module.exports = ListBlackListedStocks;
-
-/***/ },
-/* 628 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var RetrieveModifiableStockAttributesContainer = __webpack_require__(629);
-	var UnrealizedFileUploadContainer = __webpack_require__(646);
-	var RefreshContainer = __webpack_require__(648);
-	var Main = __webpack_require__(237);
-	var Panel = __webpack_require__(609);
-	var Accordion = __webpack_require__(650);
-	var PanelWrapper = __webpack_require__(608);
-
-	var MaintenanceContainer = React.createClass({
-	  displayName: "MaintenanceContainer",
-
-	  render: function () {
-	    return React.createElement(
-	      Main,
-	      null,
-	      React.createElement(
-	        PanelWrapper,
-	        { header: "Retrieve Modifiable Stock Attributes" },
-	        React.createElement(RetrieveModifiableStockAttributesContainer, null)
-	      ),
-	      React.createElement(
-	        PanelWrapper,
-	        { header: "Unrealized File Upload" },
-	        React.createElement(UnrealizedFileUploadContainer, null)
-	      ),
-	      React.createElement(
-	        PanelWrapper,
-	        { header: "Refresh" },
-	        React.createElement(RefreshContainer, null)
-	      )
-	    );
-	  }
-	});
-
-	module.exports = MaintenanceContainer;
-
-/***/ },
-/* 629 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var RetrieveModifiableStockAttributes = __webpack_require__(630);
+	var RetrieveModifiableStockAttributes = __webpack_require__(616);
 	var finchakksapi = __webpack_require__(240);
 
 	var RetrieveModifiableStockAttributesContainer = React.createClass({
@@ -46756,7 +46099,7 @@
 
 	  getInitialState: function () {
 	    return {
-	      stockName: '',
+	      stockName: typeof this.props.stockName === 'undefined' ? '' : this.props.stockName,
 	      stocksInfo: [],
 	      isStocksInfoRetrieving: false,
 	      isStocksInfoRetrieved: false
@@ -46788,6 +46131,7 @@
 
 	  render: function () {
 	    return React.createElement(RetrieveModifiableStockAttributes, {
+	      stockName: this.state.stockName,
 	      isStocksInfoRetrieving: this.state.isStocksInfoRetrieving,
 	      onStockNameSubmit: this.handleSubmit,
 	      onCaptureChange: this.handleChange,
@@ -46801,20 +46145,20 @@
 	module.exports = RetrieveModifiableStockAttributesContainer;
 
 /***/ },
-/* 630 */
+/* 616 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var Form = __webpack_require__(631);
-	var FormGroup = __webpack_require__(632);
-	var FormControl = __webpack_require__(633);
+	var Form = __webpack_require__(617);
+	var FormGroup = __webpack_require__(618);
+	var FormControl = __webpack_require__(619);
 	var Button = __webpack_require__(504);
-	var ControlLabel = __webpack_require__(637);
-	var Col = __webpack_require__(638);
-	var Row = __webpack_require__(639);
-	var Grid = __webpack_require__(640);
-	var Label = __webpack_require__(641);
-	var ModifiableAttributesContainer = __webpack_require__(642);
+	var ControlLabel = __webpack_require__(623);
+	var Col = __webpack_require__(624);
+	var Row = __webpack_require__(625);
+	var Grid = __webpack_require__(626);
+	var Label = __webpack_require__(627);
+	var ModifiableAttributesContainer = __webpack_require__(628);
 
 	function puke(obj) {
 	  return React.createElement(
@@ -46827,6 +46171,8 @@
 	function RetrieveModifiableStockAttributes(props) {
 	  var isRetrieving = props.isStocksInfoRetrieving;
 	  var isRetrieved = props.isStocksInfoRetrieved;
+	  var renderModifiableAttributesContainer;
+
 	  return React.createElement(
 	    Form,
 	    { inline: true },
@@ -46839,7 +46185,7 @@
 	        'Stock Name'
 	      ),
 	      ' ',
-	      React.createElement(FormControl, { type: 'text', onChange: props.onCaptureChange })
+	      React.createElement(FormControl, { type: 'text', defaultValue: props.stockName, onChange: props.onCaptureChange })
 	    ),
 	    ' ',
 	    React.createElement(
@@ -46855,7 +46201,7 @@
 	module.exports = RetrieveModifiableStockAttributes;
 
 /***/ },
-/* 631 */
+/* 617 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46944,7 +46290,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 632 */
+/* 618 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47058,7 +46404,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 633 */
+/* 619 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -47091,11 +46437,11 @@
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _FormControlFeedback = __webpack_require__(634);
+	var _FormControlFeedback = __webpack_require__(620);
 
 	var _FormControlFeedback2 = _interopRequireDefault(_FormControlFeedback);
 
-	var _FormControlStatic = __webpack_require__(636);
+	var _FormControlStatic = __webpack_require__(622);
 
 	var _FormControlStatic2 = _interopRequireDefault(_FormControlStatic);
 
@@ -47178,7 +46524,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 634 */
+/* 620 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47203,7 +46549,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Glyphicon = __webpack_require__(635);
+	var _Glyphicon = __webpack_require__(621);
 
 	var _Glyphicon2 = _interopRequireDefault(_Glyphicon);
 
@@ -47285,7 +46631,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 635 */
+/* 621 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47358,7 +46704,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 636 */
+/* 622 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47435,7 +46781,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 637 */
+/* 623 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -47532,7 +46878,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 638 */
+/* 624 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47796,7 +47142,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 639 */
+/* 625 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47873,7 +47219,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 640 */
+/* 626 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47961,7 +47307,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 641 */
+/* 627 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48051,12 +47397,12 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 642 */
+/* 628 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ModifiableAttributes = __webpack_require__(643);
-	var UnrealizedFileUploadContainer = __webpack_require__(646);
+	var ModifiableAttributes = __webpack_require__(629);
+	var UnrealizedFileUploadContainer = __webpack_require__(633);
 	var finchakksapi = __webpack_require__(240);
 
 	var ModifiableAttributesContainer = React.createClass({
@@ -48147,26 +47493,25 @@
 	module.exports = ModifiableAttributesContainer;
 
 /***/ },
-/* 643 */
+/* 629 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var PropTypes = React.PropTypes;
-	var Form = __webpack_require__(631);
-	var FormGroup = __webpack_require__(632);
-	var FormControl = __webpack_require__(633);
+	var Form = __webpack_require__(617);
+	var FormGroup = __webpack_require__(618);
+	var FormControl = __webpack_require__(619);
 	var Button = __webpack_require__(504);
-	var ControlLabel = __webpack_require__(637);
-	var Table = __webpack_require__(617);
-	var SelectorWrapper = __webpack_require__(644);
-	var StockRatingsWrapper = __webpack_require__(645);
+	var ControlLabel = __webpack_require__(623);
+	var Table = __webpack_require__(630);
+	var SelectorWrapper = __webpack_require__(631);
+	var StockRatingsWrapper = __webpack_require__(632);
 
 	var ModifiableAttributes = React.createClass({
 	  displayName: 'ModifiableAttributes',
 
 
 	  render: function () {
-
 	    var yes = 'Yes';
 	    var no = 'No';
 	    if (this.props.isRetrieved === true) {
@@ -48340,13 +47685,110 @@
 	module.exports = ModifiableAttributes;
 
 /***/ },
-/* 644 */
+/* 630 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(492)['default'];
+
+	var _classCallCheck = __webpack_require__(501)['default'];
+
+	var _extends = __webpack_require__(476)['default'];
+
+	var _objectWithoutProperties = __webpack_require__(502)['default'];
+
+	var _interopRequireDefault = __webpack_require__(503)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(510);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(513);
+
+	var propTypes = {
+	  striped: _react2['default'].PropTypes.bool,
+	  bordered: _react2['default'].PropTypes.bool,
+	  condensed: _react2['default'].PropTypes.bool,
+	  hover: _react2['default'].PropTypes.bool,
+	  responsive: _react2['default'].PropTypes.bool
+	};
+
+	var defaultProps = {
+	  bordered: false,
+	  condensed: false,
+	  hover: false,
+	  responsive: false,
+	  striped: false
+	};
+
+	var Table = (function (_React$Component) {
+	  _inherits(Table, _React$Component);
+
+	  function Table() {
+	    _classCallCheck(this, Table);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Table.prototype.render = function render() {
+	    var _extends2;
+
+	    var _props = this.props;
+	    var striped = _props.striped;
+	    var bordered = _props.bordered;
+	    var condensed = _props.condensed;
+	    var hover = _props.hover;
+	    var responsive = _props.responsive;
+	    var className = _props.className;
+
+	    var props = _objectWithoutProperties(_props, ['striped', 'bordered', 'condensed', 'hover', 'responsive', 'className']);
+
+	    var _splitBsProps = _utilsBootstrapUtils.splitBsProps(props);
+
+	    var bsProps = _splitBsProps[0];
+	    var elementProps = _splitBsProps[1];
+
+	    var classes = _extends({}, _utilsBootstrapUtils.getClassSet(bsProps), (_extends2 = {}, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'striped')] = striped, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'bordered')] = bordered, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'condensed')] = condensed, _extends2[_utilsBootstrapUtils.prefix(bsProps, 'hover')] = hover, _extends2));
+
+	    var table = _react2['default'].createElement('table', _extends({}, elementProps, {
+	      className: _classnames2['default'](className, classes)
+	    }));
+
+	    if (responsive) {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: _utilsBootstrapUtils.prefix(bsProps, 'responsive') },
+	        table
+	      );
+	    }
+
+	    return table;
+	  };
+
+	  return Table;
+	})(_react2['default'].Component);
+
+	Table.propTypes = propTypes;
+	Table.defaultProps = defaultProps;
+
+	exports['default'] = _utilsBootstrapUtils.bsClass('table', Table);
+	module.exports = exports['default'];
+
+/***/ },
+/* 631 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var PropTypes = React.PropTypes;
-	var FormGroup = __webpack_require__(632);
-	var FormControl = __webpack_require__(633);
+	var FormGroup = __webpack_require__(618);
+	var FormControl = __webpack_require__(619);
 
 	var SelectorWrapper = React.createClass({
 	  displayName: 'SelectorWrapper',
@@ -48382,14 +47824,14 @@
 	module.exports = SelectorWrapper;
 
 /***/ },
-/* 645 */
+/* 632 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var PropTypes = React.PropTypes;
-	var FormGroup = __webpack_require__(632);
-	var FormControl = __webpack_require__(633);
-	var SelectorWrapper = __webpack_require__(644);
+	var FormGroup = __webpack_require__(618);
+	var FormControl = __webpack_require__(619);
+	var SelectorWrapper = __webpack_require__(631);
 
 	var StockRatingsWrapper = React.createClass({
 	  displayName: 'StockRatingsWrapper',
@@ -48433,13 +47875,13 @@
 	module.exports = StockRatingsWrapper;
 
 /***/ },
-/* 646 */
+/* 633 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var Button = __webpack_require__(504);
 	var finchakksapi = __webpack_require__(240);
-	var UnrealizedFileUpload = __webpack_require__(647);
+	var UnrealizedFileUpload = __webpack_require__(634);
 
 	var UnrealizedFileUploadContainer = React.createClass({
 	  displayName: 'UnrealizedFileUploadContainer',
@@ -48505,12 +47947,12 @@
 	module.exports = UnrealizedFileUploadContainer;
 
 /***/ },
-/* 647 */
+/* 634 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var PropTypes = React.PropTypes;
-	var FormGroup = __webpack_require__(632);
+	var FormGroup = __webpack_require__(618);
 	var Button = __webpack_require__(504);
 
 	var UnrealizedFileUpload = React.createClass({
@@ -48551,11 +47993,691 @@
 	module.exports = UnrealizedFileUpload;
 
 /***/ },
+/* 635 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var NDaysHistoryStocks = __webpack_require__(636);
+	var finchakksapi = __webpack_require__(240);
+
+	var NDaysHistoryStocksContainer = React.createClass({
+	  displayName: 'NDaysHistoryStocksContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(NDaysHistoryStocks, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = NDaysHistoryStocksContainer;
+
+/***/ },
+/* 636 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
+	var finchakksapi = __webpack_require__(240);
+	var Loading = __webpack_require__(264);
+	var columnMetadata = __webpack_require__(466);
+	var PanelWrapper = __webpack_require__(608);
+	var GriddleWrapper = __webpack_require__(612);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function NDaysHistoryStocks(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading NDaysHistoryStocks' });
+	  } else {
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.smvPercent(), columnMetadata.netNDaysGain(), columnMetadata.score(), columnMetadata.investmentRatio(), columnMetadata.industryInvestmentRatio(), columnMetadata.sellPrice(), columnMetadata.simpleMovingAverage(), columnMetadata.nDay1Gain(), columnMetadata.nDay2Gain(), columnMetadata.nDay3Gain(), columnMetadata.nDay4Gain(), columnMetadata.nDay5Gain(), columnMetadata.nDay6Gain(), columnMetadata.industry()];
+
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        PanelWrapper,
+	        { header: 'Watch List' },
+	        React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	          columns: ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"],
+	          columnMetadata: metaData, bodyHeight: 800 })
+	      )
+	    );
+	  }
+	}
+
+	NDaysHistoryStocks.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = NDaysHistoryStocks;
+
+/***/ },
+/* 637 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var ProfitAndLoss = __webpack_require__(638);
+	var finchakksapi = __webpack_require__(240);
+
+	var ProfitAndLossContainer = React.createClass({
+	  displayName: 'ProfitAndLossContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listprofitAndloss().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(ProfitAndLoss, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = ProfitAndLossContainer;
+
+/***/ },
+/* 638 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var finchakksapi = __webpack_require__(240);
+	var Loading = __webpack_require__(264);
+	var PropTypes = React.PropTypes;
+	var Table = __webpack_require__(630);
+	var PanelWrapper = __webpack_require__(608);
+	var formatter = __webpack_require__(469);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function ProfitAndLoss(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading ProfitAndLoss' });
+	  } else {
+	    var stockData = props.stocksInfo;
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        PanelWrapper,
+	        { header: 'Summary' },
+	        React.createElement(
+	          Table,
+	          { striped: true, bordered: true, condensed: true, hover: true },
+	          React.createElement(
+	            'thead',
+	            null,
+	            React.createElement(
+	              'tr',
+	              null,
+	              React.createElement(
+	                'th',
+	                null,
+	                'Return(%)'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Investment'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Return'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Return(Bank)'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Diff'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'tbody',
+	            null,
+	            React.createElement(
+	              'tr',
+	              null,
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.convertToPercent(stockData.averageReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.moneyFormat(stockData.totalInvestment)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.moneyFormat(stockData.totalReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.moneyFormat(stockData.totalReturnIfBank)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.moneyFormat(stockData.totalReturnVsIfBank)
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	}
+
+	ProfitAndLoss.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.shape({
+	    averageReturn: PropTypes.number.isRequired,
+	    totalInvestment: PropTypes.number.isRequired,
+	    totalReturn: PropTypes.number.isRequired,
+	    totalInvestment: PropTypes.number.isRequired,
+	    totalReturnIfBank: PropTypes.number.isRequired,
+	    totalReturnVsIfBank: PropTypes.number.isRequired
+	  })
+	};
+
+	module.exports = ProfitAndLoss;
+
+/***/ },
+/* 639 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var TargetReachedStocks = __webpack_require__(640);
+	var finchakksapi = __webpack_require__(240);
+
+	var TargetReachedStocksContainer = React.createClass({
+	  displayName: 'TargetReachedStocksContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listTargetReachedStocks().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(TargetReachedStocks, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = TargetReachedStocksContainer;
+
+/***/ },
+/* 640 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var finchakksapi = __webpack_require__(240);
+	var Loading = __webpack_require__(264);
+	var columnMetadata = __webpack_require__(466);
+	var PropTypes = React.PropTypes;
+	var GriddleWrapper = __webpack_require__(612);
+	var PanelWrapper = __webpack_require__(608);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function TargetReachedStocks(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading TargetReachedStocks' });
+	  } else {
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.impact(), columnMetadata.diff(), columnMetadata.lowerReturnPercentTarget(), columnMetadata.upperReturnPercentTarget(), columnMetadata.lowerSellPriceTarget(), columnMetadata.upperSellPriceTarget(), columnMetadata.achieveAfterDate(), columnMetadata.achieveByDate(), columnMetadata.sellPrice()];
+
+	    return React.createElement(
+	      PanelWrapper,
+	      { header: 'Target Reached Stocks' },
+	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	        columns: ["stockName", "returnTillDate", "lowerReturnPercentTarget", "upperReturnPercentTarget", "sellPrice", "quantity", "totalInvestment", "totalReturn"],
+	        columnMetadata: metaData
+	      })
+	    );
+	  }
+	}
+
+	TargetReachedStocks.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = TargetReachedStocks;
+
+/***/ },
+/* 641 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var UnrealizedDetailsContainer = __webpack_require__(642);
+	var UnrealizedSummaryContainer = __webpack_require__(644);
+	var ProfitAndLossContainer = __webpack_require__(637);
+	var Main = __webpack_require__(237);
+
+	var InvestmentContainer = React.createClass({
+	  displayName: "InvestmentContainer",
+
+	  render: function () {
+	    return React.createElement(
+	      Main,
+	      null,
+	      React.createElement(ProfitAndLossContainer, null),
+	      React.createElement(UnrealizedSummaryContainer, null),
+	      React.createElement(UnrealizedDetailsContainer, null)
+	    );
+	  }
+
+	});
+
+	module.exports = InvestmentContainer;
+
+/***/ },
+/* 642 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var UnrealizedDetails = __webpack_require__(643);
+	var finchakksapi = __webpack_require__(240);
+
+	var UnrealizedDetailsContainer = React.createClass({
+	  displayName: 'UnrealizedDetailsContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listUnrealizedDetails().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(UnrealizedDetails, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = UnrealizedDetailsContainer;
+
+/***/ },
+/* 643 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Loading = __webpack_require__(264);
+	var columnMetadata = __webpack_require__(466);
+	var PropTypes = React.PropTypes;
+	var GriddleWrapper = __webpack_require__(612);
+	var PanelWrapper = __webpack_require__(608);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function UnrealizedDetails(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading UnrealizedDetails' });
+	  } else {
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.buyDate(), columnMetadata.buyPrice(), columnMetadata.duration(), columnMetadata.sellPrice(), columnMetadata.bankSellPrice(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.diff()];
+
+	    return React.createElement(
+	      PanelWrapper,
+	      { header: 'Unrealized Details' },
+	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	        columns: ["stockName", "returnTillDate", "buyDate", "buyPrice", "duration", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
+	        columnMetadata: metaData
+	      })
+	    );
+	  }
+	}
+
+	UnrealizedDetails.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = UnrealizedDetails;
+
+/***/ },
+/* 644 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var UnrealizedSummary = __webpack_require__(645);
+	var finchakksapi = __webpack_require__(240);
+
+	var UnrealizedSummaryContainer = React.createClass({
+	  displayName: 'UnrealizedSummaryContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listUnrealizedSummary().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(UnrealizedSummary, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = UnrealizedSummaryContainer;
+
+/***/ },
+/* 645 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Loading = __webpack_require__(264);
+	var columnMetadata = __webpack_require__(466);
+	var PropTypes = React.PropTypes;
+	var GriddleWrapper = __webpack_require__(612);
+	var PanelWrapper = __webpack_require__(608);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function UnrealizedSummary(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading UnrealizedSummary' });
+	  } else {
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.returnPercent(), columnMetadata.quantity(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.impact(), columnMetadata.lowerReturnPercentTarget(), columnMetadata.upperReturnPercentTarget(), columnMetadata.lowerSellPriceTarget(), columnMetadata.upperSellPriceTarget()];
+
+	    return React.createElement(
+	      PanelWrapper,
+	      { header: 'Unrealized Summary' },
+	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	        columns: ["stockName", "returnTillDate", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "impactOnAverageReturn"],
+	        columnMetadata: metaData
+	      })
+	    );
+	  }
+	}
+
+	UnrealizedSummary.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = UnrealizedSummary;
+
+/***/ },
+/* 646 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var ListBlackListedStocksContainer = __webpack_require__(647);
+	var Main = __webpack_require__(237);
+
+	var DeprecatedContainer = React.createClass({
+	  displayName: "DeprecatedContainer",
+
+	  render: function () {
+	    return React.createElement(
+	      Main,
+	      null,
+	      React.createElement(ListBlackListedStocksContainer, null)
+	    );
+	  }
+
+	});
+
+	module.exports = DeprecatedContainer;
+
+/***/ },
+/* 647 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var ListBlackListedStocks = __webpack_require__(648);
+	var finchakksapi = __webpack_require__(240);
+
+	var ListBlackListedStocksContainer = React.createClass({
+	  displayName: 'ListBlackListedStocksContainer',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: []
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listBlackListedStocks().then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(ListBlackListedStocks, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo
+	    });
+	  }
+
+	});
+
+	module.exports = ListBlackListedStocksContainer;
+
+/***/ },
 /* 648 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var Refresh = __webpack_require__(649);
+	var finchakksapi = __webpack_require__(240);
+	var Loading = __webpack_require__(264);
+	var columnMetadata = __webpack_require__(466);
+	var PropTypes = React.PropTypes;
+	var GriddleWrapper = __webpack_require__(612);
+	var PanelWrapper = __webpack_require__(608);
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function ListBlackListedStocks(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading ListBlackListedStocks' });
+	  } else {
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.impact(), columnMetadata.returnPercent(), columnMetadata.investment(), columnMetadata.absReturn(), columnMetadata.bankReturn(), columnMetadata.quantity()];
+
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        PanelWrapper,
+	        { header: 'Black List' },
+	        React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	          columns: ["stockName", "impactOnAverageReturn", "returnTillDate", "totalInvestment", "totalReturn", "totalReturnIfBank", "quantity"],
+	          columnMetadata: metaData })
+	      )
+	    );
+	  }
+	}
+
+	ListBlackListedStocks.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = ListBlackListedStocks;
+
+/***/ },
+/* 649 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var RetrieveModifiableStockAttributesContainer = __webpack_require__(615);
+	var UnrealizedFileUploadContainer = __webpack_require__(633);
+	var RefreshContainer = __webpack_require__(650);
+	var Main = __webpack_require__(237);
+	var Panel = __webpack_require__(609);
+	var Accordion = __webpack_require__(652);
+	var PanelWrapper = __webpack_require__(608);
+
+	var MaintenanceContainer = React.createClass({
+	  displayName: "MaintenanceContainer",
+
+	  render: function () {
+	    return React.createElement(
+	      Main,
+	      null,
+	      React.createElement(
+	        PanelWrapper,
+	        { header: "Retrieve Modifiable Stock Attributes" },
+	        React.createElement(RetrieveModifiableStockAttributesContainer, null)
+	      ),
+	      React.createElement(
+	        PanelWrapper,
+	        { header: "Unrealized File Upload" },
+	        React.createElement(UnrealizedFileUploadContainer, null)
+	      ),
+	      React.createElement(
+	        PanelWrapper,
+	        { header: "Refresh" },
+	        React.createElement(RefreshContainer, null)
+	      )
+	    );
+	  }
+	});
+
+	module.exports = MaintenanceContainer;
+
+/***/ },
+/* 650 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var Refresh = __webpack_require__(651);
 	var finchakksapi = __webpack_require__(240);
 
 	var RefreshContainer = React.createClass({
@@ -48601,12 +48723,12 @@
 	module.exports = RefreshContainer;
 
 /***/ },
-/* 649 */
+/* 651 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var PropTypes = React.PropTypes;
-	var FormGroup = __webpack_require__(632);
+	var FormGroup = __webpack_require__(618);
 	var Button = __webpack_require__(504);
 
 	var Refresh = React.createClass({
@@ -48641,7 +48763,7 @@
 	module.exports = Refresh;
 
 /***/ },
-/* 650 */
+/* 652 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48660,7 +48782,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _PanelGroup = __webpack_require__(651);
+	var _PanelGroup = __webpack_require__(653);
 
 	var _PanelGroup2 = _interopRequireDefault(_PanelGroup);
 
@@ -48688,7 +48810,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 651 */
+/* 653 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48825,95 +48947,6 @@
 
 	exports['default'] = _utilsBootstrapUtils.bsClass('panel-group', PanelGroup);
 	module.exports = exports['default'];
-
-/***/ },
-/* 652 */,
-/* 653 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var TargetHistorySelected = __webpack_require__(654);
-	var finchakksapi = __webpack_require__(240);
-
-	var TargetHistorySelectedContainer = React.createClass({
-	  displayName: 'TargetHistorySelectedContainer',
-
-
-	  getInitialState: function () {
-	    return {
-	      isLoading: true,
-	      stocksInfo: [],
-	      stockName: ''
-	    };
-	  },
-
-	  componentDidMount: function () {
-	    finchakksapi.listTargetHistorySelected(this.props.stockName).then(function (stocksInfo) {
-	      this.setState({
-	        isLoading: false,
-	        stocksInfo: stocksInfo
-	      });
-	    }.bind(this));
-	  },
-
-	  render: function () {
-	    return React.createElement(TargetHistorySelected, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo });
-	  }
-	});
-
-	module.exports = TargetHistorySelectedContainer;
-
-/***/ },
-/* 654 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(2);
-	var PropTypes = React.PropTypes;
-	var Loading = __webpack_require__(264);
-	var AppendPercent = __webpack_require__(467);
-	var ConvertToPercent = __webpack_require__(471);
-	var PanelWrapper = __webpack_require__(608);
-	var GriddleWrapper = __webpack_require__(612);
-
-	function TargetHistorySelected(props) {
-	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading TargetHistorySelected' });
-	  } else {
-	    var metaData = [{
-	      "columnName": "stockName",
-	      "displayName": "Stock Name"
-	    }, {
-	      "columnName": "businessDate",
-	      "displayName": "Date"
-	    }, {
-	      "columnName": "lowerReturnPercentTarget",
-	      "displayName": "L. Target Return %",
-	      "customComponent": AppendPercent
-	    }, {
-	      "columnName": "upperReturnPercentTarget",
-	      "displayName": "U. Target Return %",
-	      "customComponent": AppendPercent
-	    }];
-
-	    var headerName = 'Target History Details: ' + props.stocksInfo[0].stockName;
-	    return React.createElement(
-	      PanelWrapper,
-	      { header: headerName },
-	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["stockName", "businessDate", "lowerReturnPercentTarget", "upperReturnPercentTarget"],
-	        columnMetadata: metaData
-	      })
-	    );
-	  }
-	}
-
-	TargetHistorySelected.propTypes = {
-	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
-	};
-
-	module.exports = TargetHistorySelected;
 
 /***/ }
 /******/ ]);
