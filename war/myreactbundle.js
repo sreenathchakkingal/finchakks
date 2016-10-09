@@ -21104,7 +21104,7 @@
 	var InvestmentContainer = __webpack_require__(641);
 	var DeprecatedContainer = __webpack_require__(646);
 	var MaintenanceContainer = __webpack_require__(649);
-	var UnrealizedDetailsSelectedContainer = __webpack_require__(606);
+	var UnrealizedDetailsSelectedContainer = __webpack_require__(654);
 
 	var routes = React.createElement(
 	  Router,
@@ -27037,6 +27037,16 @@
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listUnrealizedDetails ', err);
+	    });
+	  },
+
+	  listUnrealizedSelected: function (stockName) {
+	    return getInitializeApiResult('listSelectedUnrealized?stockName=' + stockName).then(function (response) {
+	      var stocksInfo = response.data;
+	      console.log('listUnrealizedSelected.stocksInfo: ', stocksInfo);
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listUnrealizedSelected ', err);
 	    });
 	  },
 
@@ -38386,7 +38396,7 @@
 	var Modal = __webpack_require__(572);
 	var Button = __webpack_require__(504);
 	var MenuItem = __webpack_require__(605);
-	var UnrealizedDetailsSelectedContainer = __webpack_require__(606);
+	var UnrealizedSelectedContainer = __webpack_require__(606);
 	var TargetHistorySelectedContainer = __webpack_require__(613);
 	var RetrieveModifiableStockAttributesContainer = __webpack_require__(615);
 
@@ -38456,7 +38466,7 @@
 	          React.createElement(
 	            Modal.Body,
 	            null,
-	            React.createElement(UnrealizedDetailsSelectedContainer, { stockName: name })
+	            React.createElement(UnrealizedSelectedContainer, { stockName: name })
 	          ),
 	          React.createElement(
 	            Modal.Footer,
@@ -45295,36 +45305,42 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetailsSelected = __webpack_require__(607);
+	var UnrealizedSelected = __webpack_require__(607);
 	var finchakksapi = __webpack_require__(240);
 
-	var UnrealizedDetailsSelectedContainer = React.createClass({
-	  displayName: 'UnrealizedDetailsSelectedContainer',
+	var UnrealizedSelectedContainer = React.createClass({
+	  displayName: 'UnrealizedSelectedContainer',
 
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
-	      stocksInfo: [],
-	      stockName: ''
+	      stockName: '',
+	      stockSummary: {},
+	      stockDetail: []
 	    };
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listUnrealizedSelectedDetails(this.props.stockName).then(function (stocksInfo) {
+	    finchakksapi.listUnrealizedSelected(this.props.stockName).then(function (stocksInfo) {
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stockName: stocksInfo.summaryDbObject.stockName,
+	        stockSummary: stocksInfo.summaryDbObject,
+	        stockDetail: stocksInfo.detailDbObjects
 	      });
 	    }.bind(this));
 	  },
 
 	  render: function () {
-	    return React.createElement(UnrealizedDetailsSelected, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo });
+	    return React.createElement(UnrealizedSelected, { isLoading: this.state.isLoading,
+	      stockName: this.state.stockName,
+	      stockSummary: this.state.stockSummary,
+	      stockDetail: this.state.stockDetail
+	    });
 	  }
 	});
 
-	module.exports = UnrealizedDetailsSelectedContainer;
+	module.exports = UnrealizedSelectedContainer;
 
 /***/ },
 /* 607 */
@@ -45341,9 +45357,9 @@
 	var PanelWrapper = __webpack_require__(608);
 	var GriddleWrapper = __webpack_require__(612);
 
-	function UnrealizedDetailsSelected(props) {
+	function UnrealizedSelected(props) {
 	  if (props.isLoading === true) {
-	    return React.createElement(Loading, { text: 'Loading UnrealizedDetailsSelected' });
+	    return React.createElement(Loading, { text: 'Loading UnrealizedSelected' });
 	  } else {
 	    var metaData = [{
 	      "columnName": "stockName",
@@ -45390,26 +45406,46 @@
 	      "columnName": "diff",
 	      "displayName": "Diff",
 	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "impactOnAverageReturn",
+	      "displayName": "Impact",
+	      "customComponent": ConvertToPercent
 	    }];
 
-	    var headerName = 'Unrealized Details: ' + props.stocksInfo[0].stockName;
+	    var detailsHeaderName = 'Unrealized Details: ' + props.stockName;
+	    var summaryHeaderName = 'Unrealized Summary: ' + props.stockName;
+	    var summaryArray = [];
+	    summaryArray[0] = props.stockSummary;
 	    return React.createElement(
-	      PanelWrapper,
-	      { header: headerName },
-	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	        columns: ["returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
-	        columnMetadata: metaData
-	      })
+	      'div',
+	      null,
+	      React.createElement(
+	        PanelWrapper,
+	        { header: detailsHeaderName },
+	        React.createElement(GriddleWrapper, { results: props.stockDetail,
+	          columns: ["returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
+	          columnMetadata: metaData
+	        })
+	      ),
+	      React.createElement(
+	        PanelWrapper,
+	        { header: summaryHeaderName },
+	        React.createElement(GriddleWrapper, { results: summaryArray,
+	          columns: ["returnTillDate", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff", "impactOnAverageReturn", "sellPrice"],
+	          columnMetadata: metaData
+	        })
+	      )
 	    );
-	  }
+	  } //else block
 	}
 
-	UnrealizedDetailsSelected.propTypes = {
+	UnrealizedSelected.propTypes = {
 	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
+	  stockName: PropTypes.string.isRequired,
+	  stockDetail: PropTypes.array.isRequired
 	};
 
-	module.exports = UnrealizedDetailsSelected;
+	module.exports = UnrealizedSelected;
 
 /***/ },
 /* 608 */
@@ -48947,6 +48983,127 @@
 
 	exports['default'] = _utilsBootstrapUtils.bsClass('panel-group', PanelGroup);
 	module.exports = exports['default'];
+
+/***/ },
+/* 654 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var UnrealizedDetailsSelected = __webpack_require__(655);
+	var finchakksapi = __webpack_require__(240);
+
+	var UnrealizedDetailsSelectedContainer = React.createClass({
+	  displayName: 'UnrealizedDetailsSelectedContainer',
+
+	  getInitialState: function () {
+	    return {
+	      isLoading: true,
+	      stocksInfo: [],
+	      stockName: ''
+	    };
+	  },
+
+	  componentDidMount: function () {
+	    finchakksapi.listUnrealizedSelectedDetails(this.props.stockName).then(function (stocksInfo) {
+	      this.setState({
+	        isLoading: false,
+	        stocksInfo: stocksInfo
+	      });
+	    }.bind(this));
+	  },
+
+	  render: function () {
+	    return React.createElement(UnrealizedDetailsSelected, { isLoading: this.state.isLoading,
+	      stocksInfo: this.state.stocksInfo });
+	  }
+	});
+
+	module.exports = UnrealizedDetailsSelectedContainer;
+
+/***/ },
+/* 655 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
+	var Loading = __webpack_require__(264);
+	var AppendPercent = __webpack_require__(467);
+	var MoneyFormat = __webpack_require__(470);
+	var ConvertToPercent = __webpack_require__(471);
+	var AppendPercentRoundedOff = __webpack_require__(472);
+	var ConvertToPercentRoundedOff = __webpack_require__(473);
+	var PanelWrapper = __webpack_require__(608);
+	var GriddleWrapper = __webpack_require__(612);
+
+	function UnrealizedDetailsSelected(props) {
+	  if (props.isLoading === true) {
+	    return React.createElement(Loading, { text: 'Loading UnrealizedDetailsSelected' });
+	  } else {
+	    var metaData = [{
+	      "columnName": "stockName",
+	      "displayName": "Stock Name"
+	    }, {
+	      "columnName": "returnTillDate",
+	      "displayName": "Return %",
+	      "customComponent": AppendPercent
+	    }, {
+	      "columnName": "buyDate",
+	      "displayName": "Buy Date"
+	    }, {
+	      "columnName": "buyPrice",
+	      "displayName": "Buy Price",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "duration",
+	      "displayName": "Duration"
+	    }, {
+	      "columnName": "sellPrice",
+	      "displayName": "Sell Price",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "bankSellPrice",
+	      "displayName": "Bank",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "quantity",
+	      "displayName": "Qty",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalInvestment",
+	      "displayName": "Inv",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalReturn",
+	      "displayName": "Return",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "totalReturnIfBank",
+	      "displayName": "Bank",
+	      "customComponent": MoneyFormat
+	    }, {
+	      "columnName": "diff",
+	      "displayName": "Diff",
+	      "customComponent": MoneyFormat
+	    }];
+
+	    var headerName = 'Unrealized Details: ' + props.stocksInfo[0].stockName;
+	    return React.createElement(
+	      PanelWrapper,
+	      { header: headerName },
+	      React.createElement(GriddleWrapper, { results: props.stocksInfo,
+	        columns: ["returnTillDate", "duration", "buyPrice", "sellPrice", "bankSellPrice", "quantity", "totalInvestment", "totalReturn", "totalReturnIfBank", "diff"],
+	        columnMetadata: metaData
+	      })
+	    );
+	  }
+	}
+
+	UnrealizedDetailsSelected.propTypes = {
+	  isLoading: PropTypes.bool.isRequired,
+	  stocksInfo: PropTypes.array.isRequired
+	};
+
+	module.exports = UnrealizedDetailsSelected;
 
 /***/ }
 /******/ ]);

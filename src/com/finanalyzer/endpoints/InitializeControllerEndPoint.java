@@ -36,15 +36,7 @@ public class InitializeControllerEndPoint {
 		final List<StopLossDbObject> dbObjects = dbOperations.getEntries("stockName");
 		return dbObjects;
 	}
-	
-	
-	public List<UnrealizedSummaryDbObject> listBlackListedStocks()
-	{
-		final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = listUnrealizedSummaryStocks();
-		final List<UnrealizedSummaryDbObject> blackListedStocks = (List<UnrealizedSummaryDbObject>)Iterate.select(unrealizedSummaryDbObjects, UnrealizedSummaryDbObject.IS_BLACKLISTED);
-		return blackListedStocks;
-	}
-	
+
 	@ApiMethod(name = "listNDaysHistoryStocks")
 	public List<NDaysHistoryDbObject> listNDaysHistoryStocks()
 	{
