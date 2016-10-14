@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
 @PersistenceCapable
@@ -26,6 +27,15 @@ public class NDaysHistoryFlattenedDbObject {
 				return stock1.getStockName().compareTo(stock2.getStockName());
 			}
 			return totalDiff;
+		}
+	};
+	
+	public static final Predicate<NDaysHistoryFlattenedDbObject> IS_LATEST_CLOSE_PRICE_MIN_FILTER = new Predicate<NDaysHistoryFlattenedDbObject>() {
+
+		@Override
+		public boolean accept(NDaysHistoryFlattenedDbObject nDaysHistoryFlattenedDbObject) {
+			
+			return nDaysHistoryFlattenedDbObject.isLatestClosePriceMinimum();
 		}
 	};
 	
@@ -74,6 +84,15 @@ public class NDaysHistoryFlattenedDbObject {
 	@Persistent
 	private float nDay6Gain;	
 	
+	@Persistent
+	private boolean isLatestClosePriceMinimum;	
+
+	@Persistent
+	private float minValue;	
+	
+	@Persistent
+	private String minValueDate;	
+		
 	public String getStockName() {
 		return stockName;
 	}
@@ -222,6 +241,32 @@ public class NDaysHistoryFlattenedDbObject {
 
 	public void setnDay6Gain(float nDay6Gain) {
 		this.nDay6Gain = nDay6Gain;
+	}
+	
+
+	public boolean isLatestClosePriceMinimum() {
+		return isLatestClosePriceMinimum;
+	}
+
+	public void setLatestClosePriceMinimum(boolean isLatestClosePriceMinimum) {
+		this.isLatestClosePriceMinimum = isLatestClosePriceMinimum;
+	}
+	
+	public float getMinValue() {
+		return minValue;
+	}
+
+
+	public void setMinValue(float minValue) {
+		this.minValue = minValue;
+	}
+
+	public String getMinValueDate() {
+		return minValueDate;
+	}
+
+	public void setMinValueDate(String minValueDate) {
+		this.minValueDate = minValueDate;
 	}
 
 	@Override

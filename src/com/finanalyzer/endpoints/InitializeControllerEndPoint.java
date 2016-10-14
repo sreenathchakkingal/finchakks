@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
+import com.finanalyzer.domain.NDaysHistoryFlattenedWrapper;
 import com.finanalyzer.domain.UnrealizedWrapper;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
@@ -16,8 +17,12 @@ import com.finanalyzer.util.StringUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.gs.collections.api.block.predicate.Predicate;
+import com.gs.collections.api.list.MutableList;
+import com.gs.collections.api.partition.list.PartitionMutableList;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.utility.Iterate;
+import com.gs.collections.impl.utility.ListIterate;
 
 @Api(name = "initalizeControllerEndPoint", version = "v1")
 public class InitializeControllerEndPoint {
@@ -36,31 +41,31 @@ public class InitializeControllerEndPoint {
 		final List<StopLossDbObject> dbObjects = dbOperations.getEntries("stockName");
 		return dbObjects;
 	}
-
-	@ApiMethod(name = "listNDaysHistoryStocks")
-	public List<NDaysHistoryDbObject> listNDaysHistoryStocks()
-	{
-		JdoDbOperations<NDaysHistoryDbObject>  nDaysHistoryDbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
-		final List<NDaysHistoryDbObject> ndaysHistoryDbObjects =nDaysHistoryDbOperations.getEntries();
-		Collections.sort(ndaysHistoryDbObjects, NDaysHistoryDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
-		
-		return ndaysHistoryDbObjects;
-	}	
 	
 	@ApiMethod(name = "listNDaysHistoryFlattenedStocks")
-	public List<NDaysHistoryFlattenedDbObject> listNDaysHistoryFlattenedStocks()
+	public NDaysHistoryFlattenedWrapper listNDaysHistoryFlattenedStocks()
 	{
 		JdoDbOperations<NDaysHistoryFlattenedDbObject>  nDaysHistoryFlattenedDbOperations = new JdoDbOperations<>(NDaysHistoryFlattenedDbObject.class);
 		final List<NDaysHistoryFlattenedDbObject> ndaysHistoryFlattenedDbObjects =nDaysHistoryFlattenedDbOperations.getEntries();
 		Collections.sort(ndaysHistoryFlattenedDbObjects, NDaysHistoryFlattenedDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
-		return ndaysHistoryFlattenedDbObjects;
+		
+		final MutableList<NDaysHistoryFlattenedDbObject> stocksThatHitMin = ListIterate.select(ndaysHistoryFlattenedDbObjects, NDaysHistoryFlattenedDbObject.IS_LATEST_CLOSE_PRICE_MIN_FILTER);
+		
+		final NDaysHistoryFlattenedWrapper nDaysHistoryFlattenedWrapper = new NDaysHistoryFlattenedWrapper(ndaysHistoryFlattenedDbObjects, stocksThatHitMin);
+		
+		return nDaysHistoryFlattenedWrapper;
 	}
 	
 	@ApiMethod(name = "listSelectedUnrealized", path="listSelectedUnrealized")
 	public UnrealizedWrapper listSelectedUnrealized(@Named("stockName") String stockName)
 	{
 		final List<UnrealizedDetailDbObject> unrealizedDetail = listSelectedUnrealizedDetails(stockName);
-		final UnrealizedSummaryDbObject unrealizedSummary = listSelectedUnrealizedSummary(stockName);
+		final List<UnrealizedSummaryDbObject> unrealizedSummaryForStock = getUnrealizedSummary(stockName);
+		UnrealizedSummaryDbObject unrealizedSummary=null;
+		if(unrealizedSummaryForStock!=null && !unrealizedSummaryForStock.isEmpty())
+		{
+			unrealizedSummary = unrealizedSummaryForStock.get(0);
+		}
 		return new UnrealizedWrapper(unrealizedSummary, unrealizedDetail);
 	}
 	
@@ -106,6 +111,40 @@ public class InitializeControllerEndPoint {
 		final List<StopLossDbObject> stopLossDbObjects = targetHistoryDbOperations.getEntries("stockName", FastList.newListWith(stockName.toUpperCase()), "businessDate desc");
 		return stopLossDbObjects;
 	}
+	
+	
+	@ApiMethod(name = "listAllStocksWithoutLowerOrUpperBound", path="listAllStocksWithoutLowerOrUpperBound")
+	public List<UnrealizedSummaryDbObject> listAllStocksWithoutLowerOrUpperBound()
+	{
+		
+		JdoDbOperations<UnrealizedSummaryDbObject> summaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
+		final List<UnrealizedSummaryDbObject> summaryDbObjects = summaryDbOperations.getEntries("stockName");
+		
+		List<UnrealizedSummaryDbObject> exceptionList=FastList.newList();
+		
+		for (UnrealizedSummaryDbObject summaryDbObject : summaryDbObjects)
+		{
+			if(summaryDbObject.getLowerReturnPercentTarget()==0.0f || summaryDbObject.getUpperReturnPercentTarget()==0.0f)
+			{
+				exceptionList.add(summaryDbObject);
+			}
+		}
+		
+		return exceptionList;
+
+	}
+
+	//used in angular
+	@ApiMethod(name = "listNDaysHistoryStocks", path="listNDaysHistoryStocks")
+	public List<NDaysHistoryDbObject> listNDaysHistoryStocks()
+	{
+		JdoDbOperations<NDaysHistoryDbObject>  nDaysHistoryDbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
+		final List<NDaysHistoryDbObject> ndaysHistoryDbObjects =nDaysHistoryDbOperations.getEntries();
+		Collections.sort(ndaysHistoryDbObjects, NDaysHistoryDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
+		
+		return ndaysHistoryDbObjects;
+	}	
+	
 
 //helper methods
 	
@@ -137,11 +176,5 @@ public class InitializeControllerEndPoint {
 		
 		unrealizedSummaryDbObjects = unrealizedSummaryDbOperations.getEntries(sortBy);
 		return unrealizedSummaryDbObjects;
-	}
-	
-	//dont know why - but the @Named notation is required. if remove the api that calls this method stops working
-	public UnrealizedSummaryDbObject listSelectedUnrealizedSummary(@Named("stockName") String stockName)
-	{
-		return getUnrealizedSummary(stockName).get(0);
 	}
 }

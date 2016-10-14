@@ -27005,8 +27005,8 @@
 
 	  listNDaysHistoryStocks: function () {
 
-	    return getInitializeApiResult('ndayshistoryflatteneddbobject').then(function (response) {
-	      var stocksInfo = response.data.items;
+	    return getInitializeApiResult('listNDaysHistoryFlattenedStocks').then(function (response) {
+	      var stocksInfo = response.data;
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listNDaysHistoryStocks ', err);
@@ -45314,7 +45314,6 @@
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
-	      stockName: '',
 	      stockSummary: {},
 	      stockDetail: []
 	    };
@@ -45322,18 +45321,19 @@
 
 	  componentDidMount: function () {
 	    finchakksapi.listUnrealizedSelected(this.props.stockName).then(function (stocksInfo) {
+	      summaryDbObjectTemp = typeof stocksInfo.summaryDbObject === 'undefined' ? {} : stocksInfo.summaryDbObject;
+	      detailDbObjectsTemp = typeof stocksInfo.detailDbObjects === 'undefined' ? [] : stocksInfo.detailDbObjects;
 	      this.setState({
 	        isLoading: false,
-	        stockName: stocksInfo.summaryDbObject.stockName,
-	        stockSummary: stocksInfo.summaryDbObject,
-	        stockDetail: stocksInfo.detailDbObjects
+	        stockSummary: summaryDbObjectTemp,
+	        stockDetail: detailDbObjectsTemp
 	      });
 	    }.bind(this));
 	  },
 
 	  render: function () {
 	    return React.createElement(UnrealizedSelected, { isLoading: this.state.isLoading,
-	      stockName: this.state.stockName,
+	      stockName: this.props.stockName,
 	      stockSummary: this.state.stockSummary,
 	      stockDetail: this.state.stockDetail
 	    });
@@ -48046,7 +48046,8 @@
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
-	      stocksInfo: []
+	      stocksWithoutMin: [],
+	      stocksWithMin: []
 	    };
 	  },
 
@@ -48054,14 +48055,16 @@
 	    finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stocksWithoutMin: stocksInfo.stocksWithoutMinimum,
+	        stocksWithMin: stocksInfo.stocksMinimum
 	      });
 	    }.bind(this));
 	  },
 
 	  render: function () {
 	    return React.createElement(NDaysHistoryStocks, { isLoading: this.state.isLoading,
-	      stocksInfo: this.state.stocksInfo
+	      stocksWithoutMin: this.state.stocksWithoutMin,
+	      stocksWithMin: this.state.stocksWithMin
 	    });
 	  }
 
@@ -48095,23 +48098,40 @@
 	  } else {
 	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.smvPercent(), columnMetadata.netNDaysGain(), columnMetadata.score(), columnMetadata.investmentRatio(), columnMetadata.industryInvestmentRatio(), columnMetadata.sellPrice(), columnMetadata.simpleMovingAverage(), columnMetadata.nDay1Gain(), columnMetadata.nDay2Gain(), columnMetadata.nDay3Gain(), columnMetadata.nDay4Gain(), columnMetadata.nDay5Gain(), columnMetadata.nDay6Gain(), columnMetadata.industry()];
 
+	    var stockRatingRows = [];
+	    var columns = ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"];
+
+	    if (typeof props.stocksWithMin != 'undefined' && props.stocksWithMin.length != 0) {
+	      stockRatingRows.push(React.createElement(
+	        PanelWrapper,
+	        { header: 'Stocks that hit min', key: 'min' },
+	        React.createElement(GriddleWrapper, { results: props.stocksWithMin,
+	          columns: columns,
+	          columnMetadata: metaData })
+	      ));
+	    }
+
+	    if (typeof props.stocksWithoutMin != 'undefined' && props.stocksWithoutMin.length != 0) {
+	      stockRatingRows.push(React.createElement(
+	        PanelWrapper,
+	        { header: 'Watch List', key: 'watchlist' },
+	        React.createElement(GriddleWrapper, { results: props.stocksWithoutMin,
+	          columns: columns,
+	          columnMetadata: metaData, bodyHeight: 800 })
+	      ));
+	    }
 	    return React.createElement(
 	      'div',
 	      null,
-	      React.createElement(
-	        PanelWrapper,
-	        { header: 'Watch List' },
-	        React.createElement(GriddleWrapper, { results: props.stocksInfo,
-	          columns: ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"],
-	          columnMetadata: metaData, bodyHeight: 800 })
-	      )
+	      stockRatingRows
 	    );
 	  }
 	}
 
 	NDaysHistoryStocks.propTypes = {
 	  isLoading: PropTypes.bool.isRequired,
-	  stocksInfo: PropTypes.array.isRequired
+	  stocksWithoutMin: PropTypes.array,
+	  stocksWithMin: PropTypes.array
 	};
 
 	module.exports = NDaysHistoryStocks;

@@ -81,29 +81,21 @@ public class NDaysHistoryFlattenedDbObjectBuilder {
 		this.nDaysHistoryFlattenedDbObject.setnDay6Gain(nDay6Gain);
 		return this;
 	}
+	
+	public NDaysHistoryFlattenedDbObjectBuilder isLatestClosePriceMinimum(boolean isLatestClosePriceMinimum) {
+		this.nDaysHistoryFlattenedDbObject.setLatestClosePriceMinimum(isLatestClosePriceMinimum);
+		return this;
+	}
 
-	/*	
-	
-	public NDaysHistoryFlattenedDbObjectBuilder returnTillDate(float returnTillDate) {
-		this.nDaysHistoryFlattenedDbObject.setReturnTillDate(returnTillDate);
+	public NDaysHistoryFlattenedDbObjectBuilder minValue(float minValue) {
+		this.nDaysHistoryFlattenedDbObject.setMinValue(minValue);
 		return this;
 	}
 	
-	public NDaysHistoryFlattenedDbObjectBuilder duration(String duration) {
-		this.nDaysHistoryFlattenedDbObject.setDuration(duration);
+	public NDaysHistoryFlattenedDbObjectBuilder minValueDate(String minValueDate) {
+		this.nDaysHistoryFlattenedDbObject.setMinValueDate(minValueDate);
 		return this;
 	}
-	
-	public NDaysHistoryFlattenedDbObjectBuilder buyPrice(float buyPrice) {
-		this.nDaysHistoryFlattenedDbObject.setBuyPrice(buyPrice);
-		return this;
-	}
-	
-	public NDaysHistoryFlattenedDbObjectBuilder impactOnAverageReturn(float impactOnAverageReturn) {
-		this.nDaysHistoryFlattenedDbObject.setImpactOnAverageReturn(impactOnAverageReturn);
-		return this;
-	}
-*/
 	
 	public NDaysHistoryFlattenedDbObject build()
 	{

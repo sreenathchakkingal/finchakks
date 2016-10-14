@@ -3,19 +3,23 @@ package com.finanalyzer.helloworld;
 import java.util.ArrayList;
 
 public class Employee {
-
-	private final int id;
+	private boolean isGood;
+	private String name;
 	
-	public Employee(int id) {
-		this.id=id;
+	public Employee(boolean isGood, String name) {
+		this.isGood = isGood;
+		this.name = name;
 	}
-
-	public int getId() {
-		return this.id;
+	public boolean isGood() {
+		return isGood;
 	}
-	
-	public String toString()
-	{
-		return String.valueOf(this.id);
+	public void setGood(boolean isGood) {
+		this.isGood = isGood;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }
