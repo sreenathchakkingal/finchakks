@@ -30,12 +30,10 @@ public class NDaysHistoryFlattenedDbObject {
 		}
 	};
 	
-	public static final Predicate<NDaysHistoryFlattenedDbObject> IS_LATEST_CLOSE_PRICE_MIN_FILTER = new Predicate<NDaysHistoryFlattenedDbObject>() {
-
+	public static final Predicate<NDaysHistoryFlattenedDbObject> IS_LATEST_CLOSE_PRICE_MIN_OR_MAX_FILTER = new Predicate<NDaysHistoryFlattenedDbObject>() {
 		@Override
 		public boolean accept(NDaysHistoryFlattenedDbObject nDaysHistoryFlattenedDbObject) {
-			
-			return nDaysHistoryFlattenedDbObject.isLatestClosePriceMinimum();
+			return nDaysHistoryFlattenedDbObject.isLatestClosePriceMinimum() || nDaysHistoryFlattenedDbObject.isLatestClosePriceMaximum();
 		}
 	};
 	
@@ -92,7 +90,16 @@ public class NDaysHistoryFlattenedDbObject {
 	
 	@Persistent
 	private String minValueDate;	
-		
+
+	@Persistent
+	private float maxValue;	
+	
+	@Persistent
+	private String maxValueDate;	
+	
+	@Persistent
+	private boolean isLatestClosePriceMaximum;	
+	
 	public String getStockName() {
 		return stockName;
 	}
@@ -267,6 +274,30 @@ public class NDaysHistoryFlattenedDbObject {
 
 	public void setMinValueDate(String minValueDate) {
 		this.minValueDate = minValueDate;
+	}
+
+	public float getMaxValue() {
+		return maxValue;
+	}
+
+	public void setMaxValue(float maxValue) {
+		this.maxValue = maxValue;
+	}
+
+	public String getMaxValueDate() {
+		return maxValueDate;
+	}
+
+	public void setMaxValueDate(String maxValueDate) {
+		this.maxValueDate = maxValueDate;
+	}
+	
+	public boolean isLatestClosePriceMaximum() {
+		return isLatestClosePriceMaximum;
+	}
+
+	public void setLatestClosePriceMaximum(boolean isLatestClosePriceMaximum) {
+		this.isLatestClosePriceMaximum = isLatestClosePriceMaximum;
 	}
 
 	@Override

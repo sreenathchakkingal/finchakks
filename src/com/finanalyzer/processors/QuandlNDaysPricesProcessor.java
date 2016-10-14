@@ -25,16 +25,19 @@ import com.gs.collections.impl.list.mutable.FastList;
 public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 {
 	private static final int DEFAULT_NUMBER_OF_DAYS = 6;
-	private static final int DEFAULT_SMV_DAYS =50;
+	private static final int DEFAULT_SMV_DAYS =50;//remove this is not used.Actual SMV calc is based on Stock.DEFAULT_SMV_DAYS, refer Stock.getSimpleMovingAverage()
+	private static final int PERIOD_FOR_HIGH_LOW =365;
+	
 	protected InputStream stocksInputStream;
 	protected final int numOfDays;
-	private int simpleMovingAverage;
+	public int simpleMovingAverageDays;
 	protected String source;
 	private static final Comparator<Stock> SIMPLE_AVG_NET_GAINS_COMPARATOR = new Comparator<Stock>()
 	{
 		@Override
 		public int compare(Stock stock1, Stock stock2)
 		{
+			
 			if(stock1.isException() || stock2.isException())
 			{
 				return Integer.MAX_VALUE; 
@@ -98,10 +101,10 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 		this.source = source;
 	}
 
-	public QuandlNDaysPricesProcessor(String numOfDays, String simpleMovingAverage)
+	public QuandlNDaysPricesProcessor(String numOfDays, String simpleMovingAverageDays)
 	{
 		this.numOfDays = StringUtils.isEmpty(numOfDays)? DEFAULT_NUMBER_OF_DAYS : Integer.valueOf(numOfDays);
-		this.simpleMovingAverage = StringUtils.isEmpty(simpleMovingAverage)? DEFAULT_SMV_DAYS : Integer.valueOf(simpleMovingAverage);
+		this.simpleMovingAverageDays = StringUtils.isEmpty(simpleMovingAverageDays)? DEFAULT_SMV_DAYS : Integer.valueOf(simpleMovingAverageDays);
 	}
 
 	@Override
@@ -170,7 +173,7 @@ public class QuandlNDaysPricesProcessor implements Processor<List<Stock>>
 //		FastList<Stock> stocks = FastList.newListWith(
 //				new Stock("500331", StockExchange.BSE), new Stock("500790", StockExchange.BSE), new Stock("517354", StockExchange.BSE));
 		 
-		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, this.simpleMovingAverage);
+		StockQuandlApiAdapter.stampNDaysClosePrices(stocks, PERIOD_FOR_HIGH_LOW);
 		
 		Collections.sort(stocks, SIMPLE_AVG_NET_GAINS_COMPARATOR);
 		return stocks;

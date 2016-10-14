@@ -27031,19 +27031,9 @@
 	    });
 	  },
 
-	  listUnrealizedSelectedDetails: function (stockName) {
-	    return getInitializeApiResult('unrealizeddetaildbobject/' + stockName).then(function (response) {
-	      var stocksInfo = response.data.items;
-	      return stocksInfo;
-	    }).catch(function (err) {
-	      console.warn('Error in listUnrealizedDetails ', err);
-	    });
-	  },
-
 	  listUnrealizedSelected: function (stockName) {
 	    return getInitializeApiResult('listSelectedUnrealized?stockName=' + stockName).then(function (response) {
 	      var stocksInfo = response.data;
-	      console.log('listUnrealizedSelected.stocksInfo: ', stocksInfo);
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listUnrealizedSelected ', err);
@@ -27056,6 +27046,15 @@
 	      return stocksInfo;
 	    }).catch(function (err) {
 	      console.warn('Error in listTargetHistorySelected ', err);
+	    });
+	  },
+
+	  listUnrealizedSelectedDetails: function (stockName) {
+	    return getInitializeApiResult('unrealizeddetaildbobject/' + stockName).then(function (response) {
+	      var stocksInfo = response.data.items;
+	      return stocksInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in listUnrealizedDetails ', err);
 	    });
 	  }
 
@@ -37239,6 +37238,7 @@
 	var AppendPercentRoundedOff = __webpack_require__(472);
 	var ConvertToPercentRoundedOff = __webpack_require__(473);
 	var Trim = __webpack_require__(474);
+	var MinOrMaxFormat = __webpack_require__(657);
 
 	var helpers = {
 	  stockNameWithOptions: function () {
@@ -37277,7 +37277,7 @@
 	  },
 
 	  investment: function () {
-	    var investment = {
+	    investment = {
 	      "columnName": "totalInvestment",
 	      "displayName": "Investment",
 	      "customComponent": MoneyFormat
@@ -37546,6 +37546,47 @@
 	      "displayName": "Description"
 	    };
 	    return exceptionComment;
+	  },
+
+	  minValue: function () {
+	    var minValue = {
+	      "columnName": "minValue",
+	      "displayName": "Min"
+	    };
+	    return minValue;
+	  },
+
+	  minValueDate: function () {
+	    var minValueDate = {
+	      "columnName": "minValueDate",
+	      "displayName": "Min Dt"
+	    };
+	    return minValueDate;
+	  },
+
+	  maxValue: function () {
+	    var maxValue = {
+	      "columnName": "maxValue",
+	      "displayName": "Max"
+	    };
+	    return maxValue;
+	  },
+
+	  maxValueDate: function () {
+	    var maxValueDate = {
+	      "columnName": "maxValueDate",
+	      "displayName": "Max Dt"
+	    };
+	    return maxValueDate;
+	  },
+
+	  latestClosePriceMinimum: function () {
+	    var latestClosePriceMinimum = {
+	      "columnName": "latestClosePriceMinimum",
+	      "displayName": "Min/Max?",
+	      "customComponent": MinOrMaxFormat
+	    };
+	    return latestClosePriceMinimum;
 	  }
 
 	};
@@ -48046,8 +48087,8 @@
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
-	      stocksWithoutMin: [],
-	      stocksWithMin: []
+	      nDaysWatchlistedStocks: [],
+	      nDaysMinOrMaxStocks: []
 	    };
 	  },
 
@@ -48055,16 +48096,16 @@
 	    finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
 	      this.setState({
 	        isLoading: false,
-	        stocksWithoutMin: stocksInfo.stocksWithoutMinimum,
-	        stocksWithMin: stocksInfo.stocksMinimum
+	        nDaysWatchlistedStocks: stocksInfo.nDaysWatchlistedStocks,
+	        nDaysMinOrMaxStocks: stocksInfo.nDaysMinOrMaxStocks
 	      });
 	    }.bind(this));
 	  },
 
 	  render: function () {
 	    return React.createElement(NDaysHistoryStocks, { isLoading: this.state.isLoading,
-	      stocksWithoutMin: this.state.stocksWithoutMin,
-	      stocksWithMin: this.state.stocksWithMin
+	      nDaysWatchlistedStocks: this.state.nDaysWatchlistedStocks,
+	      nDaysMinOrMaxStocks: this.state.nDaysMinOrMaxStocks
 	    });
 	  }
 
@@ -48096,27 +48137,29 @@
 	  if (props.isLoading === true) {
 	    return React.createElement(Loading, { text: 'Loading NDaysHistoryStocks' });
 	  } else {
-	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.smvPercent(), columnMetadata.netNDaysGain(), columnMetadata.score(), columnMetadata.investmentRatio(), columnMetadata.industryInvestmentRatio(), columnMetadata.sellPrice(), columnMetadata.simpleMovingAverage(), columnMetadata.nDay1Gain(), columnMetadata.nDay2Gain(), columnMetadata.nDay3Gain(), columnMetadata.nDay4Gain(), columnMetadata.nDay5Gain(), columnMetadata.nDay6Gain(), columnMetadata.industry()];
+	    var metaData = [columnMetadata.stockNameWithOptions(), columnMetadata.smvPercent(), columnMetadata.netNDaysGain(), columnMetadata.score(), columnMetadata.investmentRatio(), columnMetadata.industryInvestmentRatio(), columnMetadata.sellPrice(), columnMetadata.simpleMovingAverage(), columnMetadata.nDay1Gain(), columnMetadata.nDay2Gain(), columnMetadata.nDay3Gain(), columnMetadata.nDay4Gain(), columnMetadata.nDay5Gain(), columnMetadata.nDay6Gain(), columnMetadata.industry(), columnMetadata.minValue(), columnMetadata.minValueDate(), columnMetadata.maxValue(), columnMetadata.maxValueDate(), columnMetadata.latestClosePriceMinimum()];
 
 	    var stockRatingRows = [];
-	    var columns = ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"];
+	    var watchListColumns = ["stockName", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "investmentRatio", "industryInvestmentRatio", "sellPrice", "simpleMovingAverage", "nDay1Gain", "nDay2Gain", "nDay3Gain", "nDay4Gain", "nDay5Gain", "nDay6Gain", "industry"];
 
-	    if (typeof props.stocksWithMin != 'undefined' && props.stocksWithMin.length != 0) {
+	    var minMaxColumns = ["stockName", "sellPrice", "latestClosePriceMinimum", "minValue", "minValueDate", "maxValue", "maxValueDate", "simpleMovingAverageAndSellDeltaNormalized", "netNDaysGain", "stockRatingValue", "simpleMovingAverage", "nDay1Gain", "nDay2Gain"];
+
+	    if (typeof props.nDaysMinOrMaxStocks != 'undefined' && props.nDaysMinOrMaxStocks.length != 0) {
 	      stockRatingRows.push(React.createElement(
 	        PanelWrapper,
-	        { header: 'Stocks that hit min', key: 'min' },
-	        React.createElement(GriddleWrapper, { results: props.stocksWithMin,
-	          columns: columns,
+	        { header: 'Stocks that hit min/max', key: 'minMax' },
+	        React.createElement(GriddleWrapper, { results: props.nDaysMinOrMaxStocks,
+	          columns: minMaxColumns,
 	          columnMetadata: metaData })
 	      ));
 	    }
 
-	    if (typeof props.stocksWithoutMin != 'undefined' && props.stocksWithoutMin.length != 0) {
+	    if (typeof props.nDaysWatchlistedStocks != 'undefined' && props.nDaysWatchlistedStocks.length != 0) {
 	      stockRatingRows.push(React.createElement(
 	        PanelWrapper,
 	        { header: 'Watch List', key: 'watchlist' },
-	        React.createElement(GriddleWrapper, { results: props.stocksWithoutMin,
-	          columns: columns,
+	        React.createElement(GriddleWrapper, { results: props.nDaysWatchlistedStocks,
+	          columns: watchListColumns,
 	          columnMetadata: metaData, bodyHeight: 800 })
 	      ));
 	    }
@@ -48130,8 +48173,8 @@
 
 	NDaysHistoryStocks.propTypes = {
 	  isLoading: PropTypes.bool.isRequired,
-	  stocksWithoutMin: PropTypes.array,
-	  stocksWithMin: PropTypes.array
+	  nDaysWatchlistedStocks: PropTypes.array,
+	  nDaysMinOrMaxStocks: PropTypes.array
 	};
 
 	module.exports = NDaysHistoryStocks;
@@ -49124,6 +49167,32 @@
 	};
 
 	module.exports = UnrealizedDetailsSelected;
+
+/***/ },
+/* 656 */,
+/* 657 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+
+	var MinOrMaxFormat = React.createClass({
+	  displayName: 'MinOrMaxFormat',
+
+	  render: function () {
+	    var num = this.props.data;
+	    var result = 'Max';
+	    if (num) {
+	      result = 'Min';
+	    }
+	    return React.createElement(
+	      'div',
+	      null,
+	      result
+	    );
+	  }
+	});
+
+	module.exports = MinOrMaxFormat;
 
 /***/ }
 /******/ ]);

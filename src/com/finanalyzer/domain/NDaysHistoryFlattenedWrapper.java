@@ -5,31 +5,33 @@ import java.util.List;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
 
 public class NDaysHistoryFlattenedWrapper {
-	private List<NDaysHistoryFlattenedDbObject> stocksWithoutMinimum;
-	private List<NDaysHistoryFlattenedDbObject> stocksMinimum;
+	private List<NDaysHistoryFlattenedDbObject> nDaysWatchlistedStocks;
+	private List<NDaysHistoryFlattenedDbObject> nDaysMinOrMaxStocks;
 	
 	public NDaysHistoryFlattenedWrapper(
 			List<NDaysHistoryFlattenedDbObject> stocksWithoutMinimum,
 			List<NDaysHistoryFlattenedDbObject> stocksMinimum) {
-		this.stocksWithoutMinimum = stocksWithoutMinimum;
-		this.stocksMinimum = stocksMinimum;
+		this.nDaysWatchlistedStocks = stocksWithoutMinimum;
+		this.nDaysMinOrMaxStocks = stocksMinimum;
+	}
+
+	public List<NDaysHistoryFlattenedDbObject> getnDaysWatchlistedStocks() {
+		return nDaysWatchlistedStocks;
+	}
+
+	public void setnDaysWatchlistedStocks(
+			List<NDaysHistoryFlattenedDbObject> nDaysWatchlistedStocks) {
+		this.nDaysWatchlistedStocks = nDaysWatchlistedStocks;
+	}
+
+	public List<NDaysHistoryFlattenedDbObject> getnDaysMinOrMaxStocks() {
+		return nDaysMinOrMaxStocks;
+	}
+
+	public void setnDaysMinOrMaxStocks(
+			List<NDaysHistoryFlattenedDbObject> nDaysMinOrMaxStocks) {
+		this.nDaysMinOrMaxStocks = nDaysMinOrMaxStocks;
 	}
 	
-	public List<NDaysHistoryFlattenedDbObject> getStocksWithoutMinimum() {
-		return stocksWithoutMinimum;
-	}
-	
-	public void setStocksWithoutMinimum(
-			List<NDaysHistoryFlattenedDbObject> stocksWithoutMinimum) {
-		this.stocksWithoutMinimum = stocksWithoutMinimum;
-	}
-	
-	public List<NDaysHistoryFlattenedDbObject> getStocksMinimum() {
-		return stocksMinimum;
-	}
-	
-	public void setStocksMinimum(List<NDaysHistoryFlattenedDbObject> stocksMinimum) {
-		this.stocksMinimum = stocksMinimum;
-	}
 	
 }

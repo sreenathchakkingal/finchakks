@@ -83,9 +83,12 @@ public class ConverterUtil {
 			.nDay4Gain(nDay4Gain)
 			.nDay5Gain(nDay5Gain)
 			.nDay6Gain(nDay6Gain)
-			.isLatestClosePriceMinimum(stock.isLatestClosePriceMinimum())
 			.minValue(stock.getMinValue())
-			.minValueDate(stock.getMinValueDate());
+			.minValueDate(stock.getMinValueDate())
+			.isLatestClosePriceMinimum(stock.isLatestClosePriceMinimum())
+			.maxValue(stock.getMaxValue())
+			.maxValueDate(stock.getMaxValueDate())
+			.isLatestClosePriceMaximum(stock.isLatestClosePriceMaximum());
 			
 			NDaysHistoryFlattenedDbObject nDaysHistoryFlattenedDbObject = builder.build();
 			nDaysHistoryFlattenedDbObjects.add(nDaysHistoryFlattenedDbObject);

@@ -39,15 +39,15 @@ public class StockQuandlApiAdapter
 //		enrichSellDetails(stocks,transposedQDataSet);
 //	}
 
-	public static void stampSimpleMovingAverage(List<Stock> stocks, int numberOfDays)
-	{
-		StockExchange stockExchange = stocks.get(0).getStockExchange();
-		UnifiedSet<Stock> uniqueSetOfStocks = UnifiedSet.newSet(stocks);
-		UnifiedSet<String> uniqueListOfStockIdentiers = uniqueSetOfStocks.collect(Stock.STOCKNAME_SELECTOR);
-		QDataset qDataSet = QuandlApi.getCumulativeValue(uniqueListOfStockIdentiers, numberOfDays, stockExchange);
-		Map<String, List<DateValueObject>> transposedQDataSet = transposeMultiQDataSet(qDataSet, stockExchange);
-		enrichSimpleMovingAverage(stocks, transposedQDataSet, numberOfDays);
-	}
+//	public static void stampSimpleMovingAverage(List<Stock> stocks, int numberOfDays)
+//	{
+//		StockExchange stockExchange = stocks.get(0).getStockExchange();
+//		UnifiedSet<Stock> uniqueSetOfStocks = UnifiedSet.newSet(stocks);
+//		UnifiedSet<String> uniqueListOfStockIdentiers = uniqueSetOfStocks.collect(Stock.STOCKNAME_SELECTOR);
+//		QDataset qDataSet = QuandlApi.getCumulativeValue(uniqueListOfStockIdentiers, numberOfDays, stockExchange);
+//		Map<String, List<DateValueObject>> transposedQDataSet = transposeMultiQDataSet(qDataSet, stockExchange);
+//		enrichSimpleMovingAverage(stocks, transposedQDataSet, numberOfDays);
+//	}
 
 	public static void stampNDaysGains(List<Stock> stocks, int numOfDays)
 	{
@@ -58,19 +58,19 @@ public class StockQuandlApiAdapter
 		enrichNDaysGains(stocks, transposedQDataSet);
 	}
 
-	private static void enrichSimpleMovingAverage(List<Stock> stocks, Map<String, List<DateValueObject>> result, int numberOfDays)
-	{
-		for (Stock stock : stocks)
-		{
-			float sumOfClosePricesOfAllDaysForEachStock = 0.0f;
-			List<DateValueObject> dateValues = result.get(stock.getStockName());	
-			for (DateValueObject dateValue : dateValues)
-			{
-				sumOfClosePricesOfAllDaysForEachStock=sumOfClosePricesOfAllDaysForEachStock+dateValue.getValue();
-			}
-			stock.setSimpleMovingAverage(sumOfClosePricesOfAllDaysForEachStock / numberOfDays);
-		}
-	}
+//	private static void enrichSimpleMovingAverage(List<Stock> stocks, Map<String, List<DateValueObject>> result, int numberOfDays)
+//	{
+//		for (Stock stock : stocks)
+//		{
+//			float sumOfClosePricesOfAllDaysForEachStock = 0.0f;
+//			List<DateValueObject> dateValues = result.get(stock.getStockName());	
+//			for (DateValueObject dateValue : dateValues)
+//			{
+//				sumOfClosePricesOfAllDaysForEachStock=sumOfClosePricesOfAllDaysForEachStock+dateValue.getValue();
+//			}
+//			stock.setSimpleMovingAverage(sumOfClosePricesOfAllDaysForEachStock / numberOfDays);
+//		}
+//	}
 
 	private static Map<String, List<DateValueObject>> transposeMultiQDataSet(QDataset qDataSet, StockExchange stockExchange)
 	{

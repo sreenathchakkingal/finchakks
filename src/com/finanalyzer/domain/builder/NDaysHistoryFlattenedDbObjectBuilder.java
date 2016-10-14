@@ -97,6 +97,21 @@ public class NDaysHistoryFlattenedDbObjectBuilder {
 		return this;
 	}
 	
+	public NDaysHistoryFlattenedDbObjectBuilder isLatestClosePriceMaximum(boolean isLatestClosePriceMaximum) {
+		this.nDaysHistoryFlattenedDbObject.setLatestClosePriceMaximum(isLatestClosePriceMaximum);
+		return this;
+	}
+
+	public NDaysHistoryFlattenedDbObjectBuilder maxValue(float maxValue) {
+		this.nDaysHistoryFlattenedDbObject.setMaxValue(maxValue);
+		return this;
+	}
+	
+	public NDaysHistoryFlattenedDbObjectBuilder maxValueDate(String maxValueDate) {
+		this.nDaysHistoryFlattenedDbObject.setMaxValueDate(maxValueDate);
+		return this;
+	}
+	
 	public NDaysHistoryFlattenedDbObject build()
 	{
 	    return this.nDaysHistoryFlattenedDbObject;

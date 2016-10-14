@@ -49,9 +49,9 @@ public class InitializeControllerEndPoint {
 		final List<NDaysHistoryFlattenedDbObject> ndaysHistoryFlattenedDbObjects =nDaysHistoryFlattenedDbOperations.getEntries();
 		Collections.sort(ndaysHistoryFlattenedDbObjects, NDaysHistoryFlattenedDbObject.SIMPLE_AVG_NET_GAINS_COMPARATOR);
 		
-		final MutableList<NDaysHistoryFlattenedDbObject> stocksThatHitMin = ListIterate.select(ndaysHistoryFlattenedDbObjects, NDaysHistoryFlattenedDbObject.IS_LATEST_CLOSE_PRICE_MIN_FILTER);
+		final MutableList<NDaysHistoryFlattenedDbObject> stocksThatHitMinOrMax = ListIterate.select(ndaysHistoryFlattenedDbObjects, NDaysHistoryFlattenedDbObject.IS_LATEST_CLOSE_PRICE_MIN_OR_MAX_FILTER);
 		
-		final NDaysHistoryFlattenedWrapper nDaysHistoryFlattenedWrapper = new NDaysHistoryFlattenedWrapper(ndaysHistoryFlattenedDbObjects, stocksThatHitMin);
+		final NDaysHistoryFlattenedWrapper nDaysHistoryFlattenedWrapper = new NDaysHistoryFlattenedWrapper(ndaysHistoryFlattenedDbObjects, stocksThatHitMinOrMax);
 		
 		return nDaysHistoryFlattenedWrapper;
 	}

@@ -81,8 +81,10 @@ public class Stock
 	private boolean isLatestClosePriceMinimum;
 	
 	private static final float TOLERANCE=0.05f;
+	private static final int DEFAULT_SMV_DAYS =50;
 	
 	private DateValueObject minDateValueObject;
+	private DateValueObject maxDateValueObject;
 	
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
@@ -543,11 +545,12 @@ public class Stock
 		if (this.simpleMovingAverage==0)
 		{
 			float sumOfClosePrices=0;
-			for (DateValueObject dateValueObject : this.dateToClosePrice)
+			final List<DateValueObject> subListForSMVCalc = this.getDateToClosePrice().subList(0, DEFAULT_SMV_DAYS);
+			for (DateValueObject dateValueObject : subListForSMVCalc)
 			{
 				sumOfClosePrices=sumOfClosePrices+dateValueObject.getValue();	
 			}
-			this.simpleMovingAverage=sumOfClosePrices/this.dateToClosePrice.size();
+			this.simpleMovingAverage=sumOfClosePrices/subListForSMVCalc.size();
 		}
 		return this.simpleMovingAverage;
 	}
@@ -573,12 +576,9 @@ public class Stock
 	}
 	
 	public boolean isLatestClosePriceMinimum() {
-		
 		final float latestClosePrice = this.dateToClosePrice.get(0).getValue();
-		
 		return latestClosePrice <= this.getMinValue() *(1+TOLERANCE); 
 	}
-	
 	
 	public DateValueObject getMinDateValueObject() {
 		if(this.minDateValueObject==null)
@@ -598,6 +598,31 @@ public class Stock
 	
 	public String getMinValueDate() {
 		return this.getMinDateValueObject().getDate();
+	}
+	
+	public boolean isLatestClosePriceMaximum() {
+		final float latestClosePrice = this.dateToClosePrice.get(0).getValue();
+		return latestClosePrice >= this.getMaxValue() *(1-TOLERANCE); 
+	}
+	
+	public DateValueObject getMaxDateValueObject() {
+		if(this.maxDateValueObject==null)
+		{
+			this.maxDateValueObject=((RichIterable<DateValueObject>)this.dateToClosePrice).maxBy(VALUE_EXTRACTOR);
+		}
+		return this.maxDateValueObject;
+	}
+	
+	public void setMaxDateValueObject(DateValueObject maxDateValueObject) {
+		this.maxDateValueObject = maxDateValueObject;
+	}
+	
+	public float getMaxValue() {
+		return this.getMaxDateValueObject().getValue();
+	}
+	
+	public String getMaxValueDate() {
+		return this.getMaxDateValueObject().getDate();
 	}
 	
 	public void setLatestClosePriceMinimum(boolean isLatestClosePriceMinimum) {
