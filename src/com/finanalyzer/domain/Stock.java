@@ -12,9 +12,11 @@ import javax.jdo.annotations.Persistent;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
+import com.gs.collections.api.RichIterable;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
+import com.gs.collections.impl.utility.ListIterate;
 
 public class Stock
 {
@@ -76,7 +78,11 @@ public class Stock
 	private String targetDate;
 	private boolean isReachedStopLossTarget;
 	private boolean isBlackListed;
+	private boolean isLatestClosePriceMinimum;
 	
+	private static final float TOLERANCE=0.05f;
+	
+	private DateValueObject minDateValueObject;
 	
 	@SuppressWarnings("serial")
 	public static final Function<Stock, String> STOCKNAME_SELECTOR = new Function<Stock, String>()
@@ -100,6 +106,15 @@ public class Stock
 				e.printStackTrace();
 				return null;
 			}
+		}
+	};
+	
+	final Function<DateValueObject, Float> VALUE_EXTRACTOR = new Function<DateValueObject, Float>() 
+	{
+		@Override
+		public Float valueOf(DateValueObject dateValueObject) {
+			
+			return dateValueObject.getValue();
 		}
 	};
 	
@@ -556,7 +571,39 @@ public class Stock
 	{
 		this.dateToClosePrice = dateToClosePrice;
 	}
-
+	
+	public boolean isLatestClosePriceMinimum() {
+		
+		final float latestClosePrice = this.dateToClosePrice.get(0).getValue();
+		
+		return latestClosePrice <= this.getMinValue() *(1+TOLERANCE); 
+	}
+	
+	
+	public DateValueObject getMinDateValueObject() {
+		if(this.minDateValueObject==null)
+		{
+			this.minDateValueObject=((RichIterable<DateValueObject>)this.dateToClosePrice).minBy(VALUE_EXTRACTOR);
+		}
+		return this.minDateValueObject;
+	}
+	
+	public void setMinDateValueObject(DateValueObject minDateValueObject) {
+		this.minDateValueObject = minDateValueObject;
+	}
+	
+	public float getMinValue() {
+		return this.getMinDateValueObject().getValue();
+	}
+	
+	public String getMinValueDate() {
+		return this.getMinDateValueObject().getDate();
+	}
+	
+	public void setLatestClosePriceMinimum(boolean isLatestClosePriceMinimum) {
+		this.isLatestClosePriceMinimum = isLatestClosePriceMinimum;
+	}
+	
 	public void setAdjustments(Adjustment splitAdjustment, Adjustment bonusAdjustment)
 	{
 		this.splitAdjustment=splitAdjustment;
