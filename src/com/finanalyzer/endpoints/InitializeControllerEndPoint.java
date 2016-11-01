@@ -112,7 +112,6 @@ public class InitializeControllerEndPoint {
 		return stopLossDbObjects;
 	}
 	
-	
 	@ApiMethod(name = "listAllStocksWithoutLowerOrUpperBound", path="listAllStocksWithoutLowerOrUpperBound")
 	public List<UnrealizedSummaryDbObject> listAllStocksWithoutLowerOrUpperBound()
 	{
@@ -129,9 +128,7 @@ public class InitializeControllerEndPoint {
 				exceptionList.add(summaryDbObject);
 			}
 		}
-		
 		return exceptionList;
-
 	}
 
 	//used in angular

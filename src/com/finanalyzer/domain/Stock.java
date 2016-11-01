@@ -234,7 +234,7 @@ public class Stock
 
 	public float getBankSellPrice()
 	{
-		return CalculatorUtil.caculateFinalPrice(this.getBuyPrice(), 10.0f, this.getDifferenceBetweeBuyDateAndSellDate());
+		return CalculatorUtil.calculateFinalAmount(this.getBuyPrice(), 10.0f, this.getDifferenceBetweeBuyDateAndSellDate());
 	}
 
 	public float getTotalInvestment()

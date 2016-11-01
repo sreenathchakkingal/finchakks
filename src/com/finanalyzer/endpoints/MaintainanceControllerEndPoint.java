@@ -106,9 +106,6 @@ public class MaintainanceControllerEndPoint {
 		
 		if(isValidLowerReturnPercentTarget ||  isValidUpperReturnPercentTarget)
 		{
-			//if it finds the entry for the same bd 
-				//see if the same has entry for that bd
-				//delete that entry
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			Query q = pm.newQuery(StopLossDbObject.class, ":p.contains(businessDate)");
 			List<StopLossDbObject> stopLossObjects  = (List<StopLossDbObject>)q.execute(DateUtil.todaysDate());
@@ -120,9 +117,6 @@ public class MaintainanceControllerEndPoint {
 					pm.deletePersistent(eachDbOject);
 				}
 			}
-				
-//			final JdoDbOperations<StopLossDbObject> stopLossOperations = new JdoDbOperations<StopLossDbObject>(StopLossDbObject.class);
-//			stopLossOperations.deleteEntries("stockName", FastList.newListWith(stockName));
 
 			StopLossDbObjectBuilder builder = new StopLossDbObjectBuilder().stockName(stockName);
 			if(isValidLowerReturnPercentTarget)
@@ -136,7 +130,6 @@ public class MaintainanceControllerEndPoint {
 			LOG.info("inserting StopLossDbObject");
 			pm.makePersistent(builder.build());
 			pm.close();
-//			stopLossOperations.insertEntries(FastList.newListWith(builder.build()));
 		}
 		
 		LOG.info("return success message");
@@ -165,7 +158,6 @@ public class MaintainanceControllerEndPoint {
 		return getResponse(inputTotalInvestment, insertedTotalInvestment);
 	}
 	
-
 	@ApiMethod(name = "refresh", path="refresh", httpMethod = ApiMethod.HttpMethod.POST)
 	public EndPointResponse refresh()
 	{
@@ -216,7 +208,6 @@ public class MaintainanceControllerEndPoint {
 		return new EndPointResponse(true, "done");
 	}
 	
-
 	//helper methods
 	private EndPointResponse getResponse(final double inputTotalInvestment,
 			final double insertedTotalInvestment) {
