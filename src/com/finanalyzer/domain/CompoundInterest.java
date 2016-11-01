@@ -1,24 +1,24 @@
 package com.finanalyzer.domain;
 
 public class CompoundInterest {
-	private float initalAmount;
+	private float initialAmount;
 	private float interestRate;
-	private long durationInDays;
+	private int durationInDays;
 	private float finalAmount;
 
-	public CompoundInterest(float initalAmount, float interestRate,long durationInDays, float finalAmount) {
-		this.initalAmount = initalAmount;
+	public CompoundInterest(float initialAmount, float interestRate,int durationInDays, float finalAmount) {
+		this.initialAmount = initialAmount;
 		this.interestRate = interestRate;
 		this.durationInDays = durationInDays;
 		this.finalAmount = finalAmount;
 	}
 
-	public float getInitalAmount() {
-		return initalAmount;
+	public float getInitialAmount() {
+		return initialAmount;
 	}
 
-	public void setInitalAmount(float initalAmount) {
-		this.initalAmount = initalAmount;
+	public void setInitialAmount(float initialAmount) {
+		this.initialAmount = initialAmount;
 	}
 
 	public float getInterestRate() {
@@ -29,11 +29,11 @@ public class CompoundInterest {
 		this.interestRate = interestRate;
 	}
 
-	public long getDurationInDays() {
+	public int getDurationInDays() {
 		return durationInDays;
 	}
 
-	public void setDurationInDays(long durationInDays) {
+	public void setDurationInDays(int durationInDays) {
 		this.durationInDays = durationInDays;
 	}
 
@@ -44,4 +44,5 @@ public class CompoundInterest {
 	public void setFinalAmount(float finalAmount) {
 		this.finalAmount = finalAmount;
 	}
+
 }

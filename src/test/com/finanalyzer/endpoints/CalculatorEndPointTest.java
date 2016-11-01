@@ -14,7 +14,7 @@ public class CalculatorEndPointTest extends TestCase{
 		CalculatorEndPoint calculatorEndPoint = new CalculatorEndPoint();
 		
 		final CompoundInterest calculateInitialAmountComponent = calculatorEndPoint.calculateMissingCompoundInterestComponent(0.0f, 10.0f, 20*365, 7209.57f);
-		assertEquals(1000, calculateInitialAmountComponent.getInitalAmount(), TOLERANCE);
+		assertEquals(1000, calculateInitialAmountComponent.getInitialAmount(), TOLERANCE);
 		
 		final CompoundInterest calculateInterestRateComponent = calculatorEndPoint.calculateMissingCompoundInterestComponent(1000.0f, 0.0f, 20*365, 7209.57f);
 		assertEquals(10.0f, calculateInterestRateComponent.getInterestRate(), TOLERANCE);

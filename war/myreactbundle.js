@@ -21101,10 +21101,11 @@
 	var IndexRoute = ReactRouter.IndexRoute;
 	var Main = __webpack_require__(237);
 	var WrapperContainer = __webpack_require__(238);
-	var InvestmentContainer = __webpack_require__(641);
-	var DeprecatedContainer = __webpack_require__(646);
-	var MaintenanceContainer = __webpack_require__(649);
-	var UnrealizedDetailsSelectedContainer = __webpack_require__(654);
+	var InvestmentContainer = __webpack_require__(642);
+	var DeprecatedContainer = __webpack_require__(647);
+	var MaintenanceContainer = __webpack_require__(650);
+	var UnrealizedDetailsSelectedContainer = __webpack_require__(655);
+	var CalculatorContainer = __webpack_require__(657);
 
 	var routes = React.createElement(
 	  Router,
@@ -21116,7 +21117,8 @@
 	    React.createElement(Route, { path: 'investment', component: InvestmentContainer }),
 	    React.createElement(Route, { path: 'deprecated', component: DeprecatedContainer }),
 	    React.createElement(Route, { path: 'maint', component: MaintenanceContainer }),
-	    React.createElement(Route, { path: 'selectedUnrealized/:stockName', component: UnrealizedDetailsSelectedContainer })
+	    React.createElement(Route, { path: 'selectedUnrealized/:stockName', component: UnrealizedDetailsSelectedContainer }),
+	    React.createElement(Route, { path: 'calculator', component: CalculatorContainer })
 	  )
 	);
 
@@ -26768,9 +26770,9 @@
 
 	var React = __webpack_require__(2);
 	var StockExceptionsContainer = __webpack_require__(239);
-	var NDaysHistoryStocksContainer = __webpack_require__(635);
-	var ProfitAndLossContainer = __webpack_require__(637);
-	var TargetReachedStocksContainer = __webpack_require__(639);
+	var NDaysHistoryStocksContainer = __webpack_require__(636);
+	var ProfitAndLossContainer = __webpack_require__(638);
+	var TargetReachedStocksContainer = __webpack_require__(640);
 	var Main = __webpack_require__(237);
 
 	var WrapperContainer = React.createClass({
@@ -37238,7 +37240,7 @@
 	var AppendPercentRoundedOff = __webpack_require__(472);
 	var ConvertToPercentRoundedOff = __webpack_require__(473);
 	var Trim = __webpack_require__(474);
-	var MinOrMaxFormat = __webpack_require__(657);
+	var MinOrMaxFormat = __webpack_require__(635);
 
 	var helpers = {
 	  stockNameWithOptions: function () {
@@ -48074,7 +48076,32 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var NDaysHistoryStocks = __webpack_require__(636);
+
+	var MinOrMaxFormat = React.createClass({
+	  displayName: 'MinOrMaxFormat',
+
+	  render: function () {
+	    var num = this.props.data;
+	    var result = 'Max';
+	    if (num) {
+	      result = 'Min';
+	    }
+	    return React.createElement(
+	      'div',
+	      null,
+	      result
+	    );
+	  }
+	});
+
+	module.exports = MinOrMaxFormat;
+
+/***/ },
+/* 636 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var NDaysHistoryStocks = __webpack_require__(637);
 	var finchakksapi = __webpack_require__(240);
 
 	var NDaysHistoryStocksContainer = React.createClass({
@@ -48114,7 +48141,7 @@
 	module.exports = NDaysHistoryStocksContainer;
 
 /***/ },
-/* 636 */
+/* 637 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48180,11 +48207,11 @@
 	module.exports = NDaysHistoryStocks;
 
 /***/ },
-/* 637 */
+/* 638 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ProfitAndLoss = __webpack_require__(638);
+	var ProfitAndLoss = __webpack_require__(639);
 	var finchakksapi = __webpack_require__(240);
 
 	var ProfitAndLossContainer = React.createClass({
@@ -48220,7 +48247,7 @@
 	module.exports = ProfitAndLossContainer;
 
 /***/ },
-/* 638 */
+/* 639 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48340,11 +48367,11 @@
 	module.exports = ProfitAndLoss;
 
 /***/ },
-/* 639 */
+/* 640 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var TargetReachedStocks = __webpack_require__(640);
+	var TargetReachedStocks = __webpack_require__(641);
 	var finchakksapi = __webpack_require__(240);
 
 	var TargetReachedStocksContainer = React.createClass({
@@ -48381,7 +48408,7 @@
 	module.exports = TargetReachedStocksContainer;
 
 /***/ },
-/* 640 */
+/* 641 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48425,13 +48452,13 @@
 	module.exports = TargetReachedStocks;
 
 /***/ },
-/* 641 */
+/* 642 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetailsContainer = __webpack_require__(642);
-	var UnrealizedSummaryContainer = __webpack_require__(644);
-	var ProfitAndLossContainer = __webpack_require__(637);
+	var UnrealizedDetailsContainer = __webpack_require__(643);
+	var UnrealizedSummaryContainer = __webpack_require__(645);
+	var ProfitAndLossContainer = __webpack_require__(638);
 	var Main = __webpack_require__(237);
 
 	var InvestmentContainer = React.createClass({
@@ -48452,11 +48479,11 @@
 	module.exports = InvestmentContainer;
 
 /***/ },
-/* 642 */
+/* 643 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetails = __webpack_require__(643);
+	var UnrealizedDetails = __webpack_require__(644);
 	var finchakksapi = __webpack_require__(240);
 
 	var UnrealizedDetailsContainer = React.createClass({
@@ -48493,7 +48520,7 @@
 	module.exports = UnrealizedDetailsContainer;
 
 /***/ },
-/* 643 */
+/* 644 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48536,11 +48563,11 @@
 	module.exports = UnrealizedDetails;
 
 /***/ },
-/* 644 */
+/* 645 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedSummary = __webpack_require__(645);
+	var UnrealizedSummary = __webpack_require__(646);
 	var finchakksapi = __webpack_require__(240);
 
 	var UnrealizedSummaryContainer = React.createClass({
@@ -48577,7 +48604,7 @@
 	module.exports = UnrealizedSummaryContainer;
 
 /***/ },
-/* 645 */
+/* 646 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48620,11 +48647,11 @@
 	module.exports = UnrealizedSummary;
 
 /***/ },
-/* 646 */
+/* 647 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ListBlackListedStocksContainer = __webpack_require__(647);
+	var ListBlackListedStocksContainer = __webpack_require__(648);
 	var Main = __webpack_require__(237);
 
 	var DeprecatedContainer = React.createClass({
@@ -48643,11 +48670,11 @@
 	module.exports = DeprecatedContainer;
 
 /***/ },
-/* 647 */
+/* 648 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ListBlackListedStocks = __webpack_require__(648);
+	var ListBlackListedStocks = __webpack_require__(649);
 	var finchakksapi = __webpack_require__(240);
 
 	var ListBlackListedStocksContainer = React.createClass({
@@ -48684,7 +48711,7 @@
 	module.exports = ListBlackListedStocksContainer;
 
 /***/ },
-/* 648 */
+/* 649 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48731,16 +48758,16 @@
 	module.exports = ListBlackListedStocks;
 
 /***/ },
-/* 649 */
+/* 650 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var RetrieveModifiableStockAttributesContainer = __webpack_require__(615);
 	var UnrealizedFileUploadContainer = __webpack_require__(633);
-	var RefreshContainer = __webpack_require__(650);
+	var RefreshContainer = __webpack_require__(651);
 	var Main = __webpack_require__(237);
 	var Panel = __webpack_require__(609);
-	var Accordion = __webpack_require__(652);
+	var Accordion = __webpack_require__(653);
 	var PanelWrapper = __webpack_require__(608);
 
 	var MaintenanceContainer = React.createClass({
@@ -48772,11 +48799,11 @@
 	module.exports = MaintenanceContainer;
 
 /***/ },
-/* 650 */
+/* 651 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var Refresh = __webpack_require__(651);
+	var Refresh = __webpack_require__(652);
 	var finchakksapi = __webpack_require__(240);
 
 	var RefreshContainer = React.createClass({
@@ -48822,7 +48849,7 @@
 	module.exports = RefreshContainer;
 
 /***/ },
-/* 651 */
+/* 652 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -48862,7 +48889,7 @@
 	module.exports = Refresh;
 
 /***/ },
-/* 652 */
+/* 653 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48881,7 +48908,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _PanelGroup = __webpack_require__(653);
+	var _PanelGroup = __webpack_require__(654);
 
 	var _PanelGroup2 = _interopRequireDefault(_PanelGroup);
 
@@ -48909,7 +48936,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 653 */
+/* 654 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49048,11 +49075,11 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 654 */
+/* 655 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetailsSelected = __webpack_require__(655);
+	var UnrealizedDetailsSelected = __webpack_require__(656);
 	var finchakksapi = __webpack_require__(240);
 
 	var UnrealizedDetailsSelectedContainer = React.createClass({
@@ -49084,7 +49111,7 @@
 	module.exports = UnrealizedDetailsSelectedContainer;
 
 /***/ },
-/* 655 */
+/* 656 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -49169,30 +49196,278 @@
 	module.exports = UnrealizedDetailsSelected;
 
 /***/ },
-/* 656 */,
 /* 657 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
+	var Calculator = __webpack_require__(658);
+	var finchakkCalculatorApi = __webpack_require__(659);
 
-	var MinOrMaxFormat = React.createClass({
-	  displayName: 'MinOrMaxFormat',
+	var CalculatorContainer = React.createClass({
+	  displayName: 'CalculatorContainer',
+
+	  getInitialState: function () {
+	    return {
+	      initialAmount: 0.0,
+	      interestRate: 0.0,
+	      durationInDays: 0,
+	      finalAmount: 0.0,
+	      buttonSytle: 'primary',
+	      buttonText: 'Calculate',
+	      buttonDisabled: false
+	    };
+	  },
+
+	  handleInitialAmountChange(e) {
+	    this.setState({ initialAmount: e.target.value });
+	  },
+
+	  handleInterestRateChange(e) {
+	    this.setState({ interestRate: e.target.value });
+	  },
+
+	  handleDurationInDaysChange(e) {
+	    this.setState({ durationInDays: e.target.value });
+	  },
+
+	  handleFinalAmountChange(e) {
+	    this.setState({ finalAmount: e.target.value });
+	  },
+
+	  handleSubmit(e) {
+	    this.setState({
+	      buttonSytle: 'info',
+	      buttonText: 'Calculating...',
+	      buttonDisabled: true
+	    });
+
+	    finchakkCalculatorApi.calculateMissingCompoundInterestComponent(this.state.initialAmount, this.state.interestRate, this.state.durationInDays, this.state.finalAmount).then(function (response) {
+	      var bStyle = 'primary';
+	      var bText = 'Calculate';
+	      var initialAmountTemp = typeof response.initialAmount === 'undefined' ? 0.0 : response.initialAmount;
+	      var interestRateTemp = typeof response.interestRate === 'undefined' ? 0.0 : response.interestRate;
+
+	      var durationInDaysTemp = typeof response.durationInDays === 'undefined' ? 0.0 : response.durationInDays;
+
+	      var finalAmountTemp = typeof response.finalAmount === 'undefined' ? 0.0 : response.finalAmount;
+
+	      this.setState({
+	        initialAmount: initialAmountTemp,
+	        interestRate: interestRateTemp,
+	        durationInDays: durationInDaysTemp,
+	        finalAmount: finalAmountTemp,
+	        buttonSytle: bStyle,
+	        buttonText: bText,
+	        buttonDisabled: false
+	      });
+	    }.bind(this));
+	  },
 
 	  render: function () {
-	    var num = this.props.data;
-	    var result = 'Max';
-	    if (num) {
-	      result = 'Min';
-	    }
+	    return React.createElement(Calculator, {
+	      initialAmount: this.state.initialAmount,
+	      interestRate: this.state.interestRate,
+	      durationInDays: this.state.durationInDays,
+	      finalAmount: this.state.finalAmount,
+	      onInitialAmountChange: this.handleInitialAmountChange,
+	      onInterestRateChange: this.handleInterestRateChange,
+	      onDurationInDaysChange: this.handleDurationInDaysChange,
+	      onFinalAmountChange: this.handleFinalAmountChange,
+	      onSubmit: this.handleSubmit,
+	      buttonSytle: this.state.buttonSytle,
+	      buttonDisabled: this.state.buttonDisabled,
+	      buttonText: this.state.buttonText
+	    });
+	  }
+
+	});
+
+	module.exports = CalculatorContainer;
+
+/***/ },
+/* 658 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(2);
+	var PropTypes = React.PropTypes;
+	var Form = __webpack_require__(617);
+	var FormGroup = __webpack_require__(618);
+	var FormControl = __webpack_require__(619);
+	var Button = __webpack_require__(504);
+	var ControlLabel = __webpack_require__(623);
+	var Table = __webpack_require__(630);
+
+	var Calculator = React.createClass({
+	  displayName: 'Calculator',
+
+
+	  render: function () {
 	    return React.createElement(
 	      'div',
 	      null,
-	      result
+	      React.createElement(
+	        'h1',
+	        null,
+	        ' Interest Rate Calculator (Compounded Quarterly) '
+	      ),
+	      React.createElement(
+	        Table,
+	        { striped: true, bordered: true, condensed: true, hover: true },
+	        React.createElement(
+	          'thead',
+	          null,
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'th',
+	              null,
+	              'Attribute Name'
+	            ),
+	            React.createElement(
+	              'th',
+	              null,
+	              'Attribute Value'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'tbody',
+	          null,
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'td',
+	              null,
+	              ' Initial Amount '
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              React.createElement(FormControl, { type: 'text', onChange: this.props.onInitialAmountChange,
+	                value: this.props.initialAmount }),
+	              ' '
+	            )
+	          ),
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'td',
+	              null,
+	              ' Interest Rate '
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              React.createElement(FormControl, { type: 'text', onChange: this.props.onInterestRateChange,
+	                value: this.props.interestRate }),
+	              ' '
+	            )
+	          ),
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'td',
+	              null,
+	              ' Duration(in days)'
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              React.createElement(FormControl, { type: 'text', onChange: this.props.onDurationInDaysChange,
+	                value: this.props.durationInDays }),
+	              ' '
+	            )
+	          ),
+	          React.createElement(
+	            'tr',
+	            null,
+	            React.createElement(
+	              'td',
+	              null,
+	              ' Final Amount '
+	            ),
+	            React.createElement(
+	              'td',
+	              null,
+	              React.createElement(FormControl, { type: 'text', onChange: this.props.onFinalAmountChange,
+	                value: this.props.finalAmount }),
+	              ' '
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        Button,
+	        { bsStyle: this.props.buttonSytle, disabled: this.props.buttonDisabled, bsSize: 'small', type: 'submit', onClick: this.props.onSubmit },
+	        this.props.buttonText
+	      )
 	    );
 	  }
 	});
 
-	module.exports = MinOrMaxFormat;
+	Calculator.propTypes = {
+	  onInitialAmountChange: PropTypes.func.isRequired,
+	  onInterestRateChange: PropTypes.func.isRequired,
+	  onDurationInDaysChange: PropTypes.func.isRequired,
+	  onFinalAmountChange: PropTypes.func.isRequired,
+	  onSubmit: PropTypes.func.isRequired,
+	  buttonSytle: PropTypes.string.isRequired,
+	  buttonText: PropTypes.string.isRequired,
+	  buttonDisabled: PropTypes.bool.isRequired
+	};
+
+	module.exports = Calculator;
+
+/***/ },
+/* 659 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var axios = __webpack_require__(241);
+	var querystring = __webpack_require__(260);
+	var prodHost = 'https://finchakks.appspot.com/_ah/api/';
+	var devHost = 'http://localhost:8888/_ah/api/';
+
+	var envIsProd = true;
+	var host = envIsProd ? prodHost : devHost;
+
+	var calculatorEndPoint = host + 'calculatorEndPoint/v1/calculateMissingCompoundInterestComponent';
+
+	function puke(obj) {
+	  return React.createElement(
+	    'pre',
+	    null,
+	    JSON.stringify(obj, null, ' ')
+	  );
+	}
+
+	function getApiWithParamResult(initialAmount, interestRate, durationInDays, finalAmount) {
+	  return axios.get(calculatorEndPoint, {
+	    params: {
+	      initialAmount: initialAmount,
+	      interestRate: interestRate,
+	      durationInDays: durationInDays,
+	      finalAmount: finalAmount
+	    }
+	  });
+	}
+
+	var helpers = {
+	  calculateMissingCompoundInterestComponent: function (initialAmount, interestRate, durationInDays, finalAmount) {
+	    return getApiWithParamResult(initialAmount, interestRate, durationInDays, finalAmount).then(function (response) {
+	      var compoundInterestInfo = response.data;
+	      console.log('calculateMissingCompoundInterestComponent.compoundInterestInfo.initialAmount', compoundInterestInfo.initialAmount);
+	      return compoundInterestInfo;
+	    }).catch(function (err) {
+	      console.warn('Error in calculateMissingCompoundInterestComponent ', err);
+	    });
+	  }
+	};
+
+	module.exports = helpers;
 
 /***/ }
 /******/ ]);
