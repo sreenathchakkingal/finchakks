@@ -21106,10 +21106,10 @@
 	var WrapperContainer = __webpack_require__(286);
 	var InvestmentContainer = __webpack_require__(645);
 	var MaintenanceContainer = __webpack_require__(650);
-	var CalculatorContainer = __webpack_require__(656);
+	var CalculatorContainer = __webpack_require__(655);
 
-	var DeprecatedContainer = __webpack_require__(659);
-	var UnrealizedDetailsSelectedContainer = __webpack_require__(662);
+	var DeprecatedContainer = __webpack_require__(658);
+	var UnrealizedDetailsSelectedContainer = __webpack_require__(661);
 
 	var routes = React.createElement(
 	  Router,
@@ -28971,12 +28971,25 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listStockExceptions().then(function (stocksInfo) {
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem('listStockExceptions.stocksInfoCachedAsString');
+
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp === 'null') {
+	      console.log('invoking listStockExceptions api');
+	      finchakksapi.listStockExceptions().then(function (stocksInfo) {
+	        localStorage.setItem('listStockExceptions.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	        this.setState({
+	          isLoading: false,
+	          stocksInfo: stocksInfo
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listStockExceptions api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stocksInfo: stocksInfoCached
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -29001,6 +29014,7 @@
 	var host = envIsProd ? prodHost : devHost;
 
 	var maintEndPoint = host + 'maintainanceControllerEndPoint/v1/';
+	var listNDaysHistoryStocksResultCache = {};
 	//mock
 	// var stocksInfo=
 	// [
@@ -29088,9 +29102,6 @@
 	  },
 
 	  getModifiableStockAttributes: function (stockName) {
-	    if (stockName === null || stockName === '') {
-	      stockName = 'SYNDIBANK';
-	    }
 	    return getMaintApiResult('getModifiableStockAttributes?stockName=' + stockName).then(function (response) {
 	      var stocksInfo = response.data;
 	      return stocksInfo;
@@ -29161,13 +29172,17 @@
 	  },
 
 	  listNDaysHistoryStocks: function () {
-
-	    return getInitializeApiResult('listNDaysHistoryFlattenedStocks').then(function (response) {
-	      var stocksInfo = response.data;
-	      return stocksInfo;
-	    }).catch(function (err) {
-	      console.warn('Error in listNDaysHistoryStocks ', err);
-	    });
+	    if (listNDaysHistoryStocksResultCache === 0) {
+	      return listNDaysHistoryStocksResultCache;
+	    } else {
+	      return getInitializeApiResult('listNDaysHistoryFlattenedStocks').then(function (response) {
+	        var stocksInfo = response.data;
+	        listNDaysHistoryStocksResultCache = stocksInfo;
+	        return stocksInfo;
+	      }).catch(function (err) {
+	        console.warn('Error in listNDaysHistoryStocks ', err);
+	      });
+	    }
 	  },
 
 	  listUnrealizedDetails: function () {
@@ -45955,15 +45970,32 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listUnrealizedSelected(this.props.stockName).then(function (stocksInfo) {
-	      summaryDbObjectTemp = typeof stocksInfo.summaryDbObject === 'undefined' ? {} : stocksInfo.summaryDbObject;
-	      detailDbObjectsTemp = typeof stocksInfo.detailDbObjects === 'undefined' ? [] : stocksInfo.detailDbObjects;
+	    var stockNameTemp = this.props.stockName;
+	    var keyName = 'listUnrealizedSelected.stocksInfoCachedAsString.' + stockNameTemp;
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem(keyName);
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp === 'null') {
+	      console.log('invoking listUnrealizedSelected api');
+	      finchakksapi.listUnrealizedSelected(stockNameTemp).then(function (stocksInfo) {
+	        localStorage.setItem(keyName, JSON.stringify(stocksInfo));
+	        summaryDbObjectTemp = typeof stocksInfo.summaryDbObject === 'undefined' ? {} : stocksInfo.summaryDbObject;
+	        detailDbObjectsTemp = typeof stocksInfo.detailDbObjects === 'undefined' ? [] : stocksInfo.detailDbObjects;
+	        this.setState({
+	          isLoading: false,
+	          stockSummary: summaryDbObjectTemp,
+	          stockDetail: detailDbObjectsTemp
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listUnrealizedSelected api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
+	      summaryDbObjectCachedTemp = stocksInfoCached.summaryDbObject;
+	      detailDbObjectsCachedTemp = stocksInfoCached.detailDbObjects;
 	      this.setState({
 	        isLoading: false,
-	        stockSummary: summaryDbObjectTemp,
-	        stockDetail: detailDbObjectsTemp
+	        stockSummary: summaryDbObjectCachedTemp,
+	        stockDetail: detailDbObjectsCachedTemp
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -48699,10 +48731,6 @@
 	var NDaysHistoryStocksContainer = React.createClass({
 	  displayName: 'NDaysHistoryStocksContainer',
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-
 	  getInitialState: function () {
 	    return {
 	      isLoading: true,
@@ -48712,13 +48740,27 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem('listNDaysHistoryStocks.stocksInfoCachedAsString');
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp === 'null') {
+	      console.log('invoking listNDaysHistoryStocks api');
+	      finchakksapi.listNDaysHistoryStocks().then(function (stocksInfo) {
+	        localStorage.setItem('listNDaysHistoryStocks.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+
+	        this.setState({
+	          isLoading: false,
+	          nDaysWatchlistedStocks: stocksInfo.nDaysWatchlistedStocks,
+	          nDaysMinOrMaxStocks: stocksInfo.nDaysMinOrMaxStocks
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listNDaysHistoryStocks api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
 	      this.setState({
 	        isLoading: false,
-	        nDaysWatchlistedStocks: stocksInfo.nDaysWatchlistedStocks,
-	        nDaysMinOrMaxStocks: stocksInfo.nDaysMinOrMaxStocks
+	        nDaysWatchlistedStocks: stocksInfoCached.nDaysWatchlistedStocks,
+	        nDaysMinOrMaxStocks: stocksInfoCached.nDaysMinOrMaxStocks
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -48820,12 +48862,24 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listprofitAndloss().then(function (stocksInfo) {
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem('listprofitAndloss.stocksInfoCachedAsString');
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp == 'null') {
+	      console.log('invoking listprofitAndloss api');
+	      finchakksapi.listprofitAndloss().then(function (stocksInfo) {
+	        localStorage.setItem('listprofitAndloss.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	        this.setState({
+	          isLoading: false,
+	          stocksInfo: stocksInfo
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listprofitAndloss api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stocksInfo: stocksInfoCached
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -48981,12 +49035,24 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listTargetReachedStocks().then(function (stocksInfo) {
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem('listTargetReachedStocks.stocksInfoCachedAsString');
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp === 'null') {
+	      console.log('invoking listTargetReachedStocks api');
+	      finchakksapi.listTargetReachedStocks().then(function (stocksInfo) {
+	        localStorage.setItem('listTargetReachedStocks.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	        this.setState({
+	          isLoading: false,
+	          stocksInfo: stocksInfo
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listTargetReachedStocks api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stocksInfo: stocksInfoCached
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -49094,12 +49160,24 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listUnrealizedDetails().then(function (stocksInfo) {
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem('listUnrealizedDetails.stocksInfoCachedAsString');
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp === 'null') {
+	      console.log('invoking listUnrealizedDetails api');
+	      finchakksapi.listUnrealizedDetails().then(function (stocksInfo) {
+	        localStorage.setItem('listUnrealizedDetails.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	        this.setState({
+	          isLoading: false,
+	          stocksInfo: stocksInfo
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listUnrealizedDetails api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stocksInfo: stocksInfoCached
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -49178,12 +49256,24 @@
 	  },
 
 	  componentDidMount: function () {
-	    finchakksapi.listUnrealizedSummary().then(function (stocksInfo) {
+	    var stocksInfoCachedAsStringTemp = localStorage.getItem('listUnrealizedSummary.stocksInfoCachedAsString');
+	    if (stocksInfoCachedAsStringTemp == null || stocksInfoCachedAsStringTemp === 'null') {
+	      console.log('invoking listUnrealizedSummary api');
+	      finchakksapi.listUnrealizedSummary().then(function (stocksInfo) {
+	        localStorage.setItem('listUnrealizedSummary.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	        this.setState({
+	          isLoading: false,
+	          stocksInfo: stocksInfo
+	        });
+	      }.bind(this));
+	    } else {
+	      console.log('using cached result instead of listUnrealizedSummary api call');
+	      var stocksInfoCached = JSON.parse(stocksInfoCachedAsStringTemp);
 	      this.setState({
 	        isLoading: false,
-	        stocksInfo: stocksInfo
+	        stocksInfo: stocksInfoCached
 	      });
-	    }.bind(this));
+	    }
 	  },
 
 	  render: function () {
@@ -49306,6 +49396,9 @@
 	      buttonText: 'Refreshing',
 	      buttonDisabled: true
 	    });
+
+	    localStorage.clear(); //clear cache
+	    console.log('local cache cleared');
 
 	    finchakksapi.refresh().then(function (updatedResponse) {
 	      var bStyle = updatedResponse.success ? 'success' : 'danger';
@@ -49558,15 +49651,14 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 655 */,
-/* 656 */
+/* 655 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
 	var Modal = __webpack_require__(575);
 	var Button = __webpack_require__(524);
-	var Calculator = __webpack_require__(657);
-	var finchakkCalculatorApi = __webpack_require__(658);
+	var Calculator = __webpack_require__(656);
+	var finchakkCalculatorApi = __webpack_require__(657);
 
 	var CalculatorContainer = React.createClass({
 	  displayName: 'CalculatorContainer',
@@ -49677,7 +49769,7 @@
 	module.exports = CalculatorContainer;
 
 /***/ },
-/* 657 */
+/* 656 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -49815,7 +49907,7 @@
 	module.exports = Calculator;
 
 /***/ },
-/* 658 */
+/* 657 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var axios = __webpack_require__(289);
@@ -49862,11 +49954,11 @@
 	module.exports = helpers;
 
 /***/ },
-/* 659 */
+/* 658 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ListBlackListedStocksContainer = __webpack_require__(660);
+	var ListBlackListedStocksContainer = __webpack_require__(659);
 	var Main = __webpack_require__(237);
 	var Menu = __webpack_require__(285);
 
@@ -49882,11 +49974,11 @@
 	module.exports = DeprecatedContainer;
 
 /***/ },
-/* 660 */
+/* 659 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var ListBlackListedStocks = __webpack_require__(661);
+	var ListBlackListedStocks = __webpack_require__(660);
 	var finchakksapi = __webpack_require__(288);
 
 	var ListBlackListedStocksContainer = React.createClass({
@@ -49923,7 +50015,7 @@
 	module.exports = ListBlackListedStocksContainer;
 
 /***/ },
-/* 661 */
+/* 660 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
@@ -49970,11 +50062,11 @@
 	module.exports = ListBlackListedStocks;
 
 /***/ },
-/* 662 */
+/* 661 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);
-	var UnrealizedDetailsSelected = __webpack_require__(663);
+	var UnrealizedDetailsSelected = __webpack_require__(662);
 	var finchakksapi = __webpack_require__(288);
 
 	var UnrealizedDetailsSelectedContainer = React.createClass({
@@ -50006,7 +50098,7 @@
 	module.exports = UnrealizedDetailsSelectedContainer;
 
 /***/ },
-/* 663 */
+/* 662 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(2);

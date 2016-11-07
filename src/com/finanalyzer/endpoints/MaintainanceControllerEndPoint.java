@@ -46,7 +46,13 @@ public class MaintainanceControllerEndPoint {
 		final AllScripsDbObject allScripsDbObject = allScripsDbOperations.getOneEntry("nseId", FastList.newListWith(stockNameUpperCase));
 		
 		JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
-		final StopLossDbObject stopLossDbObject = stopLossDbOperations.getEntries("stockName", FastList.newListWith(stockNameUpperCase), "businessDate desc").get(0);
+		final List<StopLossDbObject> stopLossEntries = stopLossDbOperations.getEntries("stockName", FastList.newListWith(stockNameUpperCase), "businessDate desc");
+		StopLossDbObject stopLossDbObject =null;
+		if(stopLossEntries!=null && stopLossEntries.size()>=1)
+		{
+			stopLossDbObject= stopLossEntries.get(0);
+		}
+		
 		ModifiableStockAttributes modifiableStockAttributes = ConverterUtil.getModifiableStockAttributes(allScripsDbObject, stopLossDbObject);
 
 		return FastList.newListWith(modifiableStockAttributes);
