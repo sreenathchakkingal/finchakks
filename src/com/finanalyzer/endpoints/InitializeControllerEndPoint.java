@@ -13,10 +13,12 @@ import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedSummaryDiffDbObject;
 import com.finanalyzer.util.StringUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.api.list.MutableList;
 import com.gs.collections.api.partition.list.PartitionMutableList;
@@ -41,6 +43,19 @@ public class InitializeControllerEndPoint {
 		final List<StopLossDbObject> dbObjects = dbOperations.getEntries("stockName");
 		return dbObjects;
 	}
+	
+	@ApiMethod(name = "listStockSummaryDiffs", path="listStockSummaryDiffs")
+	public List<UnrealizedSummaryDiffDbObject> listStockSummaryDiffs()
+	{
+		JdoDbOperations<UnrealizedSummaryDiffDbObject> dbOperations = new JdoDbOperations<>(UnrealizedSummaryDiffDbObject.class);
+		final FastList<UnrealizedSummaryDiffDbObject> dbObjects = FastList.newList(dbOperations.getEntries("stockName"));
+
+		final MutableList<UnrealizedSummaryDiffDbObject> sortedObjects = dbObjects.sortThisBy(UnrealizedSummaryDiffDbObject.RETURN_DIFF_EXTRACTOR).reverseThis();
+		int numberOfObjects = sortedObjects.size()<5 ? sortedObjects.size() : 4;
+		
+		return sortedObjects.subList(0, numberOfObjects);
+	}
+	
 	
 	@ApiMethod(name = "listNDaysHistoryFlattenedStocks")
 	public NDaysHistoryFlattenedWrapper listNDaysHistoryFlattenedStocks()

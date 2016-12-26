@@ -141,6 +141,12 @@ public class JdoDbOperations<T> {
 		this.deleteEntries(null, null);
 	}
 	
+	public Collection<T> deleteAndInsertEntries(List<T> dbObjects)
+	{
+		this.deleteEntries();
+		return this.insertEntries(dbObjects);
+	}
+	
 	public T insertEntry(T dbObject) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try

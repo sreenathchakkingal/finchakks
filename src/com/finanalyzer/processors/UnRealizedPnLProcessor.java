@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItemIterator;
+import org.junit.internal.runners.model.EachTestNotifier;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.builder.StockBuilder;
+import com.finanalyzer.domain.builder.UnrealizedSummaryDiffDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
@@ -18,6 +20,7 @@ import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedSummaryDiffDbObject;
 import com.finanalyzer.util.ConverterUtil;
 import com.finanalyzer.util.CalculatorUtil;
 import com.finanalyzer.util.DateUtil;
@@ -289,21 +292,28 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 			{
 				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = ConverterUtil.stockToUnrealizedDetailDbObject(stocksDetail);
 				final JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
-				dbDetailOperations.deleteEntries();
-				dbDetailOperations.insertEntries(unrealizedDetailDbObjects);
-
-				final List<UnrealizedSummaryDbObject> unrealizedSummaryDbObjects = ConverterUtil.stockToUnrealizedSummaryDbObject(stocksSummary);
+				dbDetailOperations.deleteAndInsertEntries(unrealizedDetailDbObjects);
+				LOG.info("inserted unrealizedDetailDbObjects: "+unrealizedDetailDbObjects.size());
+				
+				final JdoDbOperations<UnrealizedSummaryDiffDbObject> dbDiffSummaryOperations = new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class);
+				final List<UnrealizedSummaryDbObject> currentDayUnrealizedSummaryDbObjects = ConverterUtil.stockToUnrealizedSummaryDbObject(stocksSummary);
 				final JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
-				dbSummaryOperations.deleteEntries();
-				dbSummaryOperations.insertEntries(unrealizedSummaryDbObjects);
+				final List<UnrealizedSummaryDbObject> prevDayEntries = dbSummaryOperations.getEntries();
+				final List<UnrealizedSummaryDiffDbObject> diffEntries = ConverterUtil.convertToSummaryDbObjectDiff(currentDayUnrealizedSummaryDbObjects, prevDayEntries);
+			
+				dbDiffSummaryOperations.deleteAndInsertEntries(diffEntries);
+				LOG.info("inserted diffEntries before: "+new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class).getEntries().size());
+				dbSummaryOperations.deleteAndInsertEntries(currentDayUnrealizedSummaryDbObjects);
+				LOG.info("inserted currentDayUnrealizedSummaryDbObjects: "+currentDayUnrealizedSummaryDbObjects.size());
+				LOG.info("inserted diffEntries after: "+new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class).getEntries().size());
 				
 				final JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
-				profitAndLossOperations.deleteEntries();
-				profitAndLossOperations.insertEntries(FastList.newListWith(profitAndLoss));
+				profitAndLossOperations.deleteAndInsertEntries(FastList.newListWith(profitAndLoss));
+				LOG.info("inserted profitAndLossOperations");
 				
 				final JdoDbOperations<StockExceptionDbObject> exceptionStocksOperations = new JdoDbOperations<StockExceptionDbObject>(StockExceptionDbObject.class);
-				exceptionStocksOperations.deleteEntries();
-				exceptionStocksOperations.insertEntries(exceptionStocks);
+				exceptionStocksOperations.deleteAndInsertEntries(exceptionStocks);
+				LOG.info("inserted exceptionStocks: "+exceptionStocks.size());
 			}
 
 }

@@ -3,6 +3,7 @@ package com.finanalyzer.servlet;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,9 +28,12 @@ import com.gs.collections.impl.utility.Iterate;
 @Controller  
 public class UnRealizedPnLController extends PnlController
 {
+	private static final Logger LOG = Logger.getLogger(UnRealizedPnLController.class.getName());
+
 	@RequestMapping("/unRealizedPnL") 
 	public ModelAndView unRealizedPnL(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
+		LOG.info("in unRealizedPnL");
 		String triggerSource = request==null ? "": request.getParameter("triggerFrom");
 		final boolean sourceIsManual = "manual".equals(triggerSource);
 		boolean isAuthorized = true; //for cron jobs we dont have to authorized as it just persists and does not display anything
@@ -79,6 +83,8 @@ public class UnRealizedPnLController extends PnlController
 			result.put("profitAndLoss", profitAndLoss);
 			
 			processor.persistResults(stocks, stocksSummary, profitAndLoss, exceptionStocks);
+			
+			LOG.info("out unRealizedPnL");
 			
 			return new ModelAndView("unRealizedPnL", result);
 		}

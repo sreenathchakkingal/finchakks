@@ -156,9 +156,8 @@ public class MaintainanceControllerEndPoint {
 		
 		JdoDbOperations<UnrealizedDbObject> unrealizeddbOperations = 
 				new JdoDbOperations<UnrealizedDbObject>(UnrealizedDbObject.class);
-		unrealizeddbOperations.deleteEntries();
 		
-		final Collection<UnrealizedDbObject> insertedEntries = unrealizeddbOperations.insertEntries(unrealizedDbObjects);
+		final Collection<UnrealizedDbObject> insertedEntries = unrealizeddbOperations.deleteAndInsertEntries(unrealizedDbObjects);
 		final double insertedTotalInvestment = getInsertedTotalInvestment(insertedEntries);
 		
 		return getResponse(inputTotalInvestment, insertedTotalInvestment);

@@ -3,6 +3,7 @@ package com.finanalyzer.servlet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -31,9 +32,12 @@ import com.gs.collections.impl.utility.Iterate;
 @Controller  
 public class CombineNDaysHistoryAndUnrealizedController{
 
+	private static final Logger LOG = Logger.getLogger(CombineNDaysHistoryAndUnrealizedController.class.getName());
+	
 	@RequestMapping("/combineNDaysHistoryAndUnrealized")  
 	public ModelAndView combineNDaysHistoryAndUnrealized(HttpServletRequest arg0, HttpServletResponse arg1) throws Exception {
 		
+		LOG.info("in CombineNDaysHistoryAndUnrealizedController");
 		
 		JdoDbOperations<UnrealizedSummaryDbObject> unrealizedSummaryDbOperations = new JdoDbOperations<>(UnrealizedSummaryDbObject.class);
 		JdoDbOperations<UnrealizedDetailDbObject> unrealizedDetailDbOperations = new JdoDbOperations<>(UnrealizedDetailDbObject.class);
@@ -74,7 +78,8 @@ public class CombineNDaysHistoryAndUnrealizedController{
 		{
 			pm.close();
 		}
-
+		
+		LOG.info("out CombineNDaysHistoryAndUnrealizedController");
 		return new ModelAndView("test");
 	}
 }

@@ -73,7 +73,6 @@ public class NDaysHistoryControllerEndPoint {
 	private Collection<NDaysHistoryDbObject> persistResult(List<NDaysHistoryDbObject> ndaysHistoryDbObjects) 
 	{
 		JdoDbOperations<NDaysHistoryDbObject>  dbOperations = new JdoDbOperations<>(NDaysHistoryDbObject.class);
-		dbOperations.deleteEntries();
-		return dbOperations.insertEntries(ndaysHistoryDbObjects);
+		return dbOperations.deleteAndInsertEntries(ndaysHistoryDbObjects);
 	}  
 }

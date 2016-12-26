@@ -14,6 +14,7 @@ import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.builder.NDaysHistoryFlattenedDbObjectBuilder;
 import com.finanalyzer.domain.builder.UnrealizedDetailDbObjectBuilder;
 import com.finanalyzer.domain.builder.UnrealizedSummaryDbObjectBuilder;
+import com.finanalyzer.domain.builder.UnrealizedSummaryDiffDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
@@ -23,6 +24,7 @@ import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
+import com.finanalyzer.domain.jdo.UnrealizedSummaryDiffDbObject;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class ConverterUtil {
@@ -267,6 +269,50 @@ public class ConverterUtil {
 //			LOG.info("collecting stock: "+name+" for insertion");
 		}
 		return unrealizedDbObjects;
+	}
+
+	public static List<UnrealizedSummaryDiffDbObject> convertToSummaryDbObjectDiff(
+			List<UnrealizedSummaryDbObject> currentEntries,List<UnrealizedSummaryDbObject> prevDayEntries) 
+	{
+		final List<UnrealizedSummaryDiffDbObject> diffEntries = FastList.newList();
+		final UnrealizedSummaryDiffDbObjectBuilder builder = new UnrealizedSummaryDiffDbObjectBuilder();
+		//abs diff both
+		boolean isFoundInBoth=false;
+		UnrealizedSummaryDiffDbObject diffEntry=null;
+		
+		for(UnrealizedSummaryDbObject current : currentEntries)
+		{
+			isFoundInBoth=false;
+			for (UnrealizedSummaryDbObject prev : prevDayEntries)
+			{
+				if(current.getStockName().equals(prev.getStockName()))
+				{
+					isFoundInBoth=true;
+					final float absoluteDiff = Math.abs(current.getReturnTillDate()-prev.getReturnTillDate());
+					
+					diffEntry = new UnrealizedSummaryDiffDbObjectBuilder().
+							stockName(current.getStockName()).
+							currReturnTillDate(current.getReturnTillDate()).
+							prevReturnTillDate(prev.getReturnTillDate()).
+							diffReturnTillDate(absoluteDiff).
+							build();
+					break;
+				}
+			}
+			
+			if(!isFoundInBoth)
+			{
+				diffEntry = new UnrealizedSummaryDiffDbObjectBuilder().
+						stockName(current.getStockName()).
+						currReturnTillDate(current.getReturnTillDate()).
+						diffReturnTillDate(Math.abs(current.getReturnTillDate())).
+						build();
+			}
+			
+			diffEntries.add(diffEntry);
+		}
+		LOG.info("diffEntries size "+diffEntries.size());
+		return diffEntries;
 	}
 
 

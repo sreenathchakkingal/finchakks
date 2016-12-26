@@ -18,12 +18,4 @@
 		<schedule>every day 20:30</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>	
-	
-	<!-- <cron>
-		<url>/refreshAll</url>
-		<description>refreshAll</description>
-		<schedule>every day 21:00</schedule>
-		<timezone>Asia/Calcutta</timezone>
-	</cron>	
-	 -->
 </cronentries>
