@@ -308,7 +308,9 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				LOG.info("inserted diffEntries after: "+new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class).getEntries().size());
 				
 				final JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
-				profitAndLossOperations.deleteAndInsertEntries(FastList.newListWith(profitAndLoss));
+				final ProfitAndLossDbObject prevProfitAndLoss = profitAndLossOperations.getNullOrOneEntry();
+				final ProfitAndLossDbObject profitAndLossDbObject = ConverterUtil.convertToProfitAndLossObject(prevProfitAndLoss, profitAndLoss);
+				profitAndLossOperations.deleteAndInsertEntries(FastList.newListWith(profitAndLossDbObject));
 				LOG.info("inserted profitAndLossOperations");
 				
 				final JdoDbOperations<StockExceptionDbObject> exceptionStocksOperations = new JdoDbOperations<StockExceptionDbObject>(StockExceptionDbObject.class);

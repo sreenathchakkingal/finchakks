@@ -12,6 +12,7 @@ import com.finanalyzer.domain.StockExchange;
 import com.finanalyzer.domain.StockRatingValue;
 import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.builder.NDaysHistoryFlattenedDbObjectBuilder;
+import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.builder.UnrealizedDetailDbObjectBuilder;
 import com.finanalyzer.domain.builder.UnrealizedSummaryDbObjectBuilder;
 import com.finanalyzer.domain.builder.UnrealizedSummaryDiffDbObjectBuilder;
@@ -19,6 +20,7 @@ import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.DummyStockRatingValue;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
+import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
@@ -225,14 +227,6 @@ public class ConverterUtil {
 			
 			ratingObjects.add(ratingObjectForUi);
 		}
-//		
-//		
-//		for(Map.Entry<String, StockRatingValuesEnum> eachEntry : ratingNameToValue.entrySet())
-//		{
-//			ratingObjectForUi = new RatingObjectForUi(eachEntry.getKey(), eachEntry.getValue().getDescription());
-//			ratingObjects.add(ratingObjectForUi);
-//		}
-//		
 		return ratingObjects;
 	}
 
@@ -266,11 +260,11 @@ public class ConverterUtil {
 				buyDate = DateUtil.convertToStandardFormat("dd-MM-yyyy",invoiceDate);
 			}
 			unrealizedDbObjects.add(new UnrealizedDbObject(name, buyDate, buyPrice, buyQuantity));
-//			LOG.info("collecting stock: "+name+" for insertion");
 		}
 		return unrealizedDbObjects;
 	}
 
+	
 	public static List<UnrealizedSummaryDiffDbObject> convertToSummaryDbObjectDiff(
 			List<UnrealizedSummaryDbObject> currentEntries,List<UnrealizedSummaryDbObject> prevDayEntries) 
 	{
@@ -311,9 +305,30 @@ public class ConverterUtil {
 			
 			diffEntries.add(diffEntry);
 		}
-		LOG.info("diffEntries size "+diffEntries.size());
 		return diffEntries;
 	}
 
+
+	public static ProfitAndLossDbObject convertToProfitAndLossObject(ProfitAndLossDbObject prevProfitAndLossDbObject,
+			ProfitAndLossDbObject profitAndLoss) 
+	{
+		final ProfitAndLossBuilder profitAndLossBuilder = new ProfitAndLossBuilder()
+		.averageReturn(profitAndLoss.getAverageReturn())
+		.totalInvestment(profitAndLoss.getTotalInvestment())
+		.totalReturn(profitAndLoss.getTotalReturn())
+		.totalReturnIfBank(profitAndLoss.getTotalReturnIfBank())
+		.totalReturnVsIfBank(profitAndLoss.getTotalReturnVsIfBank());
+		
+		if(prevProfitAndLossDbObject!=null)
+		{
+			profitAndLossBuilder.prevAverageReturn(prevProfitAndLossDbObject.getAverageReturn())
+			.prevTotalReturn(prevProfitAndLossDbObject.getTotalReturn())
+			.prevTotalReturnVsIfBank(prevProfitAndLossDbObject.getTotalReturnVsIfBank());
+		}
+		return profitAndLossBuilder
+		.diffInCurrentAndPrevAverageReturn()
+		.diffInCurrentAndPrevTotalReturn().build();
+		
+	}
 
 }

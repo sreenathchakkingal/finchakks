@@ -12,6 +12,12 @@ public class ProfitAndLossBuilder {
 		return this;
 	}
 	
+	public ProfitAndLossBuilder prevAverageReturn(float prevAverageReturn) 
+	{
+		this.profitAndLoss.setPrevAverageReturn(prevAverageReturn);
+		return this;
+	}
+	
 	public ProfitAndLossBuilder totalInvestment(float totalInvestment) 
 	{
 		this.profitAndLoss.setTotalInvestment(totalInvestment);
@@ -24,6 +30,13 @@ public class ProfitAndLossBuilder {
 		return this;
 	}
 	
+	public ProfitAndLossBuilder prevTotalReturn(float prevTotalReturn) 
+	{
+		this.profitAndLoss.setPrevTotalReturn(prevTotalReturn);
+		return this;
+	}
+	
+	
 	public ProfitAndLossBuilder totalReturnIfBank(float totalReturnIfBank) 
 	{
 		this.profitAndLoss.setTotalReturnIfBank(totalReturnIfBank);
@@ -35,10 +48,29 @@ public class ProfitAndLossBuilder {
 		this.profitAndLoss.setTotalReturnVsIfBank(totalReturnVsIfBank);
 		return this;
 	}
-	  
+	
+	public ProfitAndLossBuilder prevTotalReturnVsIfBank(float prevTotalReturnVsIfBank) 
+	{
+		this.profitAndLoss.setPrevTotalReturnVsIfBank(prevTotalReturnVsIfBank);
+		return this;
+	}
+	
+	public ProfitAndLossBuilder diffInCurrentAndPrevAverageReturn() {
+		this.profitAndLoss.setDiffInCurrentAndPrevAverageReturn(
+				this.profitAndLoss.getAverageReturn()-this.profitAndLoss.getPrevAverageReturn()
+				);
+		return this;
+	}
+	
+	public ProfitAndLossBuilder diffInCurrentAndPrevTotalReturn() {
+		this.profitAndLoss.setDiffInCurrentAndPrevTotalReturn(
+				this.profitAndLoss.getTotalReturn()-this.profitAndLoss.getPrevTotalReturn()
+				);
+		return this;
+	}
+	
 	public ProfitAndLossDbObject build() 
 	{
 		return this.profitAndLoss;
 	}
-	  
 }

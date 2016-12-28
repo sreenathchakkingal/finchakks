@@ -8,6 +8,9 @@ public class ProfitAndLossDbObject {
 	
 	@Persistent
 	private float averageReturn;
+
+	@Persistent
+	private float prevAverageReturn;
 	
 	@Persistent
 	private float totalInvestment;
@@ -16,10 +19,22 @@ public class ProfitAndLossDbObject {
 	private float totalReturn;
 	
 	@Persistent
+	private float prevTotalReturn;
+
+	@Persistent
 	private float totalReturnIfBank;
 	
 	@Persistent
 	private float totalReturnVsIfBank;
+	
+	@Persistent
+	private float prevTotalReturnVsIfBank;
+	
+	@Persistent
+	private float diffInCurrentAndPrevAverageReturn;
+	
+	@Persistent
+	private float diffInCurrentAndPrevTotalReturn;
 	
 	public float getAverageReturn() {
 		return averageReturn;
@@ -60,5 +75,47 @@ public class ProfitAndLossDbObject {
 	public void setTotalReturnVsIfBank(float totalReturnVsIfBank) {
 		this.totalReturnVsIfBank = totalReturnVsIfBank;
 	}
-	
+
+	public float getPrevAverageReturn() {
+		return prevAverageReturn;
+	}
+
+	public void setPrevAverageReturn(float prevAverageReturn) {
+		this.prevAverageReturn = prevAverageReturn;
+	}
+
+	public float getPrevTotalReturn() {
+		return prevTotalReturn;
+	}
+
+	public void setPrevTotalReturn(float prevTotalReturn) {
+		this.prevTotalReturn = prevTotalReturn;
+	}
+
+	public float getPrevTotalReturnVsIfBank() {
+		return prevTotalReturnVsIfBank;
+	}
+
+	public void setPrevTotalReturnVsIfBank(float prevTotalReturnVsIfBank) {
+		this.prevTotalReturnVsIfBank = prevTotalReturnVsIfBank;
+	}
+
+	public float getDiffInCurrentAndPrevAverageReturn() {
+		return diffInCurrentAndPrevAverageReturn;
+	}
+
+	public void setDiffInCurrentAndPrevAverageReturn(
+			float diffInCurrentAndPrevAverageReturn) {
+		this.diffInCurrentAndPrevAverageReturn = diffInCurrentAndPrevAverageReturn;
+	}
+
+	public float getDiffInCurrentAndPrevTotalReturn() {
+		return diffInCurrentAndPrevTotalReturn;
+	}
+
+	public void setDiffInCurrentAndPrevTotalReturn(
+			float diffInCurrentAndPrevTotalReturn) {
+		this.diffInCurrentAndPrevTotalReturn = diffInCurrentAndPrevTotalReturn;
+	}
+
 }

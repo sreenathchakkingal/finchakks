@@ -238,7 +238,6 @@ public class PnLProcessor implements Processor<Pair< List<Stock>, List<StockExce
 		
 	}
 	
-	
 	private List<String> getStockNamesWithBonus(final List<Stock> stocks) {
 		List<String> stockNamesWithBonus = FastList.newList();
 		Iterate.collectIf(stocks, IS_ZERO_BUY_PRICE, Stock.STOCKNAME_SELECTOR, stockNamesWithBonus);

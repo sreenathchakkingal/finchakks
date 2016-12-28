@@ -48997,6 +48997,16 @@
 	              React.createElement(
 	                'th',
 	                null,
+	                'Prev Return(%)'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Diff'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
 	                'Investment'
 	              ),
 	              React.createElement(
@@ -49007,12 +49017,22 @@
 	              React.createElement(
 	                'th',
 	                null,
-	                'Return(Bank)'
+	                'Prev Return'
 	              ),
 	              React.createElement(
 	                'th',
 	                null,
 	                'Diff'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Return(Bank)'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Diff compared to Bank'
 	              )
 	            )
 	          ),
@@ -49030,12 +49050,32 @@
 	              React.createElement(
 	                'td',
 	                null,
+	                formatter.convertToPercent(stockData.prevAverageReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.convertToPercent(stockData.diffInCurrentAndPrevAverageReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
 	                formatter.moneyFormat(stockData.totalInvestment)
 	              ),
 	              React.createElement(
 	                'td',
 	                null,
 	                formatter.moneyFormat(stockData.totalReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.moneyFormat(stockData.prevTotalReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
+	                formatter.moneyFormat(stockData.diffInCurrentAndPrevTotalReturn)
 	              ),
 	              React.createElement(
 	                'td',
@@ -49059,8 +49099,12 @@
 	  isLoading: PropTypes.bool.isRequired,
 	  stocksInfo: PropTypes.shape({
 	    averageReturn: PropTypes.number.isRequired,
+	    prevAverageReturn: PropTypes.number.isRequired,
+	    diffInCurrentAndPrevAverageReturn: PropTypes.number.isRequired,
 	    totalInvestment: PropTypes.number.isRequired,
 	    totalReturn: PropTypes.number.isRequired,
+	    prevTotalReturn: PropTypes.number.isRequired,
+	    diffInCurrentAndPrevTotalReturn: PropTypes.number.isRequired,
 	    totalInvestment: PropTypes.number.isRequired,
 	    totalReturnIfBank: PropTypes.number.isRequired,
 	    totalReturnVsIfBank: PropTypes.number.isRequired

@@ -10,7 +10,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.gs.collections.api.tuple.Pair;
-
+//used only in angular
 @Api(name = "unrealizedDetailsControllerEndPoint", version = "v1")
 public class UnrealizedDetailsControllerEndPoint {
 	
