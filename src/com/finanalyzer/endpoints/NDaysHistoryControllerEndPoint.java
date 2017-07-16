@@ -3,26 +3,16 @@ package com.finanalyzer.endpoints;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
-import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
-import com.finanalyzer.domain.jdo.StockExceptionDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
-import com.finanalyzer.processors.Processor;
 import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
-import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.ConverterUtil;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
-import com.google.api.server.spi.config.Nullable;
-import com.gs.collections.api.tuple.Pair;
-import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "nDaysHistoryControllerEndPoint", version = "v1")
 public class NDaysHistoryControllerEndPoint {

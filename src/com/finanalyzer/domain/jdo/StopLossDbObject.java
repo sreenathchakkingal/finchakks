@@ -1,11 +1,13 @@
 package com.finanalyzer.domain.jdo;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 
 @PersistenceCapable
-public class StopLossDbObject {
+public class StopLossDbObject implements Serializable {
 
 	public static final float DATE_DIFF_TOLERANCE = 0.0005f;
 	public static final float PRICE_DIFF_TOLERANCE = 0.1f;

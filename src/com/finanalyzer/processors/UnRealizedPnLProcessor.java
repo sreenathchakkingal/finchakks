@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItemIterator;
-import org.junit.internal.runners.model.EachTestNotifier;
 
 import com.finanalyzer.api.StockQuandlApiAdapter;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.builder.StockBuilder;
-import com.finanalyzer.domain.builder.UnrealizedSummaryDiffDbObjectBuilder;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.domain.jdo.StockExceptionDbObject;
@@ -21,8 +19,8 @@ import com.finanalyzer.domain.jdo.UnrealizedDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDiffDbObject;
-import com.finanalyzer.util.ConverterUtil;
 import com.finanalyzer.util.CalculatorUtil;
+import com.finanalyzer.util.ConverterUtil;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
@@ -95,6 +93,9 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 
 	@Override
 	public Pair<List<Stock>,List<StockExceptionDbObject>> execute() {
+		
+		LOG.info("in processor.execute()");
+		
 		List<Stock> stocks = FastList.newList();
 		Stock stock;
 
@@ -288,8 +289,10 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 																		FastList.newListWith(eachStock.getStockName()),"businessDate desc");
 			}
 			
-			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss, List<StockExceptionDbObject> exceptionStocks) 
+			public void persistResults(List<Stock> stocksDetail, List<Stock> stocksSummary, ProfitAndLossDbObject profitAndLoss,
+					List<StockExceptionDbObject> exceptionStocks) 
 			{
+				LOG.info("in persistResults. stocksDetail: "+stocksDetail.size()+" stocksSummary: "+stocksSummary.size());
 				final List<UnrealizedDetailDbObject> unrealizedDetailDbObjects = ConverterUtil.stockToUnrealizedDetailDbObject(stocksDetail);
 				final JdoDbOperations<UnrealizedDetailDbObject> dbDetailOperations = new JdoDbOperations<UnrealizedDetailDbObject>(UnrealizedDetailDbObject.class);
 				dbDetailOperations.deleteAndInsertEntries(unrealizedDetailDbObjects);

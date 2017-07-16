@@ -5,22 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mortbay.log.Log;
-
 import com.finanalyzer.domain.DateValueObject;
 import com.finanalyzer.domain.Stock;
 import com.finanalyzer.domain.StockExchange;
-import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.StringUtil;
-import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.procedure.Procedure;
-import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.api.collection.MutableCollection;
 import com.gs.collections.api.multimap.MutableMultimap;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
-import com.gs.collections.impl.tuple.Tuples;
 import com.gs.collections.impl.utility.Iterate;
 
 public class StockQuandlApiAdapter

@@ -2,9 +2,7 @@ package com.finanalyzer.api;
 
 import java.util.Set;
 
-import com.finanalyzer.api.SimpleQuery.Collapse;
 import com.finanalyzer.domain.StockExchange;
-import com.finanalyzer.util.DateUtil;
 
 public class QuandlApi
 {

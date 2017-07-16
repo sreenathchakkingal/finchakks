@@ -1,7 +1,6 @@
 package com.finanalyzer.servlet;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.finanalyzer.domain.AutoCompleteData;
 import com.finanalyzer.domain.StockRatingValuesEnum;
-import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 

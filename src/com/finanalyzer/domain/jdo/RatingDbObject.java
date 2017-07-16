@@ -1,10 +1,12 @@
 package com.finanalyzer.domain.jdo;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 @PersistenceCapable
-public class RatingDbObject {
+public class RatingDbObject implements Serializable{
 
 	@Persistent
 	private String ratingName;

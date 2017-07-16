@@ -1,9 +1,9 @@
 package com.finanalyzer.db.jdo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -11,35 +11,35 @@ import javax.jdo.Query;
 
 import com.finanalyzer.db.RatingDb;
 import com.finanalyzer.db.StockIdConverstionUtil;
-import com.finanalyzer.db.StockRatingsDb;
 import com.finanalyzer.domain.MappingStockId;
-import com.finanalyzer.domain.Stock;
-import com.finanalyzer.domain.StockExchange;
-import com.finanalyzer.domain.StockRatingValue;
-import com.finanalyzer.domain.StockRatingValuesEnum;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.domain.jdo.RatingDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDbObject;
-import com.finanalyzer.processors.UnRealizedPnLProcessor;
 import com.finanalyzer.util.ConverterUtil;
 import com.finanalyzer.util.DateUtil;
 import com.finanalyzer.util.ReaderUtil;
 import com.finanalyzer.util.StringUtil;
 import com.google.appengine.api.datastore.Entity;
-import com.gs.collections.api.block.function.Function;
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.set.mutable.UnifiedSet;
 
 public class JdoDbOperations<T> {
 	
-	private static Logger LOG =  Logger.getLogger(JdoDbOperations.class.getName());
+	private static final Logger LOG =  Logger.getLogger(JdoDbOperations.class.getName());
+	private static final MemcacheService SYNC_CACHE = MemcacheServiceFactory.getMemcacheService();
+	
+	private final boolean isCachingEnabled = true;
+	private final String cacheName;
 	
 	private Class<T> dbObjectClass;
 	
 	public JdoDbOperations(Class<T> dbObjectClass)
 	{
 		this.dbObjectClass=dbObjectClass;
+		this.cacheName = this.dbObjectClass.getName()+DateUtil.todaysDate();
+		SYNC_CACHE.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
 	}
 	
 	public T getNullOrOneEntry()
@@ -61,7 +61,7 @@ public class JdoDbOperations<T> {
 	{
 		return this.getEntries(null, null, null);
 	}
-	
+
 	public List<T> getEntries(String sortBy)
 	{
 		return getEntries(null, null, sortBy);
@@ -82,8 +82,6 @@ public class JdoDbOperations<T> {
 		throw new RuntimeException("fetched zero or more than one record "+entries.size());
 	}
 	
-
-	
 	public T getNullOrOneEntry(String field, List<String> values)
 	{
 		final List<T> entries = getEntries(field, values);
@@ -103,28 +101,52 @@ public class JdoDbOperations<T> {
 	{
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query q = null;
-		try
-		{
-			if(field==null)
+		List<T> entries;
+		
+		try {
+			if (field == null) 
 			{
 				q = pm.newQuery(this.dbObjectClass);
-			}
-			else
+			} 
+			else 
 			{
-				q = pm.newQuery(this.dbObjectClass, ":p.contains("+field+")");
+				q = pm.newQuery(this.dbObjectClass, ":p.contains(" + field
+						+ ")");
 			}
-			if(sortBy!=null)
+			if (sortBy != null) 
 			{
-				q.setOrdering(sortBy);	
+				q.setOrdering(sortBy);
 			}
-			if(values==null)
+			
+			if (isCachingEnabled) 
 			{
-				return (List<T>)q.execute();	
+				String cacheNameAppendedWithValues = values == null ? this.cacheName : this.cacheName+values.toString() ;
+				entries = (List<T>) SYNC_CACHE.get(cacheNameAppendedWithValues);
+				
+				if (entries == null) 
+				{
+					LOG.info("no entries found in cache: "+cacheNameAppendedWithValues);
+					entries = values == null ? (List<T>) q.execute() : (List<T>) q.execute(values);
+					List<T> tempList = new ArrayList();
+					tempList.addAll(entries);
+					LOG.info("putting "+entries.size()+" entries in cache: "+cacheNameAppendedWithValues);
+					SYNC_CACHE.put(cacheNameAppendedWithValues, tempList);
+					LOG.info(entries.size()+" entries put into cache: "+cacheNameAppendedWithValues);
+				}
+				else
+				{
+					LOG.info("fetched: "+entries.size()+" from cache: "+this.cacheName);	
+				}
+			} 
+			else 
+			{
+				LOG.info("caching disabled");
+				entries = values == null ? (List<T>) q.execute() : (List<T>) q.execute(values);
 			}
-			return (List<T>)q.execute(values);
-		}
-		finally
-		{
+			
+			return entries;
+
+		} finally {
 			pm.close();
 		}
 	}
@@ -180,6 +202,15 @@ public class JdoDbOperations<T> {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try
 		{
+			if(isCachingEnabled)
+			{
+				SYNC_CACHE.put(this.cacheName, dbObjects);
+				LOG.info("inserted "+dbObjects.size()+" into to cache: "+this.cacheName);
+			}
+			else
+			{
+				LOG.info("caching disabled");
+			}
 			return pm.makePersistentAll(dbObjects);
 		}
 		finally

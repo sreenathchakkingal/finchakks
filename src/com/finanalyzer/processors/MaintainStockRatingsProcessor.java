@@ -6,8 +6,6 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.finanalyzer.db.RatingDb;
-import com.finanalyzer.db.StockRatingsDb;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.ActionEnum;

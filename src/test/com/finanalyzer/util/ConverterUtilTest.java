@@ -1,9 +1,10 @@
 package test.com.finanalyzer.util;
 
+import junit.framework.TestCase;
+
 import com.finanalyzer.domain.builder.ProfitAndLossBuilder;
 import com.finanalyzer.domain.jdo.ProfitAndLossDbObject;
 import com.finanalyzer.util.ConverterUtil;
-import junit.framework.TestCase;
 
 public class ConverterUtilTest extends TestCase 
 {

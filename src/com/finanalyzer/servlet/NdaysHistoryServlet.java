@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.finanalyzer.domain.NDaysPrice;
-import com.finanalyzer.domain.Stock;
 import com.finanalyzer.processors.Processor;
-import com.finanalyzer.processors.QuandlNDaysPricesProcessor;
 import com.finanalyzer.processors.YahooNDaysPricesProcessor;
 
 @SuppressWarnings("serial")

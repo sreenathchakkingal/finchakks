@@ -26,11 +26,6 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.gs.collections.impl.list.mutable.FastList;
 
 @Api(name = "maintainanceControllerEndPoint", version = "v1")
@@ -41,9 +36,12 @@ public class MaintainanceControllerEndPoint {
 	@ApiMethod(name = "getModifiableStockAttributes", path="getModifiableStockAttributes")
 	public List<ModifiableStockAttributes> getModifiableStockAttributes(@Named("stockName") String stockName)
 	{
+		LOG.info("in getModifiableStockAttributes with param: "+stockName);
 		String stockNameUpperCase= stockName.toUpperCase();
 		JdoDbOperations<AllScripsDbObject> allScripsDbOperations = new JdoDbOperations<>(AllScripsDbObject.class);
+		LOG.info("invoking allScripsDbOperations");
 		final AllScripsDbObject allScripsDbObject = allScripsDbOperations.getOneEntry("nseId", FastList.newListWith(stockNameUpperCase));
+		LOG.info("fetched  allScripsDbObject from Db");
 		
 		JdoDbOperations<StopLossDbObject> stopLossDbOperations = new JdoDbOperations<>(StopLossDbObject.class);
 		final List<StopLossDbObject> stopLossEntries = stopLossDbOperations.getEntries("stockName", FastList.newListWith(stockNameUpperCase), "businessDate desc");

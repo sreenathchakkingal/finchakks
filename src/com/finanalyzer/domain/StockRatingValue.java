@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class StockRatingValue  

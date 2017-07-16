@@ -6,13 +6,10 @@ import java.util.List;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.finanalyzer.db.StockIdConverstionUtil;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
-import com.finanalyzer.domain.MappingStockId;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.finanalyzer.util.StringUtil;
-import com.gs.collections.api.block.function.Function;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class MaintainMappingProcessor implements Processor<List<AllScripsDbObject>>

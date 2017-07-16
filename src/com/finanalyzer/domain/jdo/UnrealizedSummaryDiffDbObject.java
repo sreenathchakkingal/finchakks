@@ -1,6 +1,6 @@
 package com.finanalyzer.domain.jdo;
 
-import java.util.Comparator;
+import java.io.Serializable;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -8,7 +8,7 @@ import javax.jdo.annotations.Persistent;
 import com.gs.collections.api.block.function.Function;
 
 @PersistenceCapable
-public class UnrealizedSummaryDiffDbObject {
+public class UnrealizedSummaryDiffDbObject implements Serializable{
 	
 	public static final Function<UnrealizedSummaryDiffDbObject, Float> RETURN_DIFF_EXTRACTOR = new Function<UnrealizedSummaryDiffDbObject, Float>() {
 

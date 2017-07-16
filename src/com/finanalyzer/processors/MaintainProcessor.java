@@ -1,6 +1,5 @@
 package com.finanalyzer.processors;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -9,7 +8,6 @@ import javax.jdo.Query;
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
-import com.gs.collections.api.block.predicate.Predicate;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.utility.Iterate;
 

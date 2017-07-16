@@ -1,10 +1,9 @@
 package test.com.finanalyzer.endpoints;
 
+import junit.framework.TestCase;
+
 import com.finanalyzer.domain.CompoundInterest;
 import com.finanalyzer.endpoints.CalculatorEndPoint;
-import com.finanalyzer.util.CalculatorUtil;
-
-import junit.framework.TestCase;
 
 public class CalculatorEndPointTest extends TestCase{
 

@@ -4,18 +4,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
-import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.AutoCompleteData;
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
-import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 

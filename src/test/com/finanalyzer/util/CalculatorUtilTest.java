@@ -1,8 +1,8 @@
 package test.com.finanalyzer.util;
 
-import com.finanalyzer.util.CalculatorUtil;
-
 import junit.framework.TestCase;
+
+import com.finanalyzer.util.CalculatorUtil;
 
 public class CalculatorUtilTest extends TestCase{
 

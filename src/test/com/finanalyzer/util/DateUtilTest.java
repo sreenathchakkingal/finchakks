@@ -1,9 +1,9 @@
 package test.com.finanalyzer.util;
 
+import junit.framework.TestCase;
+
 import com.finanalyzer.domain.jdo.StopLossDbObject;
 import com.finanalyzer.util.DateUtil;
-
-import junit.framework.TestCase;
 
 public class DateUtilTest extends TestCase {
 	

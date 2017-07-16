@@ -1,7 +1,6 @@
 package com.finanalyzer.domain.builder;
 
 import com.finanalyzer.domain.jdo.NDaysHistoryFlattenedDbObject;
-import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 
 public class NDaysHistoryFlattenedDbObjectBuilder {
 	

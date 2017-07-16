@@ -1,14 +1,14 @@
 package com.finanalyzer.domain.jdo;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
+import java.io.Serializable;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
 import com.gs.collections.api.block.predicate.Predicate;
 
 @PersistenceCapable
-public class UnrealizedSummaryDbObject {
+public class UnrealizedSummaryDbObject implements Serializable{
 
 //	@PrimaryKey
 //	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

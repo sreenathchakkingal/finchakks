@@ -1,8 +1,6 @@
 package com.finanalyzer.servlet;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -19,14 +17,6 @@ import com.finanalyzer.db.jdo.PMF;
 import com.finanalyzer.domain.jdo.NDaysHistoryDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedDetailDbObject;
 import com.finanalyzer.domain.jdo.UnrealizedSummaryDbObject;
-import com.finanalyzer.endpoints.NDaysHistoryControllerEndPoint;
-import com.finanalyzer.endpoints.UnrealizedDetailsControllerEndPoint;
-import com.finanalyzer.util.DateUtil;
-import com.gs.collections.api.tuple.Pair;
-import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
-import com.gs.collections.impl.tuple.Tuples;
-import com.gs.collections.impl.utility.Iterate;
 
 
 @Controller  

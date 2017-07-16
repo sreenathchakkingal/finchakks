@@ -13,7 +13,6 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.utility.Iterate;
 
 @Api(name = "allScripsControllerEndPoint", version = "v1")
 public class AllScripsControllerEndPoint {

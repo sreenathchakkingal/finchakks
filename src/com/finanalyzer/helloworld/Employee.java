@@ -1,6 +1,5 @@
 package com.finanalyzer.helloworld;
 
-import java.util.ArrayList;
 
 public class Employee {
 	private boolean isGood;

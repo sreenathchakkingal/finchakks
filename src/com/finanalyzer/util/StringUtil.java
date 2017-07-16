@@ -2,8 +2,6 @@ package com.finanalyzer.util;
 
 import java.util.List;
 
-import com.gs.collections.impl.list.mutable.FastList;
-
 public class StringUtil {
 
 	public static boolean isInvalidValue(String response) {

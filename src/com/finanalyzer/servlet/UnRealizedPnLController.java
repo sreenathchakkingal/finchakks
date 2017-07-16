@@ -54,11 +54,13 @@ public class UnRealizedPnLController extends PnlController
 			{
 				e.printStackTrace();
 			}
-
+			
 			UnRealizedPnLProcessor processor = new UnRealizedPnLProcessor(fileItemIterator);
 
+			LOG.info("before processor.execute()");
 			Pair<List<Stock>,List<StockExceptionDbObject>> nonExceptionAndExceptionStocks = processor.execute();
-
+			LOG.info("after processor.execute()");
+			
 			List<Stock> stocks = nonExceptionAndExceptionStocks.getOne();
 			List<StockExceptionDbObject> exceptionStocks  = nonExceptionAndExceptionStocks.getTwo();
 			
@@ -82,6 +84,7 @@ public class UnRealizedPnLController extends PnlController
 			result.put("stockInvestmentChart", requestedStockInvestmentChart);
 			result.put("profitAndLoss", profitAndLoss);
 			
+			LOG.info("invoking persistResults");
 			processor.persistResults(stocks, stocksSummary, profitAndLoss, exceptionStocks);
 			
 			LOG.info("out unRealizedPnL");

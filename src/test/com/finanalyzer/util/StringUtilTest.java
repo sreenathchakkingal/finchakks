@@ -1,9 +1,9 @@
 package test.com.finanalyzer.util;
 
 
-import com.finanalyzer.util.StringUtil;
-
 import junit.framework.TestCase;
+
+import com.finanalyzer.util.StringUtil;
 
 public class StringUtilTest extends TestCase{
 	

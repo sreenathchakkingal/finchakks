@@ -1,7 +1,8 @@
 package test.com.finanalyzer.api;
 
-import com.finanalyzer.api.QuandlApi;
 import junit.framework.TestCase;
+
+import com.finanalyzer.api.QuandlApi;
 
 public class QuandlApiTest  extends TestCase{
 	

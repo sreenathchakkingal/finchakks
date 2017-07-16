@@ -1,6 +1,5 @@
 package com.finanalyzer.util;
 
-import java.util.Date;
 
 /*
 Regular Compound Interest Formula

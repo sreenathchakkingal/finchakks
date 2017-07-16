@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.finanalyzer.domain.StockRatingValuesEnum;
-import com.finanalyzer.util.StringUtil;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -42,7 +40,7 @@ public class RatingDb extends CoreDb<String, String[]> {
 	@Override
 	public Query getCascadeQueryForDeletion(String[]  ratingsToBeRemoved) { //default implementation 
 		StockRatingsDb db = new StockRatingsDb();
-		Filter selectedEntities = new FilterPredicate(db.RATING_NAME, FilterOperator.IN, Arrays.asList(ratingsToBeRemoved));
+		Filter selectedEntities = new FilterPredicate(RATING_NAME, FilterOperator.IN, Arrays.asList(ratingsToBeRemoved));
 		Query query = new Query(db.getTableName()).setFilter(selectedEntities);
 		return query;
 	}

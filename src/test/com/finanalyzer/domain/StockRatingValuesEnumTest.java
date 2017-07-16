@@ -1,8 +1,8 @@
 package test.com.finanalyzer.domain;
 
-import com.finanalyzer.domain.StockRatingValuesEnum;
-
 import junit.framework.TestCase;
+
+import com.finanalyzer.domain.StockRatingValuesEnum;
 
 public class StockRatingValuesEnumTest extends TestCase{
 	

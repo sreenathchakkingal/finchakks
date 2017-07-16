@@ -1,5 +1,6 @@
 package com.finanalyzer.domain.jdo;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -13,14 +14,12 @@ import com.finanalyzer.util.StringUtil;
 import com.google.appengine.api.datastore.Entity;
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.predicate.Predicate;
-import com.gs.collections.api.block.procedure.Procedure;
 import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.impl.list.mutable.FastList;
-import com.gs.collections.impl.list.mutable.ListAdapter;
 import com.gs.collections.impl.map.mutable.UnifiedMap;
 
 @PersistenceCapable
-public class AllScripsDbObject {
+public class AllScripsDbObject implements Serializable{
 
 	@Persistent
 	private String nseId;

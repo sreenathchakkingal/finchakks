@@ -1,13 +1,13 @@
 package com.finanalyzer.domain.jdo;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
-import com.gs.collections.api.block.predicate.Predicate;
-
 
 @PersistenceCapable
-public class UnrealizedDetailDbObject {
+public class UnrealizedDetailDbObject implements Serializable{
 
 	@Persistent
 	private String stockName;

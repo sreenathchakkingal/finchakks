@@ -2,11 +2,11 @@ package test.com.finanalyzer.domain.jdo;
 
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import com.finanalyzer.domain.jdo.AllScripsDbObject;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.test.Verify;
-
-import junit.framework.TestCase;
 
 public class AllScripsDbObjectTest extends TestCase{
 	

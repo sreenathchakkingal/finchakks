@@ -1,6 +1,6 @@
 package com.finanalyzer.domain.jdo;
 
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +8,8 @@ import java.util.Map;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
-import com.gs.collections.impl.list.mutable.FastList;
-
 @PersistenceCapable
-public class NDaysHistoryDbObject {
+public class NDaysHistoryDbObject implements Serializable{
 	
 	public static final Comparator<NDaysHistoryDbObject> SIMPLE_AVG_NET_GAINS_COMPARATOR = new Comparator<NDaysHistoryDbObject>()
 	{
