@@ -282,13 +282,14 @@ public class ConverterUtil {
 				if(current.getStockName().equals(prev.getStockName()))
 				{
 					isFoundInBoth=true;
-					final float absoluteDiff = Math.abs(current.getReturnTillDate()-prev.getReturnTillDate());
+					final float diff = current.getReturnTillDate()-prev.getReturnTillDate();
 					
 					diffEntry = new UnrealizedSummaryDiffDbObjectBuilder().
 							stockName(current.getStockName()).
 							currReturnTillDate(current.getReturnTillDate()).
 							prevReturnTillDate(prev.getReturnTillDate()).
-							diffReturnTillDate(absoluteDiff).
+							absoluteDiffReturnTillDate(Math.abs(diff)).
+							diffReturnTillDate(diff).
 							build();
 					break;
 				}

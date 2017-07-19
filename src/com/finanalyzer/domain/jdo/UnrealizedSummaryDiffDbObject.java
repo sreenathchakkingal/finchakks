@@ -13,9 +13,8 @@ public class UnrealizedSummaryDiffDbObject implements Serializable{
 	public static final Function<UnrealizedSummaryDiffDbObject, Float> RETURN_DIFF_EXTRACTOR = new Function<UnrealizedSummaryDiffDbObject, Float>() {
 
 		@Override
-		public Float valueOf(UnrealizedSummaryDiffDbObject arg0) {
-			// TODO Auto-generated method stub
-			return arg0.getDiffReturnTillDate();
+		public Float valueOf(UnrealizedSummaryDiffDbObject summaryDiffDbObject) {
+			return summaryDiffDbObject.getAbsoluteDiffReturnTillDate();
 		}
 	};
 	
@@ -31,6 +30,10 @@ public class UnrealizedSummaryDiffDbObject implements Serializable{
 	@Persistent
 	private float diffReturnTillDate;
 
+	@Persistent
+	private float absoluteDiffReturnTillDate;
+
+	
 	public String getStockName() {
 		return stockName;
 	}
@@ -62,8 +65,14 @@ public class UnrealizedSummaryDiffDbObject implements Serializable{
 	public void setDiffReturnTillDate(float diffReturnTillDate) {
 		this.diffReturnTillDate = diffReturnTillDate;
 	}
-	
-	
 
+	public float getAbsoluteDiffReturnTillDate() {
+		return absoluteDiffReturnTillDate;
+	}
+
+	public void setAbsoluteDiffReturnTillDate(float absoluteDiffReturnTillDate) {
+		this.absoluteDiffReturnTillDate = absoluteDiffReturnTillDate;
+	}
+	
 }
 

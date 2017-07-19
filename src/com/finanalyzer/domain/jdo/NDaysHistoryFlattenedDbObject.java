@@ -27,10 +27,19 @@ public class NDaysHistoryFlattenedDbObject implements Serializable{
 		}
 	};
 	
-	public static final Predicate<NDaysHistoryFlattenedDbObject> IS_LATEST_CLOSE_PRICE_MIN_OR_MAX_FILTER = new Predicate<NDaysHistoryFlattenedDbObject>() {
+	public static final Predicate<NDaysHistoryFlattenedDbObject> IS_LATEST_CLOSE_PRICE_MIN_OR_MAX_FILTER = 
+			new Predicate<NDaysHistoryFlattenedDbObject>() {
 		@Override
 		public boolean accept(NDaysHistoryFlattenedDbObject nDaysHistoryFlattenedDbObject) {
-			return nDaysHistoryFlattenedDbObject.isLatestClosePriceMinimum() || nDaysHistoryFlattenedDbObject.isLatestClosePriceMaximum();
+			
+			//pick stocks that has hit max and is invested
+			boolean isClosePriceCloseToMaxAndInvested = nDaysHistoryFlattenedDbObject.isLatestClosePriceMaximum() && 
+					nDaysHistoryFlattenedDbObject.getInvestmentRatio()>0.0f;
+					
+			//pick stocks that has hit max - does not care if we have invested or not. This could be an investment opportunity
+			boolean isClosePriceCloseToMin = nDaysHistoryFlattenedDbObject.isLatestClosePriceMinimum();
+
+			return  isClosePriceCloseToMin || isClosePriceCloseToMaxAndInvested;
 		}
 	};
 	

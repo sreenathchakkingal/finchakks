@@ -26,6 +26,11 @@ public class UnrealizedSummaryDiffDbObjectBuilder {
 		return this;
 	}
 	
+	public UnrealizedSummaryDiffDbObjectBuilder absoluteDiffReturnTillDate(float absoluteDiffReturnTillDate) {
+		this.unrealizedSummaryDiffDbObject.setAbsoluteDiffReturnTillDate(absoluteDiffReturnTillDate);
+		return this;
+	}
+	
 	public UnrealizedSummaryDiffDbObject build()
 	{
 	    return this.unrealizedSummaryDiffDbObject;

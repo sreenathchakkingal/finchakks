@@ -48949,7 +48949,7 @@
 	    return React.createElement(
 	      'div',
 	      null,
-	      React.createElement(PanelWrapper, { header: 'Summary Loading' })
+	      React.createElement(PanelWrapper, { header: 'Summary Loading...' })
 	    );
 	  } else {
 	    var stockData = props.stocksInfo;
@@ -49485,6 +49485,7 @@
 	var PropTypes = React.PropTypes;
 	var GriddleWrapper = __webpack_require__(616);
 	var PanelWrapper = __webpack_require__(612);
+	var sharedFunctions = __webpack_require__(312);
 
 	function puke(obj) {
 	  return React.createElement(
