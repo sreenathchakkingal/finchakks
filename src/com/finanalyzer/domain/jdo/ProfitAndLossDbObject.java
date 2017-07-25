@@ -38,6 +38,9 @@ public class ProfitAndLossDbObject implements Serializable{
 	@Persistent
 	private float diffInCurrentAndPrevTotalReturn;
 	
+	@Persistent
+	private String applicableDate;
+	
 	public float getAverageReturn() {
 		return averageReturn;
 	}
@@ -120,4 +123,12 @@ public class ProfitAndLossDbObject implements Serializable{
 		this.diffInCurrentAndPrevTotalReturn = diffInCurrentAndPrevTotalReturn;
 	}
 
+	public String getApplicableDate() {
+		return applicableDate;
+	}
+
+	public void setApplicableDate(String applicableDate) {
+		this.applicableDate = applicableDate;
+	}
+	
 }

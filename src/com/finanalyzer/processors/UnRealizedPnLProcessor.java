@@ -301,9 +301,22 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				final JdoDbOperations<UnrealizedSummaryDiffDbObject> dbDiffSummaryOperations = new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class);
 				final List<UnrealizedSummaryDbObject> currentDayUnrealizedSummaryDbObjects = ConverterUtil.stockToUnrealizedSummaryDbObject(stocksSummary);
 				final JdoDbOperations<UnrealizedSummaryDbObject> dbSummaryOperations = new JdoDbOperations<UnrealizedSummaryDbObject>(UnrealizedSummaryDbObject.class);
-				final List<UnrealizedSummaryDbObject> prevDayEntries = dbSummaryOperations.getEntries();
-				final List<UnrealizedSummaryDiffDbObject> diffEntries = ConverterUtil.convertToSummaryDbObjectDiff(currentDayUnrealizedSummaryDbObjects, prevDayEntries);
-			
+				final List<UnrealizedSummaryDbObject> persistedSummaryDbObject = dbSummaryOperations.getEntries();
+				List<UnrealizedSummaryDiffDbObject> diffEntries ;
+				//in case of two refreshes on the same day, preserve the prev date from UnrealizedSummaryDiffDbObject
+				if(DateUtil.todaysDate().equalsIgnoreCase(persistedSummaryDbObject.get(0).getApplicableDate()))
+				{
+					LOG.info("retaining prev values");
+					diffEntries = ConverterUtil.convertToSummaryDbObjectDiffRetainPrev(currentDayUnrealizedSummaryDbObjects, dbDiffSummaryOperations.getEntries());
+				}
+				else
+				{
+					LOG.info("refreshing prev values");
+					diffEntries = ConverterUtil.convertToSummaryDbObjectDiff(currentDayUnrealizedSummaryDbObjects, persistedSummaryDbObject);	
+				}
+				
+				LOG.info("computed diff Entries "+diffEntries.size());
+				
 				dbDiffSummaryOperations.deleteAndInsertEntries(diffEntries);
 				LOG.info("inserted diffEntries before: "+new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class).getEntries().size());
 				dbSummaryOperations.deleteAndInsertEntries(currentDayUnrealizedSummaryDbObjects);
@@ -311,7 +324,8 @@ public class UnRealizedPnLProcessor extends PnLProcessor
 				LOG.info("inserted diffEntries after: "+new JdoDbOperations<UnrealizedSummaryDiffDbObject>(UnrealizedSummaryDiffDbObject.class).getEntries().size());
 				
 				final JdoDbOperations<ProfitAndLossDbObject> profitAndLossOperations = new JdoDbOperations<ProfitAndLossDbObject>(ProfitAndLossDbObject.class);
-				final ProfitAndLossDbObject prevProfitAndLoss = profitAndLossOperations.getNullOrOneEntry();
+				final ProfitAndLossDbObject persistedProfitAndLoss = profitAndLossOperations.getNullOrOneEntry();
+				final ProfitAndLossDbObject prevProfitAndLoss = persistedProfitAndLoss.getApplicableDate()==DateUtil.todaysDate() ? null : persistedProfitAndLoss;
 				final ProfitAndLossDbObject profitAndLossDbObject = ConverterUtil.convertToProfitAndLossObject(prevProfitAndLoss, profitAndLoss);
 				profitAndLossOperations.deleteAndInsertEntries(FastList.newListWith(profitAndLossDbObject));
 				LOG.info("inserted profitAndLossOperations");

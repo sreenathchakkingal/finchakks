@@ -69,6 +69,11 @@ public class ProfitAndLossBuilder {
 		return this;
 	}
 	
+	public ProfitAndLossBuilder applicableDate(String applicableDate) {
+		this.profitAndLoss.setApplicableDate(applicableDate);
+		return this;
+	}
+	
 	public ProfitAndLossDbObject build() 
 	{
 		return this.profitAndLoss;

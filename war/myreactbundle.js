@@ -48897,7 +48897,7 @@
 	    // {
 	    console.log('invoking listprofitAndloss api');
 	    finchakksapi.listprofitAndloss().then(function (stocksInfo) {
-	      localStorage.setItem('listprofitAndloss.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	      // localStorage.setItem('listprofitAndloss.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
 	      this.setState({
 	        isLoading: false,
 	        stocksInfo: stocksInfo
@@ -48981,7 +48981,12 @@
 	              React.createElement(
 	                'th',
 	                null,
-	                'Diff'
+	                'Diff(%)'
+	              ),
+	              React.createElement(
+	                'th',
+	                null,
+	                'Diff(Amount)'
 	              ),
 	              React.createElement(
 	                'th',
@@ -48997,11 +49002,6 @@
 	                'th',
 	                null,
 	                'Prev Return'
-	              ),
-	              React.createElement(
-	                'th',
-	                null,
-	                'Diff'
 	              ),
 	              React.createElement(
 	                'th',
@@ -49039,6 +49039,11 @@
 	              React.createElement(
 	                'td',
 	                null,
+	                formatter.moneyFormat(stockData.diffInCurrentAndPrevTotalReturn)
+	              ),
+	              React.createElement(
+	                'td',
+	                null,
 	                formatter.moneyFormat(stockData.totalInvestment)
 	              ),
 	              React.createElement(
@@ -49050,11 +49055,6 @@
 	                'td',
 	                null,
 	                formatter.moneyFormat(stockData.prevTotalReturn)
-	              ),
-	              React.createElement(
-	                'td',
-	                null,
-	                formatter.moneyFormat(stockData.diffInCurrentAndPrevTotalReturn)
 	              ),
 	              React.createElement(
 	                'td',
@@ -49223,7 +49223,7 @@
 	    // {
 	    console.log('invoking listTopMovingStocks api');
 	    finchakksapi.listTopMovingStocks().then(function (stocksInfo) {
-	      localStorage.setItem('listTopMovingStocks.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
+	      // localStorage.setItem('listTopMovingStocks.stocksInfoCachedAsString', JSON.stringify(stocksInfo));
 	      this.setState({
 	        isLoading: false,
 	        stocksInfo: stocksInfo

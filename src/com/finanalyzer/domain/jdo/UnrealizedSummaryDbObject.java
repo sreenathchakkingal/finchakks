@@ -70,6 +70,9 @@ public class UnrealizedSummaryDbObject implements Serializable{
 
 	@Persistent
 	private boolean isTargetReached;
+
+	@Persistent
+	private String applicableDate;
 	
 	public static final Predicate<UnrealizedSummaryDbObject> IS_BLACKLISTED = new Predicate<UnrealizedSummaryDbObject>() {
 		
@@ -237,6 +240,14 @@ public class UnrealizedSummaryDbObject implements Serializable{
 
 	public void setTargetReached(boolean isTargetReached) {
 		this.isTargetReached = isTargetReached;
+	}
+
+	public String getApplicableDate() {
+		return applicableDate;
+	}
+
+	public void setApplicableDate(String applicableDate) {
+		this.applicableDate = applicableDate;
 	}
 
 //	public Long getId() {

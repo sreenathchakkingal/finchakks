@@ -95,8 +95,14 @@ public class UnrealizedSummaryDbObjectBuilder {
 		this.unrealizedSummaryDbObject.setAchieveByDate(achieveByDate);
 		return this;
 	}
+	
 	public UnrealizedSummaryDbObjectBuilder isTargetReached(boolean isTargetReached) {
 		this.unrealizedSummaryDbObject.setTargetReached(isTargetReached);
+		return this;
+	}
+	
+	public UnrealizedSummaryDbObjectBuilder applicableDate(String applicableDate) {
+		this.unrealizedSummaryDbObject.setApplicableDate(applicableDate);
 		return this;
 	}
 	

@@ -141,6 +141,7 @@ public class ConverterUtil {
 			.achieveAfterDate(stopLossDbObject==null ? null : stopLossDbObject.getAchieveAfterDate())
 			.achieveByDate(stopLossDbObject==null ? null : stopLossDbObject.getAchieveByDate())
 			.isTargetReached(stock.isReachedStopLossTarget())
+			.applicableDate(DateUtil.todaysDate())
 			.build();
 			
 			LOG.info("conversion complete for stock: "+stock.getStockName()+"to  UnrealizedSummaryDbObject");
@@ -269,7 +270,6 @@ public class ConverterUtil {
 			List<UnrealizedSummaryDbObject> currentEntries,List<UnrealizedSummaryDbObject> prevDayEntries) 
 	{
 		final List<UnrealizedSummaryDiffDbObject> diffEntries = FastList.newList();
-		final UnrealizedSummaryDiffDbObjectBuilder builder = new UnrealizedSummaryDiffDbObjectBuilder();
 		//abs diff both
 		boolean isFoundInBoth=false;
 		UnrealizedSummaryDiffDbObject diffEntry=null;
@@ -310,6 +310,52 @@ public class ConverterUtil {
 	}
 
 
+	public static List<UnrealizedSummaryDiffDbObject> convertToSummaryDbObjectDiffRetainPrev(
+			List<UnrealizedSummaryDbObject> currentEntries,
+			List<UnrealizedSummaryDiffDbObject> prevDiffEntries) 
+	{
+		final List<UnrealizedSummaryDiffDbObject> diffEntries = FastList.newList();
+
+		boolean isFoundInBoth=false;
+		UnrealizedSummaryDiffDbObject diffEntry=null;
+		
+		for(UnrealizedSummaryDbObject current : currentEntries)
+		{
+			isFoundInBoth=false;
+			for (UnrealizedSummaryDiffDbObject prev : prevDiffEntries)
+			{
+				if(current.getStockName().equals(prev.getStockName()))
+				{
+					isFoundInBoth=true;
+					final float diff = current.getReturnTillDate()-prev.getPrevReturnTillDate();
+					
+					diffEntry = new UnrealizedSummaryDiffDbObjectBuilder().
+							stockName(current.getStockName()).
+							currReturnTillDate(current.getReturnTillDate()).
+							prevReturnTillDate(prev.getPrevReturnTillDate()).
+							absoluteDiffReturnTillDate(Math.abs(diff)).
+							diffReturnTillDate(diff).
+							build();
+					break;
+				}
+			}
+			
+			if(!isFoundInBoth)
+			{
+				diffEntry = new UnrealizedSummaryDiffDbObjectBuilder().
+						stockName(current.getStockName()).
+						currReturnTillDate(current.getReturnTillDate()).
+						diffReturnTillDate(Math.abs(current.getReturnTillDate())).
+						build();
+			}
+			
+			diffEntries.add(diffEntry);
+		}
+		
+		return diffEntries;
+	}
+	
+	
 	public static ProfitAndLossDbObject convertToProfitAndLossObject(ProfitAndLossDbObject prevProfitAndLossDbObject,
 			ProfitAndLossDbObject profitAndLoss) 
 	{
@@ -331,5 +377,6 @@ public class ConverterUtil {
 		.diffInCurrentAndPrevTotalReturn().build();
 		
 	}
+
 
 }

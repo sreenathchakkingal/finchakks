@@ -86,7 +86,6 @@ public class DateUtil
 		return null;
 	}
 
-	//used only by yahoo - delete later.	
 	public static String getTodaysDate(String format)
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
