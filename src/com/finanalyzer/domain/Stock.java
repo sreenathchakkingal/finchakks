@@ -610,10 +610,6 @@ public class Stock
 		return this.maxDateValueObject;
 	}
 	
-	public void setMaxDateValueObject(DateValueObject maxDateValueObject) {
-		this.maxDateValueObject = maxDateValueObject;
-	}
-	
 	public float getMaxValue() {
 		return this.getMaxDateValueObject().getValue();
 	}

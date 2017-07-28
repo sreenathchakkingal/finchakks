@@ -3,19 +3,19 @@
  	<cron>
 		<url>/unRealizedPnL</url>
 		<description>unRealizedPnL</description>
-		<schedule>every day 20:00</schedule>
+		<schedule>every mon,tue,wed,thu,fri 20:00</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>
 	<cron>
 		<url>/nDaysHistory</url>
 		<description>nDaysHistory</description>
-		<schedule>every day 20:15</schedule>
+		<schedule>every mon,tue,wed,thu,fri 20:15</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>
 	<cron>
 		<url>/combineNDaysHistoryAndUnrealized</url>
 		<description>nDaysHistory</description>
-		<schedule>every day 20:30</schedule>
+		<schedule>every mon,tue,wed,thu,fri 20:30</schedule>
 		<timezone>Asia/Calcutta</timezone>
 	</cron>	
 </cronentries>
