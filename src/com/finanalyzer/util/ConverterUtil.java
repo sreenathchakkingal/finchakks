@@ -3,6 +3,7 @@ package com.finanalyzer.util;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import com.finanalyzer.db.jdo.JdoDbOperations;
 import com.finanalyzer.domain.ModifiableStockAttributes;
@@ -238,7 +239,8 @@ public class ConverterUtil {
 
 		for (String row : rawDataDFromMoneyControl)
 		{
-			String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(DELIMITER_IN_UNREALIZED_UPLOAD);
+			
+			String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row);
 
 			String name = ReaderUtil.parseStockName(stockAttributes[0]);
 			

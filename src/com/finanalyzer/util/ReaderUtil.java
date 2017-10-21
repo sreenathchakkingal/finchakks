@@ -6,13 +6,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 
+
+
+
 import com.finanalyzer.domain.DateValueObject;
+import com.finanalyzer.endpoints.MaintainanceControllerEndPoint;
 import com.gs.collections.impl.list.mutable.FastList;
 
 public class ReaderUtil
@@ -28,6 +33,8 @@ public class ReaderUtil
 	private static final int INDEX_OF_REPORTED_NET_PROFIT_IN_EXCELSHEET = 7;
 	private static final int INDEX_OF_DEBT_TO_EQUITY_IN_EXCELSHEET = 8;
 
+	private static final Logger LOG = Logger.getLogger(ReaderUtil.class.getName());
+	
 	public static List<String> convertToList(Object object, boolean isRemoveHeader, int numberOfTrailersToBeRemoved)
 	{
 		List<String> rows = convertToList(object);
@@ -176,20 +183,40 @@ public class ReaderUtil
 				: row.split(",")[INDEX_OF_DEBT_TO_EQUITY_IN_EXCELSHEET];
 	}
 
-	public static String removeCommanBetweenQuotes(String row)
+//	public static String removeCommanBetweenQuotes(String row)
+//	{
+//		StringBuffer resultString = new StringBuffer();
+//		try
+//		{
+//			Pattern regex = Pattern.compile("(.*)\"(.*),(.*)\"(.*)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+//			Matcher regexMatcher = regex.matcher(row);
+//			int counter=0;
+//			boolean isToBeReplace = regexMatcher.find();
+//			while (isToBeReplace)
+//			{
+//				regexMatcher.appendReplacement(resultString, "$1$2$3$4");
+//				row=resultString.toString();
+//				isToBeReplace=regex.matcher(resultString.toString()).find(); 
+//				System.out.println("counter: " + counter++ +" : "+isToBeReplace );
+//			}
+//			regexMatcher.appendTail(resultString);
+//		} catch (Exception ex)
+//		{
+//			ex.printStackTrace();
+//		}
+//		return resultString.toString();
+//	}
+	
+	public static String[]  removeCommanBetweenQuotes(String row)
 	{
-		StringBuffer resultString = new StringBuffer();
-		try
-		{
-			Pattern regex = Pattern.compile("(.*)\"(.*),(.*)\"(.*)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-			Matcher regexMatcher = regex.matcher(row);
-			while (regexMatcher.find())
-			{
-				regexMatcher.appendReplacement(resultString, "$1$2$3$4");
-			}
-			regexMatcher.appendTail(resultString);
-		} catch (Exception ex){}
-		return resultString.toString();
+	      Pattern p = Pattern.compile(",(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
+          // Split input with the pattern
+          String[] fields = p.split(row);
+          for (int i = 0; i < fields.length; i++) {
+              // Get rid of residual double quotes
+        	  fields[i]= fields[i].replace("\"", "").replace(",", "");
+          }
+          return fields;
 	}
 
 	public static String convertBufferedReaderToString(BufferedReader bufferedReader)

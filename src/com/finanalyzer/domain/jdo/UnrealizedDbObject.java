@@ -57,7 +57,8 @@ public class UnrealizedDbObject implements Serializable{
 	@Override
 	public String toString()
 	{
-		return this.getMoneycontrolName()+":"+this.getBuyDate()+":"+this.getBuyPrice()+":"+this.getBuyQuantity();
+		return this.getMoneycontrolName()+":"+
+	this.getBuyDate()+":"+this.getBuyPrice()+":"+this.getBuyQuantity()+":"+this.getBuyPrice()*this.getBuyQuantity() ;
 	}
 
 }

@@ -219,7 +219,7 @@ public class MaintainanceControllerEndPoint {
 		{
 			return new EndPointResponse(true, "Uploaded!!!");
 		}
-		return new EndPointResponse(false, "Mismatch: "+differenceBetweenInputAndInserted);
+		return new EndPointResponse(false, "Mismatch: "+differenceBetweenInputAndInserted+" inputTotalInvestment: "+inputTotalInvestment+" insertedTotalInvestment: "+insertedTotalInvestment);
 	}
 
 	private double getInputTotalnvestment(List<String> rowsWithoutHeader) {

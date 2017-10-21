@@ -123,7 +123,7 @@ public class JdoDbOperations<T> {
 				String cacheNameAppendedWithValues = values == null ? this.cacheName : this.cacheName+values.toString() ;
 				entries = (List<T>) SYNC_CACHE.get(cacheNameAppendedWithValues);
 				
-				if (entries == null) 
+				if (entries == null || entries.size()==0) 
 				{
 					LOG.info("no entries found in cache: "+cacheNameAppendedWithValues);
 					entries = values == null ? (List<T>) q.execute() : (List<T>) q.execute(values);
@@ -246,7 +246,7 @@ public class JdoDbOperations<T> {
 
 		for (String row : rawDataDFromMoneyControl)
 		{
-			String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row).split(splitBy);
+			String[] stockAttributes = ReaderUtil.removeCommanBetweenQuotes(row);
 
 			String name = ReaderUtil.parseStockName(stockAttributes[0]);
 			
